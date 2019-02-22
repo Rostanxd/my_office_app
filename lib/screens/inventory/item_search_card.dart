@@ -38,19 +38,6 @@ class _ItemSearchCardState extends State<ItemSearchCard> {
   }
 
   @override
-  void initState() {
-    this._item = new Item(
-        'TH CORE FLAG',
-        'TH CORE FLAG',
-        'ACCESORIES MEN',
-        'CAMISETAS',
-        'SPRING 2017',
-        40.00,
-        44.80,
-        "http://info.thgye.com.ec/PublicTempStorage/Blob10991009875.jpeg");
-  }
-
-  @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Card(

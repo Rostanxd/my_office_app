@@ -1,0 +1,39 @@
+import 'package:flutter/material.dart';
+
+class ImageCard extends StatelessWidget{
+
+  String imageUrl = "assets/img/beach.jpeg";
+
+  ImageCard(this.imageUrl);
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    final card = Container(
+      height: 350.0,
+      width: 250.0,
+      margin: EdgeInsets.only(
+          top: 80,
+          left: 20.0
+      ),
+
+      decoration: BoxDecoration(
+          image: DecorationImage(
+              fit: BoxFit.fill,
+              image: NetworkImage(this.imageUrl)
+          ),
+          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+          shape: BoxShape.rectangle,
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+                color: Colors.black38,
+                blurRadius: 15.0,
+                offset: Offset(0.0, 7.0)
+            )
+          ]
+      ),
+    );
+
+    return card;
+  }
+}

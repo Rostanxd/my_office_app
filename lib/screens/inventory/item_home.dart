@@ -10,7 +10,6 @@ import 'package:my_office_th_app/screens/inventory/item_info_card.dart';
 import 'package:my_office_th_app/screens/inventory/item_stock_card.dart';
 
 class ItemHome extends StatefulWidget {
-
   final mu.User _user;
 
   ItemHome(this._user);
@@ -23,7 +22,6 @@ class ItemHome extends StatefulWidget {
 }
 
 class _ItemHomeState extends State<ItemHome> {
-
   Card _searchCard = new Card();
   TextEditingController _itmController = new TextEditingController();
   mi.Item _item;
@@ -48,16 +46,18 @@ class _ItemHomeState extends State<ItemHome> {
   }
 
   @override
-  void initState() {
+  Widget build(BuildContext context) {
+    // TODO: implement build
     this._item = new mi.Item(
         'TH CORE FLAG',
         'TH CORE FLAG',
         'ACCESORIES MEN',
         'CAMISETAS',
         'SPRING 2017',
-        40.00,
         44.80,
-        "https://www.gamepals.co/1467-thickbox_default/camiseta-tommy-hilfiger-color-blanco.jpg");
+        40.00,
+        "https://www.gamepals.co/1467-thickbox_default/camiseta-tommy-hilfiger-color-blanco.jpg",
+        3.60);
 
     this._searchCard = new Card(
       elevation: 5.0,
@@ -74,7 +74,8 @@ class _ItemHomeState extends State<ItemHome> {
                   ),
                   child: Text(
                     'Item:',
-                    style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                    style:
+                    TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
                   ),
                 ),
                 Container(
@@ -102,15 +103,12 @@ class _ItemHomeState extends State<ItemHome> {
         ],
       ),
     );
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
     return new MaterialApp(
       home: new Scaffold(
         appBar: new AppBar(
           title: new Text(''),
+          backgroundColor: Color(0xff011e41),
         ),
         drawer: UserDrawer(widget._user),
         body: ListView(

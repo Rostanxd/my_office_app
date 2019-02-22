@@ -7,7 +7,8 @@ class Item {
   final double priceIva;
   final double priceNoIva;
   final String imagePath;
+  final double rank;
 
   Item(this.styleId, this.styleName, this.lineName, this.productName,
-      this.seasonName, this.priceIva, this.priceNoIva, this.imagePath);
+      this.seasonName, this.priceIva, this.priceNoIva, this.imagePath, this.rank);
 }

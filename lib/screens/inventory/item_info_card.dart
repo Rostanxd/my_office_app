@@ -1,11 +1,30 @@
 import 'package:flutter/material.dart';
 
+import 'package:my_office_th_app/components/gradient_back.dart';
+import 'package:my_office_th_app/components/image_list.dart';
+import 'package:my_office_th_app/screens/inventory/price_inkwell.dart';
+import 'package:my_office_th_app/screens/inventory/item_image_foot.dart';
+
 import 'package:my_office_th_app/models/item.dart' as mi;
 
-class ItemInfoCard extends StatelessWidget {
-  final mi.Item _item;
+class ItemInfoCard extends StatefulWidget {
+  final mi.Item item;
 
-  ItemInfoCard(this._item);
+  ItemInfoCard(this.item);
+
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return itemInfoCardDosState();
+  }
+}
+
+class itemInfoCardDosState extends State<ItemInfoCard> {
+  List<String> itemImageUrls = [
+    "https://www.gamepals.co/1467-thickbox_default/camiseta-tommy-hilfiger-color-blanco.jpg",
+    "https://images-na.ssl-images-amazon.com/images/I/817mCj3EqhL._UL1500_.jpg",
+    "https://i.ebayimg.com/images/g/FaoAAOSwa~hZZmbX/s-l300.jpg"
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -13,113 +32,21 @@ class ItemInfoCard extends StatelessWidget {
     return Card(
       elevation: 5.0,
       child: Container(
-        margin: EdgeInsets.all(20.0),
-        child: Row(
+        height: 400.0,
+        child: Column(
           children: <Widget>[
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Stack(
+              alignment: Alignment(0.9, 1.2),
               children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Container(
-                      margin: EdgeInsets.only(
-                        bottom: 5.0
-                      ),
-                      child: Text(
-                        'Information',
-                        style: TextStyle(fontSize: 18.0,
-                            fontWeight: FontWeight.bold, color: Color(0xff011e41))
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Text(
-                      'Style Name: ',
-                      style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      this._item.styleName,
-                      style: TextStyle(fontSize: 14.0),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Text(
-                      'Line: ',
-                      style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      this._item.lineName,
-                      style: TextStyle(fontSize: 14.0),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Text(
-                      'Product: ',
-                      style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      this._item.productName,
-                      style: TextStyle(fontSize: 14.0),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Text(
-                      'Season: ',
-                      style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      this._item.seasonName,
-                      style: TextStyle(fontSize: 14.0),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Text(
-                      'Price No Iva: ',
-                      style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      "\$ " + this._item.priceNoIva.toString(),
-                      style: TextStyle(fontSize: 14.0),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Text(
-                      'Price No Iva: ',
-                      style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      this._item.priceIva.toString(),
-                      style: TextStyle(fontSize: 14.0),
-                    ),
-                  ],
-                )
+                GradientBack(
+                    widget.item.styleName,
+                    widget.item.lineName + ' \/ ' + widget.item.productName,
+                    widget.item.seasonName),
+                ImageList(this.itemImageUrls),
+                PriceInkWell(widget.item)
               ],
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                  margin: EdgeInsets.only(left: 20.0),
-                  width: 100.0,
-                  alignment: Alignment(0, 0),
-                  child: Image(
-                    image: NetworkImage(this._item.imagePath),
-                  ),
-                )
-              ],
-            ),
+            ItemImageFoot(widget.item)
           ],
         ),
       ),
