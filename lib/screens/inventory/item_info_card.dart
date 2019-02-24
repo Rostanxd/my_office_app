@@ -32,21 +32,29 @@ class itemInfoCardDosState extends State<ItemInfoCard> {
     return Card(
       elevation: 5.0,
       child: Container(
-        height: 400.0,
         child: Column(
           children: <Widget>[
             Stack(
-              alignment: Alignment(0.9, 1.2),
               children: <Widget>[
-                GradientBack(
-                    widget.item.styleName,
-                    widget.item.lineName + ' \/ ' + widget.item.productName,
-                    widget.item.seasonName),
+                Container(
+                  height: 400.0,
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: GradientBack(
+                        widget.item.styleName,
+                        widget.item.lineName + ' \/ ' + widget.item.productName,
+                        widget.item.seasonName),
+                  ),
+                ),
                 ImageList(this.itemImageUrls),
-                PriceInkWell(widget.item)
+                Container(
+                    margin: EdgeInsets.only(top: 350.0, left: 10.0),
+                    child: ItemImageFoot(widget.item)),
+                Container(
+                    margin: EdgeInsets.only(top: 325.0, left: 250.0),
+                    child: PriceInkWell(widget.item)),
               ],
             ),
-            ItemImageFoot(widget.item)
           ],
         ),
       ),

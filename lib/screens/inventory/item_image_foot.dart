@@ -10,6 +10,7 @@ class ItemImageFoot extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
+
     // TODO: implement createState
     return _ItemImageFootState();
   }
@@ -47,8 +48,6 @@ class _ItemImageFootState extends State<ItemImageFoot> {
 //    Loading stars
     var i = 1;
     for (i = 1; i <= widget.item.rank; i++) {
-
-      print(i.toString());
 
       this._row.children.add(Icon(
         Icons.star,

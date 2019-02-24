@@ -57,15 +57,14 @@ class _LoginForm extends State<LoginForm> {
     }, onError: (error) {
       setState(() {
         this._login = false;
-        this._myUser = new mu.User(
-            'GUEST', 'GUEST', '0'
-        );
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => HomePage(this._myUser)));
-      });
-//      Scaffold.of(context)
-//          .showSnackBar(SnackBar(content: Text("Connection time-out!")));
+        this._myUser = new mu.User('GUEST', 'GUEST', '0');
 
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => HomePage(this._myUser)),
+            (Route<dynamic> route) => false);
+      });
+      Scaffold.of(context)
+          .showSnackBar(SnackBar(content: Text("Connection time-out!")));
     }).catchError((error) {
       print(error);
       setState(() {

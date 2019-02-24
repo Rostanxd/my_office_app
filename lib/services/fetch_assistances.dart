@@ -8,7 +8,7 @@ import 'package:my_office_th_app/factories/assistance.dart' as fa;
 import 'package:my_office_th_app/models/assistance.dart' as ma;
 import 'package:my_office_th_app/utils/connection.dart' as con;
 
-Future<List<fa.Assistance>> fetchAssistances(
+Future<List<fa.Assistance>> fetchAssistance(
     http.Client client, String date, String employeeId) async {
 
   final response = await client.post(con.Connection.host + '/rest/WsAssistance',
@@ -26,7 +26,7 @@ Future<List<fa.Assistance>> fetchAssistances(
 
   var jsonSdt = json.encode(mapSdt);
 
-  return compute(parseAssistances, jsonSdt);
+  return compute(parseAssistance, jsonSdt);
 }
 
 Future<ma.Assistance> fetchAnAssistance(
@@ -54,7 +54,7 @@ Future<ma.Assistance> fetchAnAssistance(
         mapResponse['SdtAssistances'][i]['exitMsg']);
   }
 
-//  If we dont have data in this day.
+//  If we don't have data in this day.
   if (assistance == null) {
     assistance = ma.Assistance(
       date, employeeId, '00:00', '00:00', '00:00', '00:00',
@@ -65,7 +65,7 @@ Future<ma.Assistance> fetchAnAssistance(
   return assistance;
 }
 
-List<fa.Assistance> parseAssistances(String responseBody) {
+List<fa.Assistance> parseAssistance(String responseBody) {
   final parsed = json.decode(responseBody).cast<Map<String, dynamic>>();
 
   return parsed

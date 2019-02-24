@@ -6,13 +6,12 @@ import 'package:flutter/services.dart';
 import 'package:my_office_th_app/models/user.dart' as mu;
 import 'package:my_office_th_app/models/item.dart' as mi;
 import 'package:my_office_th_app/screens/home/user_drawer.dart';
-import 'package:my_office_th_app/screens/inventory/item_info_card.dart';
-import 'package:my_office_th_app/screens/inventory/item_stock_card.dart';
+import 'package:my_office_th_app/screens/inventory/item_home_list_view.dart';
 
 class ItemHome extends StatefulWidget {
-  final mu.User _user;
+  final mu.User user;
 
-  ItemHome(this._user);
+  ItemHome(this.user);
 
   @override
   State<StatefulWidget> createState() {
@@ -22,103 +21,134 @@ class ItemHome extends StatefulWidget {
 }
 
 class _ItemHomeState extends State<ItemHome> {
-  Card _searchCard = new Card();
-  TextEditingController _itmController = new TextEditingController();
-  mi.Item _item;
+  String barcode = '';
+  mi.Item item;
+  ItemHomeListView itemHomeListView;
 
   Future barcodeScanning() async {
     try {
-      String barcode = await BarcodeScanner.scan();
-      setState(() => this._itmController.text = barcode);
+      var _barcode = await BarcodeScanner.scan();
+      setState(() =>  this.barcode = _barcode);
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.CameraAccessDenied) {
-        setState(() {
-          this._itmController.text = 'No camera permission!';
-        });
+        setState(() => this.barcode = '');
       } else {
-        setState(() => this._itmController.text = 'Unknown error: $e');
+        setState(() => this.barcode = '');
       }
     } on FormatException {
-      setState(() => this._itmController.text = 'Nothing captured.');
+      setState(() => this.barcode = '');
     } catch (e) {
-      setState(() => this._itmController.text = 'Unknown error: $e');
+      setState(() => this.barcode = '');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    this._item = new mi.Item(
-        'TH CORE FLAG',
-        'TH CORE FLAG',
-        'ACCESORIES MEN',
-        'CAMISETAS',
-        'SPRING 2017',
-        44.80,
-        40.00,
-        "https://www.gamepals.co/1467-thickbox_default/camiseta-tommy-hilfiger-color-blanco.jpg",
-        3.60);
-
-    this._searchCard = new Card(
-      elevation: 5.0,
-      child: Column(
-        children: <Widget>[
-          Form(
-            child: Row(
-              children: <Widget>[
-                Container(
-                  margin: EdgeInsets.only(
-                    top: 20.0,
-                    left: 20.0,
-                    bottom: 20.0,
-                  ),
-                  child: Text(
-                    'Item:',
-                    style:
-                    TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Container(
-                  width: 150.0,
-                  margin: EdgeInsets.only(
-                      top: 20.0, left: 10.0, right: 20.0, bottom: 20.0),
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      labelStyle: TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey),
-                    ),
-                    controller: _itmController,
-                  ),
-                ),
-                Container(
-                  child: new RaisedButton(
-                      onPressed: barcodeScanning, child: Icon(Icons.search)),
-                  padding: const EdgeInsets.all(8.0),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+    Widget cardEmpty = Align(
+        alignment: Alignment.center,
+        child: Container(
+            height: 100.0,
+            width: 200.0,
+            child: Center(
+                child: Text(
+              'Search the item!',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14.0,
+              ),
+            ))));
 
     return new MaterialApp(
       home: new Scaffold(
         appBar: new AppBar(
           title: new Text(''),
           backgroundColor: Color(0xff011e41),
-        ),
-        drawer: UserDrawer(widget._user),
-        body: ListView(
-          children: <Widget>[
-            this._searchCard,
-            ItemInfoCard(this._item),
-            ItemStockCard(this._item),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () {
+                showSearch(context: context, delegate: DataSearch());
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.bookmark_border),
+              onPressed: () {
+                barcodeScanning();
+              },
+            )
           ],
         ),
+        drawer: UserDrawer(widget.user),
+        body: this.barcode.isNotEmpty ? ItemHomeListView(barcode) : cardEmpty,
       ),
+    );
+  }
+}
+
+//Implementation of search bar writing
+class DataSearch extends SearchDelegate<String> {
+  final cities = ['Milagro', 'Guayaquil', 'Quito', 'Manta', 'Cuenca'];
+  final recentCities = ['Milagro', 'Guayaquil', 'Quito'];
+  String itemStr;
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+//    Actions for app bar
+    return [
+      IconButton(
+        icon: Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+          close(context, null);
+        },
+      )
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+//    Leading icon on the left of the app
+    return IconButton(
+      icon: AnimatedIcon(
+          icon: AnimatedIcons.menu_arrow, progress: transitionAnimation),
+      onPressed: () {
+        close(context, null);
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    //    Show some result based on the selection
+    return ItemHomeListView(itemStr);
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+//    Show when someone searches for something
+    final suggestionList = query.isEmpty
+        ? recentCities
+        : cities.where((p) => p.startsWith(query)).toList();
+    return ListView.builder(
+      itemBuilder: (context, index) => ListTile(
+            onTap: () {
+              showResults(context);
+              this.itemStr = suggestionList[index].toString();
+            },
+            leading: Icon(Icons.location_city),
+            title: RichText(
+                text: TextSpan(
+                    text: suggestionList[index].substring(0, query.length),
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold),
+                    children: [
+                  TextSpan(
+                      text: suggestionList[index].substring(query.length),
+                      style: TextStyle(color: Colors.grey))
+                ])),
+          ),
+      itemCount: suggestionList.length,
     );
   }
 }

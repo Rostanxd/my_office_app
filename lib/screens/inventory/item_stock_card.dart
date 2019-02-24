@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'package:my_office_th_app/models/item.dart' as mi;
+import 'package:my_office_th_app/models/item_stock.dart' as mi;
 
 class ItemStockCard extends StatefulWidget {
-  final mi.Item _item;
+  final List<mi.ItemStock> listItemStock;
 
-  ItemStockCard(this._item);
+  ItemStockCard(this.listItemStock);
 
   @override
   State<StatefulWidget> createState() {
@@ -91,7 +91,7 @@ class _ItemStockCardState extends State<ItemStockCard> {
 
     _tableStock.children.add(_titleRow);
 
-    _tableStock.children.addAll(_dummyStock
+    _tableStock.children.addAll(widget.listItemStock
         .map((f) => TableRow(children: [
               TableCell(
                 child: Row(
@@ -111,10 +111,10 @@ class _ItemStockCardState extends State<ItemStockCard> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
-                    Container(margin: EdgeInsets.all(5.0), child: InkWell(child: Text(f.local),
+                    Container(margin: EdgeInsets.all(5.0), child: InkWell(child: Text(f.local.toString()),
                     onTap: (){
                       Scaffold.of(context)
-                          .showSnackBar(SnackBar(content: Text(f.local)));
+                          .showSnackBar(SnackBar(content: Text(f.local.toString())));
                     },))
                   ],
                 ),
@@ -124,10 +124,10 @@ class _ItemStockCardState extends State<ItemStockCard> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
                     Container(
-                        margin: EdgeInsets.all(5.0), child: InkWell(child: Text(f.others),
+                        margin: EdgeInsets.all(5.0), child: InkWell(child: Text(f.others.toString()),
                     onTap: (){
                       Scaffold.of(context)
-                          .showSnackBar(SnackBar(content: Text(f.others)));
+                          .showSnackBar(SnackBar(content: Text(f.others.toString())));
                     },))
                   ],
                 ),
@@ -141,20 +141,3 @@ class _ItemStockCardState extends State<ItemStockCard> {
             width: 300.0, margin: EdgeInsets.all(20.0), child: _tableStock));
   }
 }
-
-class itemStock {
-  String color;
-  String size;
-  String local;
-  String others;
-
-  itemStock(this.color, this.size, this.local, this.others);
-}
-
-var _dummyStock = [
-  itemStock('Blue', '', '', ''),
-  itemStock('', 'Small', '8', '4'),
-  itemStock('', 'Medium', '2', '0'),
-  itemStock('', 'Large', '5', '3'),
-  itemStock('Total Blue', '', '15', '7'),
-];

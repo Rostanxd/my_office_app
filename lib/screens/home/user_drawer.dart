@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 
 import 'package:my_office_th_app/models/user.dart';
 
+import 'package:my_office_th_app/screens/home/index.dart';
 import 'package:my_office_th_app/screens/inventory/item_home.dart';
+import 'package:my_office_th_app/screens/login/index.dart';
 
 class UserDrawer extends StatelessWidget {
+  final User user;
 
-  final User _user;
-
-  UserDrawer(this._user);
+  UserDrawer(this.user);
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +39,7 @@ class UserDrawer extends StatelessWidget {
                         left: 20.0,
                       ),
                       child: Text(
-                        this._user.name,
+                        this.user.name,
                         style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -85,8 +86,10 @@ class UserDrawer extends StatelessWidget {
               title: new Text("Inventario"),
               trailing: new Icon(Icons.apps),
               onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => ItemHome(this._user)));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ItemHome(this.user)));
               }),
           new ListTile(
               title: new Text("CRM"),
@@ -96,14 +99,22 @@ class UserDrawer extends StatelessWidget {
           new ListTile(
               title: new Text("Inicio"),
               trailing: new Icon(Icons.home),
-              onTap: () {}),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => HomePage(this.user)));
+              }),
           new ListTile(
               title: new Text("Salir"),
               trailing: new Icon(Icons.exit_to_app),
-              onTap: () {}),
+              onTap: () {
+                Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => MyLoginPage()),
+                        (Route<dynamic> route) => false);
+              }),
         ],
       ),
     );
   }
-
 }

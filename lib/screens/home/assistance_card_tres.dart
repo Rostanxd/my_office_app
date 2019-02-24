@@ -40,7 +40,6 @@ class _AssistanceCardState extends State<AssistanceCard> {
   void _putReclaim() {
     setState(() {
       _assistanceReclaim = _reclaimController.text;
-      print(_assistanceReclaim);
 
 //      After posting the request
       _currentAssistanceType = _listAssistanceTypes[0];
@@ -159,7 +158,6 @@ class _AssistanceCardState extends State<AssistanceCard> {
     }
 
     _currentAssistanceType = _listDropDownMenuItems[0].value;
-    print('Init: ' + _currentAssistanceType.name);
   }
 
   @override
@@ -196,7 +194,7 @@ class _AssistanceCardState extends State<AssistanceCard> {
                   ),
                   Container(
                     margin:
-                        EdgeInsets.only(top: 20.0, left: 20.0, bottom: 10.0),
+                        EdgeInsets.only(top: 20.0, left: 40.0, bottom: 10.0),
                     child: RaisedButton(
                       onPressed: _selectDate,
                       child: Text('Search'),
