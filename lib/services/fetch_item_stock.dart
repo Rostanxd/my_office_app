@@ -35,27 +35,18 @@ Future<List<mi.ItemStock>> fetchModelItemStock(
   List<mi.ItemStock> itemStockModel = new List<mi.ItemStock>();
   var response = await client.post(con.Connection.host + '/rest/WsItemStock',
       headers: {"Content-Type": "application/json"},
-      body: json.encode({"date": "$itemId"}));
+      body: json.encode({"itemId": "$itemId"}));
 
   print(response.body);
 
   //  Code generated for object sdt from genexus.
   Map<String, dynamic> mapResponse = json.decode(response.body);
 
-  for (var i=0; i < mapResponse['SdtItemStock'].length; i++){
-    itemStockModel.add(new mi.ItemStock(mapResponse['SdtItemStock'][i]['color'],
-        mapResponse['SdtItemStock'][i]['size'],
-        mapResponse['SdtItemStock'][i]['local'],
-        mapResponse['SdtItemStock'][i]['others']));
-  }
-
-//  Dummy data
-  if (itemStockModel == null) {
-    itemStockModel.add(mi.ItemStock('Blue', '', '', ''));
-    itemStockModel.add(mi.ItemStock('', 'Small', '8', '4'));
-    itemStockModel.add(mi.ItemStock('', 'Medium', '2', '0'));
-    itemStockModel.add(mi.ItemStock('', 'Large', '5', '3'));
-    itemStockModel.add(mi.ItemStock('Total Blue', '', '15', '7'));
+  for (var i=0; i < mapResponse['sdt_inv_estilos_app'].length; i++){
+    itemStockModel.add(new mi.ItemStock(mapResponse['sdt_inv_estilos_app'][i]['Color'],
+        mapResponse['sdt_inv_estilos_app'][i]['Talla'],
+        mapResponse['sdt_inv_estilos_app'][i]['StockLocal'],
+        mapResponse['sdt_inv_estilos_app'][i]['StockOtros']));
   }
 
   return itemStockModel;

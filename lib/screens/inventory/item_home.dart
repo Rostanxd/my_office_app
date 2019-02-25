@@ -88,8 +88,8 @@ class _ItemHomeState extends State<ItemHome> {
 
 //Implementation of search bar writing
 class DataSearch extends SearchDelegate<String> {
-  final cities = ['Milagro', 'Guayaquil', 'Quito', 'Manta', 'Cuenca'];
-  final recentCities = ['Milagro', 'Guayaquil', 'Quito'];
+  final cities = ['09T313900004LAR', '09T09630001VMED', '09T09630001VSMA'];
+  final recentCities = ['09T313900004LAR', '09T09630001VMED', '09T09630001VSMA'];
   String itemStr;
 
   @override

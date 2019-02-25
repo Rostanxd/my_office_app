@@ -33,7 +33,7 @@ class _ItemHomeListView extends State<ItemHomeListView> {
     // TODO: implement build
     si
         .fetchAnItem(http.Client(), widget.itemStr)
-        .timeout(Duration(seconds: 5))
+        .timeout(Duration(seconds: 15))
         .then((result) {
       setState(() {
         item = result;
@@ -47,10 +47,12 @@ class _ItemHomeListView extends State<ItemHomeListView> {
 
     si
         .fetchModelItemStock(http.Client(), widget.itemStr)
-        .timeout(Duration(seconds: 5))
+        .timeout(Duration(seconds: 15))
         .then((result) {
       setState(() {
+        print('>>  1 ' + result.toString());
         result.map((i) => listItemStock.add(i));
+        print('>>  2 ' + this.listItemStock.toString());
         this.itemStock = true;
       });
     }, onError: (error) {
