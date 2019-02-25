@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:my_office_th_app/components/gradient_back.dart';
 import 'package:my_office_th_app/components/image_list.dart';
-import 'package:my_office_th_app/screens/inventory/price_inkwell.dart';
+import 'package:my_office_th_app/screens/inventory/item_price_inkwell.dart';
 import 'package:my_office_th_app/screens/inventory/item_image_foot.dart';
 
 import 'package:my_office_th_app/models/item.dart' as mi;
@@ -20,12 +20,6 @@ class ItemInfoCard extends StatefulWidget {
 }
 
 class itemInfoCardDosState extends State<ItemInfoCard> {
-  List<String> itemImageUrls = [
-    "https://www.gamepals.co/1467-thickbox_default/camiseta-tommy-hilfiger-color-blanco.jpg",
-    "https://images-na.ssl-images-amazon.com/images/I/817mCj3EqhL._UL1500_.jpg",
-    "https://i.ebayimg.com/images/g/FaoAAOSwa~hZZmbX/s-l300.jpg"
-  ];
-
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -46,13 +40,13 @@ class itemInfoCardDosState extends State<ItemInfoCard> {
                         widget.item.seasonName),
                   ),
                 ),
-                ImageList(this.itemImageUrls),
+                ImageList(widget.item.listImagesPath),
                 Container(
                     margin: EdgeInsets.only(top: 350.0, left: 10.0),
                     child: ItemImageFoot(widget.item)),
                 Container(
                     margin: EdgeInsets.only(top: 325.0, left: 250.0),
-                    child: PriceInkWell(widget.item)),
+                    child: ItemPriceInkwell(widget.item)),
               ],
             ),
           ],

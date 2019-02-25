@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 
 import 'package:my_office_th_app/models/item.dart' as mi;
 
-class PriceInkWell extends StatefulWidget {
+class ItemPriceInkwell extends StatefulWidget {
   final mi.Item item;
 
-  PriceInkWell(this.item);
+  ItemPriceInkwell(this.item);
 
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return _PriceInkWellState();
+    return _ItemPriceInkwellState();
   }
 }
 
-class _PriceInkWellState extends State<PriceInkWell> {
+class _ItemPriceInkwellState extends State<ItemPriceInkwell> {
   bool pressed = false;
 
   void _changePrice() {

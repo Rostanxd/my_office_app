@@ -51,6 +51,7 @@ Future<mi.Item> fetchAnItem(
         mapResponse['SdtItem'][i]['priceIva'],
         mapResponse['SdtItem'][i]['priceNoIva'],
         mapResponse['SdtItem'][i]['imagePath'],
+        mapResponse['SdtItem'][i]['listImagesPath'],
         mapResponse['SdtItem'][i]['rank']);
   }
 
@@ -65,6 +66,9 @@ Future<mi.Item> fetchAnItem(
         44.80,
         40.00,
         "https://www.gamepals.co/1467-thickbox_default/camiseta-tommy-hilfiger-color-blanco.jpg",
+        ["https://www.gamepals.co/1467-thickbox_default/camiseta-tommy-hilfiger-color-blanco.jpg",
+        "https://images-na.ssl-images-amazon.com/images/I/817mCj3EqhL._UL1500_.jpg",
+        "https://i.ebayimg.com/images/g/FaoAAOSwa~hZZmbX/s-l300.jpg"],
         3.60);
   }
 
