@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_office_th_app/screens/login/form.dart';
+import 'package:my_office_th_app/screens/login/login_user_form.dart';
+import 'package:my_office_th_app/screens/login/login_local_form.dart';
 
 class MyLoginPage extends StatefulWidget {
   @override
@@ -41,7 +42,8 @@ class _MyLoginPageState extends State<MyLoginPage> {
                 ],
               ),
             ),
-            LoginForm(),
+//            LoginUserForm(),
+            LoginLocalForm(),
             SizedBox(height: 15.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

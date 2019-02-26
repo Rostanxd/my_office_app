@@ -26,11 +26,10 @@ class _ItemHomeListView extends State<ItemHomeListView> {
   mi.Item item;
   List<mis.ItemStock> listItemStock = new List<mis.ItemStock>();
   bool itemFound = false;
-  bool itemStock = false;
 
   @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
+  void initState() {
+//    TODO: calling the fetch method to get the item's details
     si
         .fetchAnItem(http.Client(), widget.itemStr)
         .timeout(Duration(seconds: 15))
@@ -45,26 +44,31 @@ class _ItemHomeListView extends State<ItemHomeListView> {
       print('fetchAnItem catchError: $error');
     });
 
+//    TODO: calling the fetch method to get the item's stock
     si
         .fetchModelItemStock(http.Client(), widget.itemStr)
         .timeout(Duration(seconds: 15))
         .then((result) {
       setState(() {
-        print('>>  1 ' + result.toString());
-        result.map((i) => listItemStock.add(i));
-        print('>>  2 ' + this.listItemStock.toString());
-        this.itemStock = true;
+//        result.map((i) => listItemStock.add(i));
+        for (mis.ItemStock i in result) {
+          this.listItemStock.add(i);
+        }
       });
     }, onError: (error) {
       print('fetchModelItemStock onError: $error');
     }).catchError((error) {
       print('fetchModelItemStock catchError: $error');
     });
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
     return ListView(
       children: <Widget>[
         itemFound ? ItemInfoCard(item) : CardDummyLoading(),
-        itemStock ? ItemStockCard(listItemStock) : CardDummyLoading(),
+        listItemStock.length > 0 ? ItemStockCard(listItemStock) : CardDummyLoading(),
       ],
     );
   }

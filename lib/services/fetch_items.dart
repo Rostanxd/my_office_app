@@ -46,11 +46,11 @@ Future<mi.Item> fetchAnItem(http.Client client, String itemId) async {
         mapResponse['SdtItems'][i]['lineName'],
         mapResponse['SdtItems'][i]['productName'],
         mapResponse['SdtItems'][i]['seasonName'],
-        double.parse(mapResponse['SdtItems'][i]['priceIva']),
-        double.parse(mapResponse['SdtItems'][i]['priceNoIva']),
+        mapResponse['SdtItems'][i]['priceIva'],
+        mapResponse['SdtItems'][i]['priceNoIva'],
         mapResponse['SdtItems'][i]['imagePath'],
-        mapResponse['SdtItems'][i]['listImagesPath'],
-        double.parse(mapResponse['SdtItems'][i]['rank']));
+        mapResponse['SdtItems'][i]['listImagesPath'].cast<String>(),
+        mapResponse['SdtItems'][i]['rank']);
   }
 
   return item;

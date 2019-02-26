@@ -45,8 +45,8 @@ Future<List<mi.ItemStock>> fetchModelItemStock(
   for (var i=0; i < mapResponse['sdt_inv_estilos_app'].length; i++){
     itemStockModel.add(new mi.ItemStock(mapResponse['sdt_inv_estilos_app'][i]['Color'],
         mapResponse['sdt_inv_estilos_app'][i]['Talla'],
-        mapResponse['sdt_inv_estilos_app'][i]['StockLocal'],
-        mapResponse['sdt_inv_estilos_app'][i]['StockOtros']));
+        int.parse(mapResponse['sdt_inv_estilos_app'][i]['StockLocal']),
+        int.parse(mapResponse['sdt_inv_estilos_app'][i]['StockOtros'])));
   }
 
   return itemStockModel;

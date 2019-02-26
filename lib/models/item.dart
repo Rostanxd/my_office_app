@@ -22,3 +22,4 @@ class Item {
       this.listImagesPath,
       this.rank);
 }
+

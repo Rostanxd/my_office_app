@@ -10,39 +10,31 @@ import 'package:my_office_th_app/models/user.dart' as mu;
 import 'package:my_office_th_app/services/fetch_users.dart' as su;
 import 'package:my_office_th_app/screens/home/index.dart';
 
-class LoginForm extends StatefulWidget {
+class LoginUserForm extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return _LoginForm();
+    return _LoginUserFormState();
   }
 }
 
-class _LoginForm extends State<LoginForm> {
+class _LoginUserFormState extends State<LoginUserForm> {
   final _formKey = GlobalKey<FormState>();
 
   mu.User _myUser;
   String _user, _password;
   bool _login = false;
-  TextEditingController _userController = new TextEditingController();
-  TextEditingController _passController = new TextEditingController();
 
-//  -----------------------------
-//  Functions!
-//  -----------------------------
   void _checkLogin() {
-//    Change the state to true to keep the circle loading
+//    TODO: Change the state to true to keep the circle loading
     setState(() {
       _login = true;
     });
 
-    _user = _userController.text;
-    _password = _passController.text;
-
     var _userLogged = su.fetchAnUser(http.Client(), _user, _password);
 
-//    When I have a response from the future, take the result to evaluate.
-    _userLogged.timeout(new Duration(seconds: 5)).then((result) {
+//    TODO: When I have a response from the future, take the result to evaluate.
+    _userLogged.timeout(new Duration(seconds: 30)).then((result) {
       setState(() {
         this._login = false;
         if (result != null) {
@@ -90,7 +82,6 @@ class _LoginForm extends State<LoginForm> {
                   borderSide: BorderSide(color: Color(0xff011e41)))),
           validator: (val) => val.isEmpty ? 'User is empty' : null,
           onSaved: (val) => this._user = val,
-          controller: _userController,
         ),
         SizedBox(height: 20.0),
         new TextFormField(
@@ -108,7 +99,6 @@ class _LoginForm extends State<LoginForm> {
               : null,
           onSaved: (val) => _password = val,
           obscureText: true,
-          controller: _passController,
         ),
         SizedBox(height: 5.0),
         Container(
@@ -147,8 +137,8 @@ class _LoginForm extends State<LoginForm> {
             child: GestureDetector(
               onTap: () {
                 if (_formKey.currentState.validate()) {
+                  _formKey.currentState.save();
                   _checkLogin();
-//                    _submit();
                 }
               },
               child: Center(
@@ -166,10 +156,10 @@ class _LoginForm extends State<LoginForm> {
       );
     }
 
-//    Adding the other buttons
+//    TODO: Adding the other buttons
     formColumn.children.add(new SizedBox(height: 20.0));
 
-//    Facebook button
+//    TODO: Facebook button
     /*
     formColumn.children.add(new Container(
       height: 40.0,

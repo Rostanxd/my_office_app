@@ -25,69 +25,69 @@ class _ItemStockCardState extends State<ItemStockCard> {
     );
 
     var _titleRow = TableRow(
-      decoration: BoxDecoration(color: Colors.black),
+        decoration: BoxDecoration(border: Border.all(color: Colors.black)),
         children: [
-      TableCell(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            Container(
-              margin: EdgeInsets.all(2.0),
-              child: Text(
-                'Color',
-                style:
-                    TextStyle(color: Color(0xff011e41), fontWeight: FontWeight.bold),
-              ),
-            )
-          ],
-        ),
-      ),
-      TableCell(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            Container(
-              margin: EdgeInsets.all(2.0),
-              child: Text(
-                'Size',
-                style:
-                    TextStyle(color: Color(0xff011e41), fontWeight: FontWeight.bold),
-              ),
-            )
-          ],
-        ),
-      ),
-      TableCell(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            Container(
-              margin: EdgeInsets.all(2.0),
-              child: Text(
-                'Local',
-                style:
-                    TextStyle(color: Color(0xff011e41), fontWeight: FontWeight.bold),
-              ),
-            )
-          ],
-        ),
-      ),
-      TableCell(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            Container(
-              margin: EdgeInsets.all(2.0),
-              child: Text(
-                'Others',
-                style:
-                    TextStyle(color: Color(0xff011e41), fontWeight: FontWeight.bold),
-              ),
-            )
-          ],
-        ),
-      ),
-    ]);
+          TableCell(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.all(2.0),
+                  child: Text(
+                    'Color',
+                    style: TextStyle(
+                        color: Color(0xff011e41), fontWeight: FontWeight.bold),
+                  ),
+                )
+              ],
+            ),
+          ),
+          TableCell(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.all(2.0),
+                  child: Text(
+                    'Size',
+                    style: TextStyle(
+                        color: Color(0xff011e41), fontWeight: FontWeight.bold),
+                  ),
+                )
+              ],
+            ),
+          ),
+          TableCell(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.all(2.0),
+                  child: Text(
+                    'Local',
+                    style: TextStyle(
+                        color: Color(0xff011e41), fontWeight: FontWeight.bold),
+                  ),
+                )
+              ],
+            ),
+          ),
+          TableCell(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.all(2.0),
+                  child: Text(
+                    'Others',
+                    style: TextStyle(
+                        color: Color(0xff011e41), fontWeight: FontWeight.bold),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ]);
 
     _tableStock.children.add(_titleRow);
 
@@ -96,26 +96,25 @@ class _ItemStockCardState extends State<ItemStockCard> {
               TableCell(
                 child: Row(
                   children: <Widget>[
-                    Container(margin: EdgeInsets.all(5.0), child: Text(f.color))
+                    Container(
+                        width: 50.0,
+                        margin: EdgeInsets.all(5.0),
+                        child: Text(f.color, style: TextStyle(fontSize: 10.0)))
                   ],
                 ),
               ),
               TableCell(
                 child: Row(
                   children: <Widget>[
-                    Container(margin: EdgeInsets.all(5.0), child: Text(f.size))
-                  ],
-                ),
-              ),
-              TableCell(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    Container(margin: EdgeInsets.all(5.0), child: InkWell(child: Text(f.local.toString()),
-                    onTap: (){
-                      Scaffold.of(context)
-                          .showSnackBar(SnackBar(content: Text(f.local.toString())));
-                    },))
+                    Container(
+                        margin: EdgeInsets.all(5.0),
+                        child: Text(
+                          f.size,
+                          style: f.size == 'Total'
+                              ? TextStyle(
+                                  fontSize: 10.0, fontWeight: FontWeight.bold)
+                              : TextStyle(fontSize: 10.0),
+                        ))
                   ],
                 ),
               ),
@@ -124,11 +123,37 @@ class _ItemStockCardState extends State<ItemStockCard> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
                     Container(
-                        margin: EdgeInsets.all(5.0), child: InkWell(child: Text(f.others.toString()),
-                    onTap: (){
-                      Scaffold.of(context)
-                          .showSnackBar(SnackBar(content: Text(f.others.toString())));
-                    },))
+                        margin: EdgeInsets.all(5.0),
+                        child: InkWell(
+                          child: Text(f.local == 0 ? '' : f.local.toString(),
+                              style: f.size == 'Total'
+                                  ? TextStyle(
+                                      fontSize: 10.0,
+                                      fontWeight: FontWeight.bold)
+                                  : TextStyle(fontSize: 10.0)),
+                        ))
+                  ],
+                ),
+              ),
+              TableCell(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    Container(
+                        margin: EdgeInsets.all(5.0),
+                        child: InkWell(
+                          child: Text(f.others == 0 ? '' : f.others.toString(),
+                              style: f.size == 'Total'
+                                  ? TextStyle(
+                                      fontSize: 10.0,
+                                      fontWeight: FontWeight.bold)
+                                  : TextStyle(fontSize: 10.0)),
+                          onTap: () {
+                            Scaffold.of(context).showSnackBar(SnackBar(
+                                content: Text(
+                                    f.others == 0 ? '' : f.others.toString())));
+                          },
+                        ))
                   ],
                 ),
               ),
