@@ -21,21 +21,42 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
 
   mh.Holding _currentHolding;
   ml.Local _currentLocal;
-  List<mh.Holding> listHoldings = new List<mh.Holding>();
-  List<ml.Local> listLocals = new List<ml.Local>();
+  List<mh.Holding> _listHoldings = new List<mh.Holding>();
+  List<ml.Local> _listLocals = new List<ml.Local>();
   List<DropdownMenuItem<mh.Holding>> _listDropDownHoldings =
       new List<DropdownMenuItem<mh.Holding>>();
   List<DropdownMenuItem<ml.Local>> _listDropDownLocals =
       new List<DropdownMenuItem<ml.Local>>();
 
+//  Variables to keep showing the circular progress.
+  bool _boolHolding = false;
+  bool _boolLocals = false;
+
   void _getHoldings() {
+
+    setState(() {
+      this._boolHolding = true;
+    });
+
     sh.fetchHoldings(http.Client()).timeout(Duration(seconds: 15)).then(
         (result) {
       print('_getHodlings >> ' + result.toString());
       setState(() {
+
+        this._boolHolding = false;
+
         for (mh.Holding h in result) {
-          this.listHoldings.add(h);
+          this._listHoldings.add(h);
         }
+
+        for (var _hld in _listHoldings) {
+          this
+              ._listDropDownHoldings
+              .add(new DropdownMenuItem(value: _hld, child: new Text(_hld.name)));
+        }
+
+        _currentHolding = _listDropDownHoldings[0].value;
+
       });
     }, onError: (error) {
       print(error);
@@ -47,19 +68,35 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
   void _changeDropDownItemHolding(mh.Holding _holdingSelected) {
     setState(() {
       _currentHolding = _holdingSelected;
+      _getLocals(_currentHolding.id);
     });
   }
 
   void _getLocals(String holdingId) {
+    setState(() {
+      this._boolLocals = true;
+    });
+
     sl
         .fetchLocals(http.Client(), holdingId)
         .timeout(Duration(seconds: 15))
         .then((result) {
       setState(() {
+
+        this._boolLocals = false;
+
 //        TODO: updating the list variable for the holdings, and the dropdown
         for (ml.Local l in result) {
-          listLocals.add(l);
+          _listLocals.add(l);
         }
+
+        for (var _loc in this._listLocals) {
+          this
+              ._listDropDownLocals
+              .add(new DropdownMenuItem(value: _loc, child: new Text(_loc.name)));
+        }
+
+        _currentLocal = _listDropDownLocals[0].value;
       });
     }, onError: (error) {
       print(error);
@@ -68,20 +105,112 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
     });
   }
 
+  void _changeDropDownItemLocal(ml.Local _localSelected) {
+    setState(() {
+      this._currentLocal = _localSelected;
+    });
+  }
+
   @override
-  void initState() {
+  void initState(){
+
+//    TODO: Loading DropdownMenuItem for holdings
     this._getHoldings();
+
+//    TODO: Loading DropdownMenuItem for locals
+    this._getLocals('0');
+
+//    _listLocals.add(new ml.Local('', 'Select...'));
+//    for (var _loc in _listLocals) {
+//      this
+//          ._listDropDownLocals
+//          .add(new DropdownMenuItem(value: _loc, child: new Text(_loc.name)));
+//    }
+//    _currentLocal = _listDropDownLocals[0].value;
   }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return DropdownButton<mh.Holding>(
-      value: _currentHolding,
-      items: _listDropDownHoldings,
-      onChanged: (mh.Holding h) {
-        _changeDropDownItemHolding(h);
-      },
+
+    var _circularProgress = CircularProgressIndicator();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          margin: EdgeInsets.only(
+            top: 20.0,
+            left: 20.0,
+          ),
+          child: Text('Holding',
+            style: TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+              color: Color(0xff011e41)
+            )
+          ),
+        ),
+        SizedBox(height: 10.0),
+        Container(
+          child: Center(
+            child: _boolHolding ? _circularProgress : DropdownButton<mh.Holding>(
+              value: _currentHolding,
+              items: _listDropDownHoldings,
+              onChanged: (mh.Holding h) {
+                this._changeDropDownItemHolding(h);
+              },
+            ),
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.only(
+              top: 20.0,
+              left: 20.0
+          ),
+          child: Text('Local',
+              style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xff011e41)
+              )
+          ),
+        ),
+        SizedBox(height: 10.0),
+        Container(
+          child: Center(
+            child: _boolLocals ? _circularProgress : DropdownButton<ml.Local>(
+              value: _currentLocal,
+              items: _listDropDownLocals,
+              onChanged: (ml.Local l) {
+                this._changeDropDownItemLocal(l);
+              },
+            ),
+          ),
+        ),
+        SizedBox(height: 40.0),
+        Container(
+          height: 40.0,
+          child: Material(
+            borderRadius: BorderRadius.circular(20.0),
+            shadowColor: Color(0xff212121),
+            color: Color(0xff011e41),
+            elevation: 7.0,
+            child: GestureDetector(
+              onTap: () {},
+              child: Center(
+                child: Text(
+                  'CONTINUE',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Montserrat'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

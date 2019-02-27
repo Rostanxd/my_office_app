@@ -11,7 +11,7 @@ Future<List<ml.Local>> fetchLocals(http.Client client,
   List<ml.Local> listLocals = new List<ml.Local>();
   var response = await http.post(con.Connection.host + '/rest/WsManBodegas',
       headers: {"Content-Type": "application/json"},
-      body: {"HldCodigo": holdingId});
+      body: json.encode({"HldCodigo": "$holdingId"}));
 
   print(response.body);
 
