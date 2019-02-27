@@ -9,11 +9,11 @@ import 'package:my_office_th_app/models/item_stock.dart' as mi;
 import 'package:my_office_th_app/utils/connection.dart' as con;
 
 Future<List<fi.ItemStock>> fetchItemStock(
-    http.Client client, String itemId) async {
+    http.Client client, String itemId, String localId) async {
 
   final response = await client.post(con.Connection.host + '/rest/WsItemStock',
       headers: {"Content-Type": "application/json"},
-      body: json.encode({"date": "$itemId"}));
+      body: json.encode({"itemId": "$itemId", "BodCodigo": "$localId"}));
 
   //  Code generated for object sdt from genexus.
   var mapSdt = <Map>[];
@@ -30,12 +30,12 @@ Future<List<fi.ItemStock>> fetchItemStock(
 }
 
 Future<List<mi.ItemStock>> fetchModelItemStock(
-    http.Client client, String itemId) async {
+    http.Client client, String itemId, String localId) async {
 
   List<mi.ItemStock> itemStockModel = new List<mi.ItemStock>();
   var response = await client.post(con.Connection.host + '/rest/WsItemStock',
       headers: {"Content-Type": "application/json"},
-      body: json.encode({"itemId": "$itemId"}));
+      body: json.encode({"itemId": "$itemId", "BodCodigo": "$localId"}));
 
   print(response.body);
 

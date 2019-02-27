@@ -1,14 +1,10 @@
-import 'dart:async';
-import 'dart:convert';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
 
 import 'package:my_office_th_app/models/user.dart' as mu;
 import 'package:my_office_th_app/services/fetch_users.dart' as su;
-import 'package:my_office_th_app/screens/home/index.dart';
+import 'package:my_office_th_app/screens/login/index.dart';
 
 class LoginUserForm extends StatefulWidget {
   @override
@@ -40,7 +36,7 @@ class _LoginUserFormState extends State<LoginUserForm> {
         if (result != null) {
           this._myUser = result;
           Navigator.push(context,
-              MaterialPageRoute(builder: (context) => HomePage(this._myUser)));
+              MaterialPageRoute(builder: (context) => MyLoginPage(this._myUser)));
         } else {
           Scaffold.of(context)
               .showSnackBar(SnackBar(content: Text("User login failed!")));
@@ -52,7 +48,7 @@ class _LoginUserFormState extends State<LoginUserForm> {
         this._myUser = new mu.User('GUEST', 'GUEST', '0');
 
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomePage(this._myUser)),
+            MaterialPageRoute(builder: (context) => MyLoginPage(this._myUser)),
             (Route<dynamic> route) => false);
       });
       Scaffold.of(context)

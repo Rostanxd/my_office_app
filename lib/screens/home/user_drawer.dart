@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:my_office_th_app/models/user.dart';
+import 'package:my_office_th_app/models/local.dart';
 
 import 'package:my_office_th_app/screens/home/index.dart';
 import 'package:my_office_th_app/screens/inventory/item_home.dart';
@@ -8,8 +9,9 @@ import 'package:my_office_th_app/screens/login/index.dart';
 
 class UserDrawer extends StatelessWidget {
   final User user;
+  final Local local;
 
-  UserDrawer(this.user);
+  UserDrawer(this.user, this.local);
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +91,7 @@ class UserDrawer extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => ItemHome(this.user)));
+                        builder: (context) => ItemHome(this.user, this.local)));
               }),
           new ListTile(
               title: new Text("CRM"),
@@ -103,14 +105,14 @@ class UserDrawer extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => HomePage(this.user)));
+                        builder: (context) => HomePage(this.user, this.local)));
               }),
           new ListTile(
               title: new Text("Salir"),
               trailing: new Icon(Icons.exit_to_app),
               onTap: () {
                 Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => MyLoginPage()),
+                    MaterialPageRoute(builder: (context) => MyLoginPage(null)),
                         (Route<dynamic> route) => false);
               }),
         ],

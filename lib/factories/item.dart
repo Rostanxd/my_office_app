@@ -1,4 +1,5 @@
 class Item {
+  final String itemId;
   final String styleId;
   final String styleName;
   final String lineName;
@@ -10,6 +11,7 @@ class Item {
   final double rank;
 
   Item({
+      this.itemId,
       this.styleId,
       this.styleName,
       this.lineName,
@@ -22,6 +24,7 @@ class Item {
 
   factory Item.fromJson(Map<String, dynamic> json) {
     return Item(
+      itemId: json['itemId'],
       styleId: json['styleId'],
       styleName: json['styleName'],
       lineName: json['lineName'],

@@ -4,11 +4,13 @@ import 'package:my_office_th_app/screens/home/assistance_card_tres.dart';
 import 'package:my_office_th_app/screens/home/user_drawer.dart';
 
 import 'package:my_office_th_app/models/user.dart';
+import 'package:my_office_th_app/models/local.dart';
 
 class HomePage extends StatelessWidget {
-  final User _user;
+  final User user;
+  final Local local;
 
-  HomePage(this._user);
+  HomePage(this.user, this.local);
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,7 @@ class HomePage extends StatelessWidget {
           title: Text(""),
           backgroundColor: Color(0xff011e41),
         ),
-        drawer: UserDrawer(_user),
+        drawer: UserDrawer(this.user, this.local),
         body: Container(
           child: ListView(
             children: <Widget>[

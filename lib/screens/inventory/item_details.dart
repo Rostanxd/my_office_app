@@ -5,24 +5,26 @@ import 'package:flutter/material.dart';
 import 'package:my_office_th_app/components/card_dummy_loading.dart';
 import 'package:my_office_th_app/models/item.dart' as mi;
 import 'package:my_office_th_app/models/item_stock.dart' as mis;
+import 'package:my_office_th_app/models/local.dart' as ml;
 import 'package:my_office_th_app/screens/inventory/item_info_card.dart';
 import 'package:my_office_th_app/screens/inventory/item_stock_card.dart';
 import 'package:my_office_th_app/services/fetch_items.dart' as si;
 import 'package:my_office_th_app/services/fetch_item_stock.dart' as si;
 
-class ItemHomeListView extends StatefulWidget {
+class ItemDetails extends StatefulWidget {
   final String itemStr;
+  final ml.Local local;
 
-  ItemHomeListView(this.itemStr);
+  ItemDetails(this.itemStr, this.local);
 
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return _ItemHomeListView();
+    return _ItemDetailsState();
   }
 }
 
-class _ItemHomeListView extends State<ItemHomeListView> {
+class _ItemDetailsState extends State<ItemDetails> {
   mi.Item item;
   List<mis.ItemStock> listItemStock = new List<mis.ItemStock>();
   bool itemFound = false;
@@ -31,7 +33,7 @@ class _ItemHomeListView extends State<ItemHomeListView> {
   void initState() {
 //    TODO: calling the fetch method to get the item's details
     si
-        .fetchAnItem(http.Client(), widget.itemStr)
+        .fetchAnItem(http.Client(), widget.itemStr, '')
         .timeout(Duration(seconds: 15))
         .then((result) {
       setState(() {
@@ -46,7 +48,7 @@ class _ItemHomeListView extends State<ItemHomeListView> {
 
 //    TODO: calling the fetch method to get the item's stock
     si
-        .fetchModelItemStock(http.Client(), widget.itemStr)
+        .fetchModelItemStock(http.Client(), widget.itemStr, widget.local.id)
         .timeout(Duration(seconds: 15))
         .then((result) {
       setState(() {

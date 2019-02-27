@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
+
+import 'package:my_office_th_app/models/user.dart' as mu;
+
 import 'package:my_office_th_app/screens/login/login_user_form.dart';
 import 'package:my_office_th_app/screens/login/login_local_form.dart';
 
 class MyLoginPage extends StatefulWidget {
+  final mu.User user;
+
+  MyLoginPage(this.user);
+
   @override
   _MyLoginPageState createState() => new _MyLoginPageState();
 }
 
 class _MyLoginPageState extends State<MyLoginPage> {
-
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -42,10 +48,16 @@ class _MyLoginPageState extends State<MyLoginPage> {
                 ],
               ),
             ),
-//            LoginUserForm(),
-            LoginLocalForm(),
             SizedBox(height: 15.0),
-            Row(
+            widget.user == null
+                ? Text('')
+                : Center(
+                    child: Container(
+                    child: Text(widget.user.name),
+                  )),
+            widget.user == null ? LoginUserForm() : LoginLocalForm(widget.user),
+            SizedBox(height: 15.0),
+            widget.user == null ? Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
@@ -67,7 +79,7 @@ class _MyLoginPageState extends State<MyLoginPage> {
                   ),
                 )
               ],
-            )
+            ) : Text('')
           ],
         ));
   }

@@ -3,15 +3,22 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:my_office_th_app/models/user.dart' as mu;
+import 'package:http/http.dart' as http;
+
+import 'package:my_office_th_app/factories/item.dart' as fi;
 import 'package:my_office_th_app/models/item.dart' as mi;
+import 'package:my_office_th_app/models/local.dart' as ml;
+import 'package:my_office_th_app/models/user.dart' as mu;
 import 'package:my_office_th_app/screens/home/user_drawer.dart';
-import 'package:my_office_th_app/screens/inventory/item_home_list_view.dart';
+import 'package:my_office_th_app/screens/inventory/item_details.dart';
+import 'package:my_office_th_app/screens/inventory/items_style_list_view.dart';
+import 'package:my_office_th_app/services/fetch_items.dart' as si;
 
 class ItemHome extends StatefulWidget {
   final mu.User user;
+  final ml.Local local;
 
-  ItemHome(this.user);
+  ItemHome(this.user, this.local);
 
   @override
   State<StatefulWidget> createState() {
@@ -23,12 +30,12 @@ class ItemHome extends StatefulWidget {
 class _ItemHomeState extends State<ItemHome> {
   String barcode = '';
   mi.Item item;
-  ItemHomeListView itemHomeListView;
+  ItemDetails itemHomeListView;
 
   Future barcodeScanning() async {
     try {
       var _barcode = await BarcodeScanner.scan();
-      setState(() =>  this.barcode = _barcode);
+      setState(() => this.barcode = _barcode);
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.CameraAccessDenied) {
         setState(() => this.barcode = '');
@@ -68,7 +75,8 @@ class _ItemHomeState extends State<ItemHome> {
             IconButton(
               icon: Icon(Icons.search),
               onPressed: () {
-                showSearch(context: context, delegate: DataSearch());
+                showSearch(
+                    context: context, delegate: DataSearch(widget.local));
               },
             ),
             IconButton(
@@ -79,22 +87,26 @@ class _ItemHomeState extends State<ItemHome> {
             )
           ],
         ),
-        drawer: UserDrawer(widget.user),
-        body: this.barcode.isNotEmpty ? ItemHomeListView(barcode) : cardEmpty,
+        drawer: UserDrawer(widget.user, widget.local),
+        body: this.barcode.isNotEmpty
+            ? ItemDetails(barcode, widget.local)
+            : cardEmpty,
       ),
     );
   }
 }
 
-//Implementation of search bar writing
+//  TODO: Implementation of search bar.
 class DataSearch extends SearchDelegate<String> {
-  final cities = ['09T313900004LAR', '09T09630001VMED', '09T09630001VSMA'];
-  final recentCities = ['09T313900004LAR', '09T09630001VMED', '09T09630001VSMA'];
-  String itemStr;
+  final ml.Local local;
+
+  DataSearch(this.local);
+
+  String styleId;
 
   @override
   List<Widget> buildActions(BuildContext context) {
-//    Actions for app bar
+//    TODO: Icon close
     return [
       IconButton(
         icon: Icon(Icons.clear),
@@ -108,7 +120,7 @@ class DataSearch extends SearchDelegate<String> {
 
   @override
   Widget buildLeading(BuildContext context) {
-//    Leading icon on the left of the app
+//    TODO: Leading icon on the left of the app
     return IconButton(
       icon: AnimatedIcon(
           icon: AnimatedIcons.menu_arrow, progress: transitionAnimation),
@@ -120,35 +132,60 @@ class DataSearch extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
-    //    Show some result based on the selection
-    return ItemHomeListView(itemStr);
+    //    TODO: Show some result based on the selection
+    return ItemsStyleListView(this.styleId);
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-//    Show when someone searches for something
-    final suggestionList = query.isEmpty
-        ? recentCities
-        : cities.where((p) => p.startsWith(query)).toList();
+//    TODO: Show when someone searches for something
+    return query.isEmpty
+        ? Container(
+        margin: EdgeInsets.all(20.0),
+        child: Text(
+          'Insert a Style...',
+          style: TextStyle(fontSize: 16.0),
+        ))
+        : FutureBuilder<List<fi.Item>>(
+      future: si.fetchStyles(http.Client(), query),
+      builder:
+          (BuildContext context, AsyncSnapshot<List<fi.Item>> items) {
+        if (!items.hasData) {
+          return Container(
+              margin: EdgeInsets.all(20.0),
+              child: Text(
+                'No result',
+                style: TextStyle(fontSize: 16.0),
+              ));
+        }
+
+        return buildSuggestionItems(items.data);
+      },
+    );
+  }
+
+  Widget buildSuggestionItems(List<fi.Item> items) {
     return ListView.builder(
       itemBuilder: (context, index) => ListTile(
             onTap: () {
               showResults(context);
-              this.itemStr = suggestionList[index].toString();
+              this.styleId = items[index].styleId;
             },
-            leading: Icon(Icons.location_city),
+            leading: Icon(Icons.style),
             title: RichText(
                 text: TextSpan(
-                    text: suggestionList[index].substring(0, query.length),
+                    text: items[index].styleId.substring(0, query.length),
                     style: TextStyle(
                         color: Colors.black, fontWeight: FontWeight.bold),
                     children: [
                   TextSpan(
-                      text: suggestionList[index].substring(query.length),
+                      text: items[index].styleId.substring(query.length),
                       style: TextStyle(color: Colors.grey))
                 ])),
+            subtitle:
+                Text(items[index].styleName + ' / ' + items[index].lineName),
           ),
-      itemCount: suggestionList.length,
+      itemCount: items.length,
     );
   }
 }

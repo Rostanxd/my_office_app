@@ -36,13 +36,6 @@ Future<m.User> fetchAnUser(http.Client client, String user, String password) asy
         mapResponse['SdtUsers'][i]['level']);
   }
 
-//  If we don't have connection with the server, or the user is bad.
-  if (userModel == null){
-    userModel = new m.User(
-      'GUEST', 'GUEST', '0'
-    );
-  }
-
   return userModel;
 }
 
