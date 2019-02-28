@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:my_office_th_app/factories/item.dart' as fi;
-import 'package:my_office_th_app/models/item.dart' as mi;
 import 'package:my_office_th_app/models/local.dart' as ml;
 import 'package:my_office_th_app/models/user.dart' as mu;
 import 'package:my_office_th_app/screens/home/user_drawer.dart';
@@ -28,24 +27,24 @@ class ItemHome extends StatefulWidget {
 }
 
 class _ItemHomeState extends State<ItemHome> {
-  String barcode = '';
-  mi.Item item;
-  ItemDetails itemHomeListView;
+  String _barcode = '';
 
   Future barcodeScanning() async {
     try {
-      var _barcode = await BarcodeScanner.scan();
-      setState(() => this.barcode = _barcode);
+      var _barcodeRead = await BarcodeScanner.scan();
+      setState(() => this._barcode = _barcodeRead);
+      MaterialPageRoute(
+          builder: (context) => ItemDetails(this._barcode, widget.local));
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.CameraAccessDenied) {
-        setState(() => this.barcode = '');
+        setState(() => this._barcode = '');
       } else {
-        setState(() => this.barcode = '');
+        setState(() => this._barcode = '');
       }
     } on FormatException {
-      setState(() => this.barcode = '');
+      setState(() => this._barcode = '');
     } catch (e) {
-      setState(() => this.barcode = '');
+      setState(() => this._barcode = '');
     }
   }
 
@@ -66,10 +65,10 @@ class _ItemHomeState extends State<ItemHome> {
               ),
             ))));
 
-    return new MaterialApp(
-      home: new Scaffold(
-        appBar: new AppBar(
-          title: new Text(''),
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text(''),
           backgroundColor: Color(0xff011e41),
           actions: <Widget>[
             IconButton(
@@ -88,9 +87,7 @@ class _ItemHomeState extends State<ItemHome> {
           ],
         ),
         drawer: UserDrawer(widget.user, widget.local),
-        body: this.barcode.isNotEmpty
-            ? ItemDetails(barcode, widget.local)
-            : cardEmpty,
+        body: cardEmpty,
       ),
     );
   }
@@ -106,7 +103,7 @@ class DataSearch extends SearchDelegate<String> {
 
   @override
   List<Widget> buildActions(BuildContext context) {
-//    TODO: Icon close
+//    TODO: Icon to close the search bar
     return [
       IconButton(
         icon: Icon(Icons.clear),
@@ -132,8 +129,8 @@ class DataSearch extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
-    //    TODO: Show some result based on the selection
-    return ItemsStyleListView(this.styleId);
+    //    TODO: Show some result based on the selection, in this case the list of items
+    return ItemsStyleListView(this.styleId, this.local);
   }
 
   @override
@@ -141,27 +138,27 @@ class DataSearch extends SearchDelegate<String> {
 //    TODO: Show when someone searches for something
     return query.isEmpty
         ? Container(
-        margin: EdgeInsets.all(20.0),
-        child: Text(
-          'Insert a Style...',
-          style: TextStyle(fontSize: 16.0),
-        ))
+            margin: EdgeInsets.all(20.0),
+            child: Text(
+              'Insert a Style...',
+              style: TextStyle(fontSize: 16.0),
+            ))
         : FutureBuilder<List<fi.Item>>(
-      future: si.fetchStyles(http.Client(), query),
-      builder:
-          (BuildContext context, AsyncSnapshot<List<fi.Item>> items) {
-        if (!items.hasData) {
-          return Container(
-              margin: EdgeInsets.all(20.0),
-              child: Text(
-                'No result',
-                style: TextStyle(fontSize: 16.0),
-              ));
-        }
+            future: si.fetchStyles(http.Client(), query),
+            builder:
+                (BuildContext context, AsyncSnapshot<List<fi.Item>> items) {
+              if (!items.hasData) {
+                return Container(
+                    margin: EdgeInsets.all(20.0),
+                    child: Text(
+                      'No result',
+                      style: TextStyle(fontSize: 16.0),
+                    ));
+              }
 
-        return buildSuggestionItems(items.data);
-      },
-    );
+              return buildSuggestionItems(items.data);
+            },
+          );
   }
 
   Widget buildSuggestionItems(List<fi.Item> items) {

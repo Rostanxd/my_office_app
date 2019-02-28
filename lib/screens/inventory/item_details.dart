@@ -67,11 +67,20 @@ class _ItemDetailsState extends State<ItemDetails> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return ListView(
-      children: <Widget>[
-        itemFound ? ItemInfoCard(item) : CardDummyLoading(),
-        listItemStock.length > 0 ? ItemStockCard(listItemStock) : CardDummyLoading(),
-      ],
+    return MaterialApp(
+      home: new Scaffold(
+          appBar: new AppBar(
+            title: new Text(item.itemId),
+            backgroundColor: Color(0xff011e41),
+          ),
+          body: ListView(
+            children: <Widget>[
+              itemFound ? ItemInfoCard(item) : CardDummyLoading(),
+              listItemStock.length > 0
+                  ? ItemStockCard(listItemStock)
+                  : CardDummyLoading(),
+            ],
+          )),
     );
   }
 }
