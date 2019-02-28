@@ -15,12 +15,13 @@ class ImageList extends StatelessWidget {
       height: 350.0,
       child: ListView(
         padding: EdgeInsets.only(
-          top: 10,
-          left: 25.0,
-          bottom: 40.0
+            top: 10,
+            left: 25.0,
+            bottom: 40.0
         ),
         scrollDirection: Axis.horizontal,
-        children: imageUrls.map((i) => ImageCard(i)).toList(),
+        children: this.imageUrls.length != 0 ? imageUrls.map((i) =>
+            ImageCard(i)).toList() : ImageCard(''),
       ),
     );
   }

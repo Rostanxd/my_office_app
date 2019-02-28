@@ -73,7 +73,7 @@ class _ItemsStyleListViewState extends State<ItemsStyleListView> {
                   title: Text(this._listItem[index].itemId),
                   subtitle: Text(this._listItem[index].styleName +
                       ' / ' +
-                      this._listItem[index].lineName),
+                      this._listItem[index].lineName, style: TextStyle(fontSize: 10.00),),
                 ),
             itemCount: this._listItem.length,
           );

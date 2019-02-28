@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:my_office_th_app/models/user.dart' as mu;
+import 'package:my_office_th_app/screens/home/index.dart';
 import 'package:my_office_th_app/services/fetch_users.dart' as su;
 import 'package:my_office_th_app/screens/login/index.dart';
 
@@ -35,29 +36,32 @@ class _LoginUserFormState extends State<LoginUserForm> {
         this._login = false;
         if (result != null) {
           this._myUser = result;
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => MyLoginPage(this._myUser)));
+
+          if (this._myUser.local.id.isEmpty) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => MyLoginPage(this._myUser)));
+          } else {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        HomePage(this._myUser, this._myUser.local)));
+          }
         } else {
           Scaffold.of(context)
               .showSnackBar(SnackBar(content: Text("User login failed!")));
         }
       });
     }, onError: (error) {
-      setState(() {
-        this._login = false;
-        this._myUser = new mu.User('GUEST', 'GUEST', '0');
-
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => MyLoginPage(this._myUser)),
-            (Route<dynamic> route) => false);
-      });
+      setState(() => this._login = false);
       Scaffold.of(context)
           .showSnackBar(SnackBar(content: Text("Connection time-out!")));
     }).catchError((error) {
       print(error);
-      setState(() {
-        this._login = false;
-      });
+
+      setState(() => this._login = false);
       Scaffold.of(context)
           .showSnackBar(SnackBar(content: Text("Error connection!")));
     });

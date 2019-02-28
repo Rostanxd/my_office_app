@@ -42,21 +42,10 @@ class itemInfoCardDosState extends State<ItemInfoCard> {
                 ),
                 ImageList(widget.item.listImagesPath),
                 Container(
-                  child: Text(
-                    widget.item.styleId,
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20.0,
-                        fontFamily: "Lato",
-                        fontWeight: FontWeight.bold
-                    ),
-                  ),
-                ),
-                Container(
                     margin: EdgeInsets.only(top: 350.0, left: 10.0),
                     child: ItemImageFoot(widget.item)),
                 Container(
-                    margin: EdgeInsets.only(top: 325.0, left: 250.0),
+                    margin: EdgeInsets.only(top: 325.0, left: 200.0),
                     child: ItemPriceInkwell(widget.item)),
               ],
             ),

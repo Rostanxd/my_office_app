@@ -6,34 +6,38 @@ import 'package:http/http.dart' as http;
 
 import 'package:my_office_th_app/factories/user.dart';
 import 'package:my_office_th_app/models/user.dart' as m;
+import 'package:my_office_th_app/models/local.dart' as l;
 import 'package:my_office_th_app/utils/connection.dart' as con;
 
-Future<List<User>> fetchUsers(http.Client client, String user, String password) async {
-  final response = await client.post(
-      con.Connection.host +  '/rest/WsLogin',
+Future<List<User>> fetchUsers(
+    http.Client client, String user, String password) async {
+  final response = await client.post(con.Connection.host + '/rest/WsLogin',
       headers: {"Content-Type": "application/json"},
-      body: json.encode({"user":"$user", "password":"$password"})
-  );
+      body: json.encode({"user": "$user", "password": "$password"}));
 
   return compute(parseUsers, response.body);
 }
 
-Future<m.User> fetchAnUser(http.Client client, String user, String password) async {
+Future<m.User> fetchAnUser(
+    http.Client client, String user, String password) async {
   var userModel;
-  var response = await client.post(
-      con.Connection.host +  '/rest/WsLogin',
+  var response = await client.post(con.Connection.host + '/rest/WsLogin',
       headers: {"Content-Type": "application/json"},
-      body: json.encode({"user":"$user", "password":"$password"})
-  );
+      body: json.encode({"user": "$user", "password": "$password"}));
 
   print(response.body);
 
   Map<String, dynamic> mapResponse = json.decode(response.body);
 
-  for (var i=0; i < mapResponse['SdtUsers'].length; i++){
-    userModel = m.User(mapResponse['SdtUsers'][i]['user'],
+  for (var i = 0; i < mapResponse['SdtUsers'].length; i++) {
+    userModel = m.User(
+        mapResponse['SdtUsers'][i]['user'],
         mapResponse['SdtUsers'][i]['name'],
-        mapResponse['SdtUsers'][i]['level']);
+        mapResponse['SdtUsers'][i]['level'],
+        mapResponse['SdtUsers'][i]['accessId'],
+        mapResponse['SdtUsers'][i]['sellerId'],
+        l.Local(mapResponse['SdtUsers'][i]['localId'],
+            mapResponse['SdtUsers'][i]['localName']));
   }
 
   return userModel;

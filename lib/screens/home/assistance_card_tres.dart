@@ -194,7 +194,7 @@ class _AssistanceCardState extends State<AssistanceCard> {
                   ),
                   Container(
                     margin:
-                        EdgeInsets.only(top: 20.0, left: 40.0, bottom: 10.0),
+                        EdgeInsets.only(top: 20.0, left: 20.0, bottom: 10.0),
                     child: RaisedButton(
                       onPressed: _selectDate,
                       child: Text('Search'),

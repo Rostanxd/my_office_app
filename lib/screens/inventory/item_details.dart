@@ -25,36 +25,47 @@ class ItemDetails extends StatefulWidget {
 }
 
 class _ItemDetailsState extends State<ItemDetails> {
-  mi.Item item;
-  List<mis.ItemStock> listItemStock = new List<mis.ItemStock>();
-  bool itemFound = false;
+  mi.Item _item;
+  List<mis.ItemStock> _listItemStock = new List<mis.ItemStock>();
+  bool _boolItem = false;
 
   @override
   void initState() {
 //    TODO: calling the fetch method to get the item's details
+
+    setState(() {
+      this._boolItem = true;
+    });
+
     si
         .fetchAnItem(http.Client(), widget.itemStr, '')
         .timeout(Duration(seconds: 15))
         .then((result) {
       setState(() {
-        item = result;
-        itemFound = true;
+        _item = result;
+        this._boolItem = false;
       });
     }, onError: (error) {
       print('fetchAnItem onError: $error');
+      setState(() {
+        this._boolItem = false;
+      });
     }).catchError((error) {
       print('fetchAnItem catchError: $error');
+      setState(() {
+        this._boolItem = false;
+      });
     });
 
 //    TODO: calling the fetch method to get the item's stock
     si
-        .fetchModelItemStock(http.Client(), widget.itemStr, widget.local.id)
+        .fetchModelItemStock(
+            http.Client(), widget.itemStr, widget.local.id, 'L')
         .timeout(Duration(seconds: 15))
         .then((result) {
       setState(() {
-//        result.map((i) => listItemStock.add(i));
         for (mis.ItemStock i in result) {
-          this.listItemStock.add(i);
+          this._listItemStock.add(i);
         }
       });
     }, onError: (error) {
@@ -70,17 +81,42 @@ class _ItemDetailsState extends State<ItemDetails> {
     return MaterialApp(
       home: new Scaffold(
           appBar: new AppBar(
-            title: new Text(item.itemId),
+            title: new Text(widget.itemStr),
             backgroundColor: Color(0xff011e41),
-          ),
-          body: ListView(
-            children: <Widget>[
-              itemFound ? ItemInfoCard(item) : CardDummyLoading(),
-              listItemStock.length > 0
-                  ? ItemStockCard(listItemStock)
-                  : CardDummyLoading(),
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
             ],
-          )),
+          ),
+          body: _boolItem
+              ? ListView(
+                  children: <Widget>[
+                    CardDummyLoading(),
+                    CardDummyLoading(),
+                  ],
+                )
+              : _item != null
+                  ? ListView(
+                      children: <Widget>[
+                        ItemInfoCard(_item),
+                        _listItemStock.length > 0
+                            ? ItemStockCard(_item, _listItemStock, widget.local)
+                            : CardDummyLoading(),
+                      ],
+                    )
+                  : Container(
+                      child: Center(
+                        child: Text('Item not found!',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14.0,
+                            )),
+                      ),
+                    )),
     );
   }
 }

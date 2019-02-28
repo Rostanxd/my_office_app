@@ -9,11 +9,11 @@ import 'package:my_office_th_app/models/item_stock.dart' as mi;
 import 'package:my_office_th_app/utils/connection.dart' as con;
 
 Future<List<fi.ItemStock>> fetchItemStock(
-    http.Client client, String itemId, String localId) async {
-
+    http.Client client, String itemId, String localId, String type) async {
   final response = await client.post(con.Connection.host + '/rest/WsItemStock',
       headers: {"Content-Type": "application/json"},
-      body: json.encode({"itemId": "$itemId", "BodCodigo": "$localId"}));
+      body: json.encode(
+          {"itemId": "$itemId", "BodCodigo": "$localId", "type": "$type"}));
 
   //  Code generated for object sdt from genexus.
   var mapSdt = <Map>[];
@@ -30,23 +30,25 @@ Future<List<fi.ItemStock>> fetchItemStock(
 }
 
 Future<List<mi.ItemStock>> fetchModelItemStock(
-    http.Client client, String itemId, String localId) async {
-
+    http.Client client, String itemId, String localId, String type) async {
   List<mi.ItemStock> itemStockModel = new List<mi.ItemStock>();
   var response = await client.post(con.Connection.host + '/rest/WsItemStock',
       headers: {"Content-Type": "application/json"},
-      body: json.encode({"itemId": "$itemId", "BodCodigo": "$localId"}));
+      body: json.encode(
+          {"itemId": "$itemId", "BodCodigo": "$localId", "type": "$type"}));
 
   print(response.body);
 
   //  Code generated for object sdt from genexus.
   Map<String, dynamic> mapResponse = json.decode(response.body);
 
-  for (var i=0; i < mapResponse['sdt_inv_estilos_app'].length; i++){
-    itemStockModel.add(new mi.ItemStock(mapResponse['sdt_inv_estilos_app'][i]['Color'],
+  for (var i = 0; i < mapResponse['sdt_inv_estilos_app'].length; i++) {
+    itemStockModel.add(new mi.ItemStock(
+        mapResponse['sdt_inv_estilos_app'][i]['Color'],
         mapResponse['sdt_inv_estilos_app'][i]['Talla'],
         int.parse(mapResponse['sdt_inv_estilos_app'][i]['StockLocal']),
-        int.parse(mapResponse['sdt_inv_estilos_app'][i]['StockOtros'])));
+        int.parse(mapResponse['sdt_inv_estilos_app'][i]['StockOtros']),
+        mapResponse['sdt_inv_estilos_app'][i]['ItmCodigo']));
   }
 
   return itemStockModel;
@@ -56,5 +58,6 @@ List<fi.ItemStock> parseItemStock(String responseBody) {
   final parsed = json.decode(responseBody).cast<Map<String, dynamic>>();
 
   return parsed
-      .map<fi.ItemStock>((json) => fi.ItemStock.fromJson(json)).toList();
+      .map<fi.ItemStock>((json) => fi.ItemStock.fromJson(json))
+      .toList();
 }
