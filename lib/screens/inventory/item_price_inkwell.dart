@@ -42,10 +42,10 @@ class _ItemPriceInkwellState extends State<ItemPriceInkwell> {
           child: Center(
             child: Text(
               this._pressed
-                  ? 'c/IVA \$ ' + widget.item.priceIva.toString()
-                  : 's/IVA \$ ' + widget.item.priceNoIva.toString(),
+                  ? 's/IVA \$ ' + widget.item.priceNoIva.toString()
+                  : 'c/IVA \$ ' + widget.item.priceIva.toString(),
               style: TextStyle(
-                  fontSize: 14.0,
+                  fontSize: 16.0,
                   fontWeight: FontWeight.bold,
                   color: Colors.white),
             ),

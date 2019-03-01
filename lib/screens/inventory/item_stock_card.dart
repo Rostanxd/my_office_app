@@ -42,7 +42,7 @@ class _ItemStockCardState extends State<ItemStockCard> {
       si
           .fetchModelItemStock(
               http.Client(), itemId, widget.local.id, _tableType)
-          .timeout(Duration(seconds: 15))
+          .timeout(Duration(seconds: 30))
           .then((result) {
         setState(() {
           _boolLocal = false;
@@ -283,7 +283,8 @@ class _ItemStockCardState extends State<ItemStockCard> {
                           EdgeInsets.only(top: 20.0, left: 20.0, bottom: 5.0),
                       child: Text(
                         this._tableType == 'L'
-                            ? 'Stock in the local'
+                            ? 'Stock in local'
+                            ''
                             : 'Stock of ' + this._itemSelected,
                         style: TextStyle(
                             fontSize: 16.0, fontWeight: FontWeight.bold),

@@ -8,6 +8,7 @@ import 'package:my_office_th_app/models/item_stock.dart' as mis;
 import 'package:my_office_th_app/models/local.dart' as ml;
 import 'package:my_office_th_app/screens/inventory/item_info_card.dart';
 import 'package:my_office_th_app/screens/inventory/item_stock_card.dart';
+import 'package:my_office_th_app/screens/inventory/item_sales_stock_card.dart';
 import 'package:my_office_th_app/services/fetch_items.dart' as si;
 import 'package:my_office_th_app/services/fetch_item_stock.dart' as si;
 
@@ -27,6 +28,7 @@ class ItemDetails extends StatefulWidget {
 class _ItemDetailsState extends State<ItemDetails> {
   mi.Item _item;
   List<mis.ItemStock> _listItemStock = new List<mis.ItemStock>();
+  List<mis.ItemStock> _listItemSalesStock = new List<mis.ItemStock>();
   bool _boolItem = false;
 
   @override
@@ -73,6 +75,22 @@ class _ItemDetailsState extends State<ItemDetails> {
     }).catchError((error) {
       print('fetchModelItemStock catchError: $error');
     });
+
+    si
+        .fetchModelItemStock(
+        http.Client(), widget.itemStr, widget.local.id, 'C')
+        .timeout(Duration(seconds: 15))
+        .then((result) {
+      setState(() {
+        for (mis.ItemStock i in result) {
+          this._listItemSalesStock.add(i);
+        }
+      });
+    }, onError: (error) {
+      print('fetchModelItemStock onError: $error');
+    }).catchError((error) {
+      print('fetchModelItemStock catchError: $error');
+    });
   }
 
   @override
@@ -97,15 +115,33 @@ class _ItemDetailsState extends State<ItemDetails> {
                   children: <Widget>[
                     CardDummyLoading(),
                     CardDummyLoading(),
+                    CardDummyLoading(),
                   ],
                 )
               : _item != null
                   ? ListView(
                       children: <Widget>[
-                        ItemInfoCard(_item),
-                        _listItemStock.length > 0
-                            ? ItemStockCard(_item, _listItemStock, widget.local)
-                            : CardDummyLoading(),
+                        Container(
+                            margin: EdgeInsets.only(
+                              top: 10.0, left: 10.0, right: 10.0
+                            ),
+                            child: ItemInfoCard(_item)),
+                        Container(
+                          margin: EdgeInsets.only(
+                              top: 10.0, left: 10.0, right: 10.0, bottom: 10.0
+                          ),
+                          child: _listItemStock.length > 0
+                              ? ItemStockCard(_item, _listItemStock, widget.local)
+                              : CardDummyLoading(),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(
+                              top: 10.0, left: 10.0, right: 10.0, bottom: 10.0
+                          ),
+                          child: _listItemSalesStock.length > 0
+                              ? ItemSalesStockCard(_listItemSalesStock)
+                              : CardDummyLoading(),
+                        ),
                       ],
                     )
                   : Container(
