@@ -11,15 +11,15 @@ class FloatingActionButtonGreen extends StatefulWidget{
 
 class _FloatingActionButtonGreen extends State<FloatingActionButtonGreen> {
 
-  bool pressed = false;
+  bool _pressed = false;
 
   void onPressedFav(){
     setState(() {
-      pressed = !this.pressed;
+      _pressed = !this._pressed;
     });
 
     Scaffold.of(context).showSnackBar(
-        this.pressed ? SnackBar(content: Text("Agregado a favoritos!")) :
+        this._pressed ? SnackBar(content: Text("Agregado a favoritos!")) :
         SnackBar(content: Text("Eliminado de tus favoritos!"))
     );
   }

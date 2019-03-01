@@ -5,9 +5,9 @@ import 'package:my_office_th_app/screens/home/assistance_card_hour.dart';
 
 class ListAssistanceCard extends StatelessWidget {
 
-  final List<Assistance> assistances;
+  final List<Assistance> assistance;
 
-  const ListAssistanceCard({Key key, this.assistances}) : super(key: key);
+  const ListAssistanceCard({Key key, this.assistance}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class ListAssistanceCard extends StatelessWidget {
     return GridView.builder(
         gridDelegate:
             SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 1),
-        itemCount: assistances.length,
+        itemCount: assistance.length,
         itemBuilder: (context, index) {
           return Card(
             elevation: 5.0,
@@ -39,13 +39,13 @@ class ListAssistanceCard extends StatelessWidget {
                     AssistanceCardHour(
                         'assets/img/beach.jpeg',
                         'Entrance',
-                        assistances[index].entryHour,
-                        assistances[index].entryMsg),
+                        assistance[index].entryHour,
+                        assistance[index].entryMsg),
                     AssistanceCardHour(
                         'assets/img/girl.jpg',
                         'Lunch-Out',
-                        assistances[index].lunchOutHour,
-                        assistances[index].lunchOutMsg),
+                        assistance[index].lunchOutHour,
+                        assistance[index].lunchOutMsg),
                   ],
                 ),
                 Row(
@@ -53,13 +53,13 @@ class ListAssistanceCard extends StatelessWidget {
                     AssistanceCardHour(
                         'assets/img/mountain.jpeg',
                         'Lunch-In',
-                        assistances[index].lunchInHour,
-                        assistances[index].lunchInMsg),
+                        assistance[index].lunchInHour,
+                        assistance[index].lunchInMsg),
                     AssistanceCardHour(
                         'assets/img/people.jpg',
                         'Exit',
-                        assistances[index].exitHour,
-                        assistances[index].exitMsg),
+                        assistance[index].exitHour,
+                        assistance[index].exitMsg),
                   ],
                 ),
                 ButtonTheme.bar(

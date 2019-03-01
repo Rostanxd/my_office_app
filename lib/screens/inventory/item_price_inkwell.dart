@@ -15,11 +15,11 @@ class ItemPriceInkwell extends StatefulWidget {
 }
 
 class _ItemPriceInkwellState extends State<ItemPriceInkwell> {
-  bool pressed = false;
+  bool _pressed = false;
 
   void _changePrice() {
     setState(() {
-      pressed = !this.pressed;
+      _pressed = !this._pressed;
     });
   }
 
@@ -41,7 +41,7 @@ class _ItemPriceInkwellState extends State<ItemPriceInkwell> {
                   tileMode: TileMode.clamp)),
           child: Center(
             child: Text(
-              this.pressed
+              this._pressed
                   ? 'c/IVA \$ ' + widget.item.priceIva.toString()
                   : 's/IVA \$ ' + widget.item.priceNoIva.toString(),
               style: TextStyle(

@@ -92,8 +92,6 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
 
 //        TODO: updating the list variable for the holdings, and the dropdown
         _listLocals.clear();
-
-//        _listLocals.add(new ml.Local('', 'Select...'));
         for (ml.Local l in result) {
           _listLocals.add(l);
         }

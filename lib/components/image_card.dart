@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ImageCard extends StatelessWidget {
-  String imageUrl = "assets/img/beach.jpeg";
+  final String imageUrl;
 
   ImageCard(this.imageUrl);
 

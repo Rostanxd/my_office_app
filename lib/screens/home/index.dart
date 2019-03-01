@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:my_office_th_app/screens/home/assistance_card_tres.dart';
+import 'package:my_office_th_app/screens/home/assistance_card.dart';
 import 'package:my_office_th_app/screens/home/user_drawer.dart';
 
 import 'package:my_office_th_app/models/user.dart';
@@ -26,8 +26,6 @@ class HomePage extends StatelessWidget {
           child: ListView(
             children: <Widget>[
               AssistanceCard(),
-//              CardDummyLoading(),
-//              CardDummyLoading(),
             ],
           ),
         ));

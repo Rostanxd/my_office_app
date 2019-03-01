@@ -4,14 +4,14 @@ class ItemDeletePhoto extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return _ItemDeleePhoto();
+    return _ItemDeletePhotoState();
   }
 
 }
 
-class _ItemDeleePhoto extends State<ItemDeletePhoto> {
+class _ItemDeletePhotoState extends State<ItemDeletePhoto> {
 
-  bool pressed = false;
+  bool _pressed = false;
 
   void onPressedFav(){
 //    Process to delete item's photo
