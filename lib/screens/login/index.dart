@@ -27,21 +27,21 @@ class _MyLoginPageState extends State<MyLoginPage> {
                 children: <Widget>[
                   Container(
                     padding: EdgeInsets.fromLTRB(15.0, 110.0, 0.0, 0.0),
-                    child: Text('TH',
+                    child: Text('Smart Sales',
                         style: TextStyle(
-                            fontSize: 80.0, fontWeight: FontWeight.bold)),
+                            fontSize: 60.0, fontWeight: FontWeight.bold)),
                   ),
                   Container(
                     padding: EdgeInsets.fromLTRB(16.0, 175.0, 0.0, 0.0),
-                    child: Text('Office',
+                    child: Text('Force',
                         style: TextStyle(
-                            fontSize: 80.0, fontWeight: FontWeight.bold)),
+                            fontSize: 60.0, fontWeight: FontWeight.bold)),
                   ),
                   Container(
-                    padding: EdgeInsets.fromLTRB(230.0, 175.0, 0.0, 0.0),
+                    padding: EdgeInsets.fromLTRB(175.0, 175.0, 0.0, 0.0),
                     child: Text('.',
                         style: TextStyle(
-                            fontSize: 80.0,
+                            fontSize: 60.0,
                             fontWeight: FontWeight.bold,
                             color: Color(0xff011e41))),
                   )

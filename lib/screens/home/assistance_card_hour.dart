@@ -25,7 +25,7 @@ class AssistanceCardHour extends StatelessWidget {
 
     final title = Container(
       margin: EdgeInsets.only(
-        left: 20.0
+        left: 10.0
       ),
       child: Text(
         this.title,
@@ -40,7 +40,7 @@ class AssistanceCardHour extends StatelessWidget {
 
     final hour = Container(
       margin: EdgeInsets.only(
-          left: 20.0
+          left: 10.0
       ),
       child: Text(
         this.hour,
@@ -54,7 +54,7 @@ class AssistanceCardHour extends StatelessWidget {
 
     final comment = Container(
       margin: EdgeInsets.only(
-          left: 20.0
+          left: 10.0
       ),
       child: Text(
         this.state,

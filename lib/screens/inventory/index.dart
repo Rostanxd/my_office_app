@@ -36,8 +36,8 @@ class _InventoryHomeState extends State<InventoryHome> {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => ItemDetails(
-                  this._barcode, widget.local)));
+              builder: (context) =>
+                  ItemDetails(this._barcode, widget.local, widget.user)));
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.CameraAccessDenied) {
         setState(() => this._barcode = '');
@@ -62,7 +62,8 @@ class _InventoryHomeState extends State<InventoryHome> {
             child: Center(
                 child: Column(
               children: <Widget>[
-                Text('Search the item!',
+                Text(
+                  'Search the item!',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 14.0,
@@ -71,8 +72,7 @@ class _InventoryHomeState extends State<InventoryHome> {
               ],
             ))));
 
-    return MaterialApp(
-      home: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           title: Text(''),
           backgroundColor: Color(0xff011e41),
@@ -81,7 +81,8 @@ class _InventoryHomeState extends State<InventoryHome> {
               icon: Icon(Icons.search),
               onPressed: () {
                 showSearch(
-                    context: context, delegate: DataSearch(widget.local));
+                    context: context,
+                    delegate: DataSearch(widget.local, widget.user));
               },
             ),
             IconButton(
@@ -94,16 +95,16 @@ class _InventoryHomeState extends State<InventoryHome> {
         ),
         drawer: UserDrawer(widget.user, widget.local),
         body: cardEmpty,
-      ),
-    );
+      );
   }
 }
 
 //  TODO: Implementation of search bar.
 class DataSearch extends SearchDelegate<String> {
   final ml.Local local;
+  final mu.User user;
 
-  DataSearch(this.local);
+  DataSearch(this.local, this.user);
 
   String styleId;
 
@@ -136,7 +137,7 @@ class DataSearch extends SearchDelegate<String> {
   @override
   Widget buildResults(BuildContext context) {
     //    TODO: Show some result based on the selection, in this case the list of items
-    return ItemsStyleListView(this.styleId, this.local);
+    return ItemsStyleListView(this.styleId, this.local, this.user);
   }
 
   @override
@@ -185,8 +186,10 @@ class DataSearch extends SearchDelegate<String> {
                       text: items[index].styleId.substring(query.length),
                       style: TextStyle(color: Colors.grey))
                 ])),
-            subtitle:
-                Text(items[index].styleName + ' / ' + items[index].lineName, style: TextStyle(fontSize: 10.0),),
+            subtitle: Text(
+              items[index].styleName + ' / ' + items[index].lineName,
+              style: TextStyle(fontSize: 10.0),
+            ),
           ),
       itemCount: items.length,
     );

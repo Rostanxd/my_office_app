@@ -123,7 +123,7 @@ class _ItemSalesStockCardState extends State<ItemSalesStockCard> {
                     ? Text('')
                     : Text(
                         f.local.toString(),
-                        style: f.size == 'Total'
+                        style: f.size == 'Total' || f.color == 'Total'
                             ? TextStyle(
                                 fontSize: 10.0, fontWeight: FontWeight.bold)
                             : TextStyle(fontSize: 10.0),
@@ -136,7 +136,7 @@ class _ItemSalesStockCardState extends State<ItemSalesStockCard> {
                     ? Text('')
                     : Text(
                         f.others.toString(),
-                        style: f.size == 'Total'
+                        style: f.size == 'Total' || f.color == 'Total'
                             ? TextStyle(
                                 fontSize: 10.0, fontWeight: FontWeight.bold)
                             : TextStyle(fontSize: 10.0),
@@ -151,7 +151,7 @@ class _ItemSalesStockCardState extends State<ItemSalesStockCard> {
                           ? Text('')
                           : Text(
                               (f.local - f.others).toString(),
-                              style: f.size == 'Total'
+                              style: f.size == 'Total' || f.color == 'Total'
                                   ? TextStyle(
                                       fontSize: 10.0,
                                       fontWeight: FontWeight.bold)

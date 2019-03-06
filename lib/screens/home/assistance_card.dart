@@ -169,113 +169,116 @@ class _AssistanceCardState extends State<AssistanceCard> {
     }
 
     // TODO: implement build
-    return Card(
-        elevation: 5.0,
-        child: Column(
-          children: <Widget>[
-            Form(
-              child: Row(
-                children: <Widget>[
-                  Container(
-                    margin:
-                        EdgeInsets.only(top: 20.0, left: 20.0, bottom: 10.0),
-                    child: Text('Assistance',
-                        style: TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xff011e41))),
-                  ),
-                  Container(
-                    margin:
-                        EdgeInsets.only(top: 20.0, left: 20.0, bottom: 10.0),
-                    child: Text(_dateToFind,
-                        style: TextStyle(
-                            fontSize: 18.0, color: Color(0xff011e41))),
-                  ),
-                  Container(
-                    margin:
-                        EdgeInsets.only(top: 20.0, left: 20.0, bottom: 10.0),
-                    child: RaisedButton(
-                      onPressed: _selectDate,
-                      child: Text('Search'),
+    return Container(
+      margin: EdgeInsets.all(10.0),
+      child: Card(
+          elevation: 5.0,
+          child: Column(
+            children: <Widget>[
+              Form(
+                child: Row(
+                  children: <Widget>[
+                    Container(
+                      margin:
+                          EdgeInsets.only(top: 20.0, left: 20.0, bottom: 10.0),
+                      child: Text('Assistance',
+                          style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xff011e41))),
                     ),
-                  )
-                ],
-              ),
-            ),
-            FutureBuilder(
-              future: fetchAnAssistance(
-                  http.Client(), this._dateToFind, '0915157473'),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) print(snapshot.error);
-                if (snapshot.data == null) {
-                  return Container(
-                      margin: EdgeInsets.only(
-                        top: 20.0,
-                        bottom: 20.0,
+                    Container(
+                      margin:
+                          EdgeInsets.only(top: 20.0, left: 10.0, bottom: 10.0),
+                      child: Text(_dateToFind,
+                          style: TextStyle(
+                              fontSize: 18.0, color: Color(0xff011e41))),
+                    ),
+                    Container(
+                      margin:
+                          EdgeInsets.only(top: 20.0, left: 10.0, bottom: 10.0),
+                      child: RaisedButton(
+                        onPressed: _selectDate,
+                        child: Text('Search'),
                       ),
-                      height: 40.0,
-                      child: CircularProgressIndicator());
-                } else {
-                  if (snapshot.hasData) {
+                    )
+                  ],
+                ),
+              ),
+              FutureBuilder(
+                future: fetchAnAssistance(
+                    http.Client(), this._dateToFind, '0915157473'),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) print(snapshot.error);
+                  if (snapshot.data == null) {
+                    return Container(
+                        margin: EdgeInsets.only(
+                          top: 20.0,
+                          bottom: 20.0,
+                        ),
+                        height: 40.0,
+                        child: CircularProgressIndicator());
+                  } else {
+                    if (snapshot.hasData) {
 //                    Update the assitance
-                    this._assistance = snapshot.data;
+                      this._assistance = snapshot.data;
 
 //                    Returning de column
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        SizedBox(height: 15.0),
-                        Row(
-                          children: <Widget>[
-                            AssistanceCardHour(
-                                'assets/img/beach.jpeg',
-                                'Entrance',
-                                _assistance.entryHour,
-                                _assistance.entryMsg),
-                            AssistanceCardHour(
-                                'assets/img/girl.jpg',
-                                'Lunch-Out',
-                                _assistance.lunchOutHour,
-                                _assistance.lunchOutMsg),
-                          ],
-                        ),
-                        Row(
-                          children: <Widget>[
-                            AssistanceCardHour(
-                                'assets/img/mountain.jpeg',
-                                'Lunch-In',
-                                _assistance.lunchInHour,
-                                _assistance.lunchInMsg),
-                            AssistanceCardHour('assets/img/people.jpg', 'Exit',
-                                _assistance.exitHour, _assistance.exitMsg),
-                          ],
-                        ),
-                        ButtonTheme.bar(
-                          // make buttons use the appropriate styles for cards
-                          child: ButtonBar(
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          SizedBox(height: 15.0),
+                          Row(
                             children: <Widget>[
-                              FlatButton(
-                                child: const Text(
-                                  'RECLAIM',
-                                  style: TextStyle(
-                                    color: Color(0xFFeb2227),
-                                  ),
-                                ),
-                                onPressed: () {
-                                  _reclaimAssistanceHour();
-                                },
-                              ),
+                              AssistanceCardHour(
+                                  'assets/img/beach.jpeg',
+                                  'Entrance',
+                                  _assistance.entryHour,
+                                  _assistance.entryMsg),
+                              AssistanceCardHour(
+                                  'assets/img/girl.jpg',
+                                  'Lunch-Out',
+                                  _assistance.lunchOutHour,
+                                  _assistance.lunchOutMsg),
                             ],
                           ),
-                        ),
-                      ],
-                    );
+                          Row(
+                            children: <Widget>[
+                              AssistanceCardHour(
+                                  'assets/img/mountain.jpeg',
+                                  'Lunch-In',
+                                  _assistance.lunchInHour,
+                                  _assistance.lunchInMsg),
+                              AssistanceCardHour('assets/img/people.jpg', 'Exit',
+                                  _assistance.exitHour, _assistance.exitMsg),
+                            ],
+                          ),
+                          ButtonTheme.bar(
+                            // make buttons use the appropriate styles for cards
+                            child: ButtonBar(
+                              children: <Widget>[
+                                FlatButton(
+                                  child: const Text(
+                                    'RECLAIM',
+                                    style: TextStyle(
+                                      color: Color(0xFFeb2227),
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    _reclaimAssistanceHour();
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    }
                   }
-                }
-              },
-            ),
-          ],
-        ));
+                },
+              ),
+            ],
+          )),
+    );
   }
 }

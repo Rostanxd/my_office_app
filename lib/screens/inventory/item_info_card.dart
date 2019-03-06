@@ -6,11 +6,15 @@ import 'package:my_office_th_app/screens/inventory/item_price_inkwell.dart';
 import 'package:my_office_th_app/screens/inventory/item_image_foot.dart';
 
 import 'package:my_office_th_app/models/item.dart' as mi;
+import 'package:my_office_th_app/models/local.dart' as ml;
+import 'package:my_office_th_app/models/user.dart' as mu;
 
 class ItemInfoCard extends StatefulWidget {
   final mi.Item item;
+  final ml.Local local;
+  final mu.User user;
 
-  ItemInfoCard(this.item);
+  ItemInfoCard(this.item, this.local, this.user);
 
   @override
   State<StatefulWidget> createState() {
@@ -43,7 +47,8 @@ class itemInfoCardDosState extends State<ItemInfoCard> {
                 ImageList(widget.item.listImagesPath),
                 Container(
                     margin: EdgeInsets.only(top: 350.0, left: 10.0),
-                    child: ItemImageFoot(widget.item)),
+                    child:
+                        ItemImageFoot(widget.item, widget.local, widget.user)),
                 Container(
                     margin: EdgeInsets.only(top: 325.0, left: 200.0),
                     child: ItemPriceInkwell(widget.item)),

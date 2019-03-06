@@ -24,6 +24,12 @@ dependencies:
   datetime_picker_formfield: ^0.1.8
   barcode_scan: ^0.0.8
 
+  # Using this version of image_picker because it's compatible with AndroidX
+  image_picker: ^0.4.12+1
+
+  # To manipulate the image from the camra or gallery
+  image: ^2.0.7
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

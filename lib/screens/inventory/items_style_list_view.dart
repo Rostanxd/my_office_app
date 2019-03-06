@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:my_office_th_app/models/item.dart' as mi;
 import 'package:my_office_th_app/models/local.dart' as ml;
+import 'package:my_office_th_app/models/user.dart' as mu;
 import 'package:my_office_th_app/services/fetch_items.dart' as si;
 
 import 'package:my_office_th_app/screens/inventory/item_details.dart';
@@ -11,8 +12,9 @@ import 'package:my_office_th_app/screens/inventory/item_details.dart';
 class ItemsStyleListView extends StatefulWidget {
   final String styleId;
   final ml.Local local;
+  final mu.User user;
 
-  ItemsStyleListView(this.styleId, this.local);
+  ItemsStyleListView(this.styleId, this.local, this.user);
 
   @override
   State<StatefulWidget> createState() {
@@ -67,13 +69,18 @@ class _ItemsStyleListViewState extends State<ItemsStyleListView> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => ItemDetails(
-                                this._listItem[index].itemId, widget.local)));
+                                this._listItem[index].itemId,
+                                widget.local,
+                                widget.user)));
                   },
                   leading: Icon(Icons.open_in_new),
                   title: Text(this._listItem[index].itemId),
-                  subtitle: Text(this._listItem[index].styleName +
-                      ' / ' +
-                      this._listItem[index].lineName, style: TextStyle(fontSize: 10.00),),
+                  subtitle: Text(
+                    this._listItem[index].styleName +
+                        ' / ' +
+                        this._listItem[index].lineName,
+                    style: TextStyle(fontSize: 10.00),
+                  ),
                 ),
             itemCount: this._listItem.length,
           );
