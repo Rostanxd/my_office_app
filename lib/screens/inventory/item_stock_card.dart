@@ -3,17 +3,16 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:my_office_th_app/components/card_dummy_loading.dart';
 
-import 'package:my_office_th_app/models/item.dart' as mi;
 import 'package:my_office_th_app/models/item_stock.dart' as ms;
 import 'package:my_office_th_app/models/local.dart' as ml;
+import 'package:my_office_th_app/screens/inventory/item_state_container.dart';
 import 'package:my_office_th_app/services/fetch_item_stock.dart' as si;
 
 class ItemStockCard extends StatefulWidget {
-  final mi.Item item;
   final List<ms.ItemStock> listItemStock;
   final ml.Local local;
 
-  ItemStockCard(this.item, this.listItemStock, this.local);
+  ItemStockCard(this.listItemStock, this.local);
 
   @override
   State<StatefulWidget> createState() {
@@ -30,7 +29,8 @@ class _ItemStockCardState extends State<ItemStockCard> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+//    Getting data from the item sate container
+    final container = ItemStateContainer.of(context);
 
     void _getStockOtherLocal(String itemId) {
       setState(() {
@@ -69,7 +69,7 @@ class _ItemStockCardState extends State<ItemStockCard> {
             color: Colors.black, fontWeight: FontWeight.bold, fontSize: 11.0);
       }
 
-      if (_itemStock.itemId == widget.item.itemId) {
+      if (_itemStock.itemId == container.item.itemId) {
         return TextStyle(
             color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11.0);
       }
@@ -218,7 +218,7 @@ class _ItemStockCardState extends State<ItemStockCard> {
                     ),
                   )),
                   Container(
-                      color: f.itemId == widget.item.itemId
+                      color: f.itemId == container.item.itemId
                           ? Colors.red
                           : Colors.transparent,
                       child: Padding(
@@ -232,7 +232,7 @@ class _ItemStockCardState extends State<ItemStockCard> {
                         ),
                       )),
                   Container(
-                      color: f.itemId == widget.item.itemId
+                      color: f.itemId == container.item.itemId
                           ? Colors.red
                           : Colors.transparent,
                       child: Padding(

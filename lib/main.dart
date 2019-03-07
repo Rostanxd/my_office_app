@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:my_office_th_app/screens/login/index.dart';
 import 'package:my_office_th_app/screens/home/index.dart';
 import 'package:my_office_th_app/screens/inventory/index.dart';
-import 'package:my_office_th_app/screens/inventory/item_details.dart';
 import 'package:my_office_th_app/screens/signup/signup.dart';
 
 void main() => runApp(new MyApp());

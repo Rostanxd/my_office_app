@@ -8,8 +8,9 @@ import 'package:my_office_th_app/models/item_stock.dart' as mis;
 import 'package:my_office_th_app/models/local.dart' as ml;
 import 'package:my_office_th_app/models/user.dart' as mu;
 import 'package:my_office_th_app/screens/inventory/item_info_card.dart';
-import 'package:my_office_th_app/screens/inventory/item_stock_card.dart';
 import 'package:my_office_th_app/screens/inventory/item_sales_stock_card.dart';
+import 'package:my_office_th_app/screens/inventory/item_state_container.dart';
+import 'package:my_office_th_app/screens/inventory/item_stock_card.dart';
 import 'package:my_office_th_app/services/fetch_items.dart' as si;
 import 'package:my_office_th_app/services/fetch_item_stock.dart' as si;
 
@@ -112,18 +113,20 @@ class _ItemDetailsState extends State<ItemDetails> {
                 ],
               )
             : _item != null
-                ? ListView(
+                ? ItemStateContainer(
+                    item: _item,
+                    child: ListView(
                     children: <Widget>[
                       Container(
                           margin: EdgeInsets.only(
                               top: 10.0, left: 10.0, right: 10.0),
                           child:
-                              ItemInfoCard(_item, widget.local, widget.user)),
+                              ItemInfoCard(widget.local, widget.user)),
                       Container(
                         margin:
                             EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
                         child: _listItemStock.length > 0
-                            ? ItemStockCard(_item, _listItemStock, widget.local)
+                            ? ItemStockCard(_listItemStock, widget.local)
                             : CardDummyLoading(),
                       ),
                       Container(
@@ -134,7 +137,7 @@ class _ItemDetailsState extends State<ItemDetails> {
                             : CardDummyLoading(),
                       ),
                     ],
-                  )
+                  ))
                 : Container(
                     child: Center(
                       child: Text('Item not found!',

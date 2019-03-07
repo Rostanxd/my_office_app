@@ -13,6 +13,8 @@ import 'package:my_office_th_app/screens/inventory/item_details.dart';
 import 'package:my_office_th_app/screens/inventory/items_style_list_view.dart';
 import 'package:my_office_th_app/services/fetch_items.dart' as si;
 
+import 'package:webview_flutter/webview_flutter.dart';
+
 class InventoryHome extends StatefulWidget {
   final mu.User user;
   final ml.Local local;
@@ -53,7 +55,8 @@ class _InventoryHomeState extends State<InventoryHome> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+    String localId = widget.local.id;
+
     Widget cardEmpty = Align(
         alignment: Alignment.center,
         child: Container(
@@ -73,29 +76,33 @@ class _InventoryHomeState extends State<InventoryHome> {
             ))));
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text(''),
-          backgroundColor: Color(0xff011e41),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.search),
-              onPressed: () {
-                showSearch(
-                    context: context,
-                    delegate: DataSearch(widget.local, widget.user));
-              },
-            ),
-            IconButton(
-              icon: Icon(Icons.bookmark_border),
-              onPressed: () {
-                _barcodeScanning();
-              },
-            )
-          ],
-        ),
-        drawer: UserDrawer(widget.user, widget.local),
-        body: cardEmpty,
-      );
+      appBar: AppBar(
+        title: Text(''),
+        backgroundColor: Color(0xff011e41),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              showSearch(
+                  context: context,
+                  delegate: DataSearch(widget.local, widget.user));
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.bookmark_border),
+            onPressed: () {
+              _barcodeScanning();
+            },
+          )
+        ],
+      ),
+      drawer: UserDrawer(widget.user, widget.local),
+      body: WebView(
+        initialUrl:
+            'http://info.thgye.com.ec/InvLineasProveedor.html?bodCodigo=$localId',
+        javaScriptMode: JavaScriptMode.unrestricted,
+      ),
+    );
   }
 }
 

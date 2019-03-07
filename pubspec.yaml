@@ -30,6 +30,9 @@ dependencies:
   # To manipulate the image from the camra or gallery
   image: ^2.0.7
 
+  # To use the web view widget
+  webview_flutter: ^0.1.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
