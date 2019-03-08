@@ -6,18 +6,11 @@ import 'package:my_office_th_app/screens/inventory/item_price_inkwell.dart';
 import 'package:my_office_th_app/screens/inventory/item_image_foot.dart';
 import 'package:my_office_th_app/screens/inventory/item_state_container.dart';
 
-import 'package:my_office_th_app/models/local.dart' as ml;
-import 'package:my_office_th_app/models/user.dart' as mu;
+import 'package:my_office_th_app/screens/login/login_state_container.dart';
 
 class ItemInfoCard extends StatefulWidget {
-  final ml.Local local;
-  final mu.User user;
-
-  ItemInfoCard(this.local, this.user);
-
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return ItemInfoCardState();
   }
 }
@@ -25,9 +18,10 @@ class ItemInfoCard extends StatefulWidget {
 class ItemInfoCardState extends State<ItemInfoCard> {
   @override
   Widget build(BuildContext context) {
-
 //    Getting data from the item sate container
-    final container = ItemStateContainer.of(context);
+    final containerItem = ItemStateContainer.of(context);
+//    Getting data from the login sate container
+    final containerLogin = LoginStateContainer.of(context);
 
     return Card(
       elevation: 5.0,
@@ -41,19 +35,21 @@ class ItemInfoCardState extends State<ItemInfoCard> {
                   child: Align(
                     alignment: Alignment.topCenter,
                     child: GradientBack(
-                        container.item.styleName,
-                        container.item.lineName + ' \/ ' + container.item.productName,
-                        container.item.seasonName),
+                        containerItem.item.styleName,
+                        containerItem.item.lineName +
+                            ' \/ ' +
+                            containerItem.item.productName,
+                        containerItem.item.seasonName),
                   ),
                 ),
-                ImageList(container.item.listImagesPath),
+                ImageList(containerItem.item.listImagesPath),
                 Container(
                     margin: EdgeInsets.only(top: 350.0, left: 10.0),
-                    child:
-                        ItemImageFoot(container.item, widget.local, widget.user)),
+                    child: ItemImageFoot(containerItem.item,
+                        containerLogin.local, containerLogin.user)),
                 Container(
                     margin: EdgeInsets.only(top: 325.0, left: 200.0),
-                    child: ItemPriceInkwell(container.item)),
+                    child: ItemPriceInkwell(containerItem.item)),
               ],
             ),
           ],

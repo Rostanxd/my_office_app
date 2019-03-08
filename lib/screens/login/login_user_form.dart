@@ -4,13 +4,12 @@ import 'package:http/http.dart' as http;
 
 import 'package:my_office_th_app/models/user.dart' as mu;
 import 'package:my_office_th_app/screens/home/index.dart';
+import 'package:my_office_th_app/screens/login/login_state_container.dart';
 import 'package:my_office_th_app/services/fetch_users.dart' as su;
-import 'package:my_office_th_app/screens/login/index.dart';
 
 class LoginUserForm extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return _LoginUserFormState();
   }
 }
@@ -22,15 +21,19 @@ class _LoginUserFormState extends State<LoginUserForm> {
   String _user, _password;
   bool _login = false;
 
-  void _checkLogin() {
-//    TODO: Change the state to true to keep the circle loading
+  void _checkLogin(BuildContext context) {
+
+//    Getting data from the item sate container
+    final container = LoginStateContainer.of(context);
+
+//    Change the state to true to keep the circle loading
     setState(() {
       _login = true;
     });
 
     var _userLogged = su.fetchAnUser(http.Client(), _user, _password);
 
-//    TODO: When I have a response from the future, take the result to evaluate.
+//    When I have a response from the future, take the result to evaluate.
     _userLogged.timeout(new Duration(seconds: 30)).then((result) {
       setState(() {
         this._login = false;
@@ -38,16 +41,19 @@ class _LoginUserFormState extends State<LoginUserForm> {
           this._myUser = result;
 
           if (this._myUser.local.id.isEmpty) {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => MyLoginPage(this._myUser)));
+//            Update the user inherited
+            container.updateUser(_myUser);
           } else {
+//            Update the user and local inherited
+            container.updateUser(_myUser);
+            container.updateHolding(_myUser.holding);
+            container.updateLogin(_myUser.local);
+
             Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        HomePage(this._myUser, this._myUser.local)));
+                        HomePage()));
           }
         } else {
           Scaffold.of(context)
@@ -94,7 +100,7 @@ class _LoginUserFormState extends State<LoginUserForm> {
               focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Color(0xff011e41)))),
           validator: (val) => val.isEmpty
-              ? 'Pleasse insert your password to '
+              ? 'Please insert your password to '
                   'continue...'
               : null,
           onSaved: (val) => _password = val,
@@ -138,7 +144,7 @@ class _LoginUserFormState extends State<LoginUserForm> {
               onTap: () {
                 if (_formKey.currentState.validate()) {
                   _formKey.currentState.save();
-                  _checkLogin();
+                  _checkLogin(context);
                 }
               },
               child: Center(
@@ -156,10 +162,10 @@ class _LoginUserFormState extends State<LoginUserForm> {
       );
     }
 
-//    TODO: Adding the other buttons
+//    Adding the other buttons
     formColumn.children.add(new SizedBox(height: 20.0));
 
-//    TODO: Facebook button
+//    Facebook button
     /*
     formColumn.children.add(new Container(
       height: 40.0,

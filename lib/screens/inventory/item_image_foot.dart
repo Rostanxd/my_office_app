@@ -6,8 +6,6 @@ import 'package:image/image.dart' as im;
 
 import 'package:my_office_th_app/utils/connection.dart';
 
-import 'package:image_picker/image_picker.dart';
-
 import 'package:flutter/material.dart';
 
 import 'package:my_office_th_app/models/item.dart' as mi;
@@ -155,7 +153,7 @@ class _ItemImageFootState extends State<ItemImageFoot> {
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  ItemDetails(widget.item.itemId, widget.local, widget.user)));
+                  ItemDetails(widget.item.itemId)));
     }).catchError((err) {
       print(err);
     });

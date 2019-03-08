@@ -1,21 +1,16 @@
 import 'package:flutter/material.dart';
 
-import 'package:my_office_th_app/models/user.dart';
-import 'package:my_office_th_app/models/local.dart';
-
 import 'package:my_office_th_app/screens/home/index.dart';
 import 'package:my_office_th_app/screens/inventory/index.dart';
 import 'package:my_office_th_app/screens/login/index.dart';
+import 'package:my_office_th_app/screens/login/login_state_container.dart';
 
 class UserDrawer extends StatelessWidget {
-  final User user;
-  final Local local;
-
-  UserDrawer(this.user, this.local);
-
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+//    Getting data from the item sate container
+    final container = LoginStateContainer.of(context);
+
     return Drawer(
       child: new ListView(
         children: <Widget>[
@@ -41,7 +36,7 @@ class UserDrawer extends StatelessWidget {
                         left: 20.0,
                       ),
                       child: Text(
-                        this.user.name,
+                        container.user != null ? container.user.name : '',
                         style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -54,7 +49,7 @@ class UserDrawer extends StatelessWidget {
                         left: 20.0,
                       ),
                       child: Text(
-                        this.local.name.isEmpty ? 'SISTEMAS' : this.local.name,
+                        container.local != null ? container.local.name : '',
                         style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -78,17 +73,16 @@ class UserDrawer extends StatelessWidget {
               trailing: new Icon(Icons.apps),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => InventoryHome(this.user, this.local)));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => InventoryHome()));
               }),
           new ListTile(
               title: new Text("CRM"),
               trailing: new Icon(Icons.people),
               onTap: () {
                 Navigator.pop(context);
-                Scaffold.of(context).showSnackBar(new SnackBar(content: Text('In developing, hold on!')));
+                Scaffold.of(context).showSnackBar(
+                    new SnackBar(content: Text('In developing, hold on!')));
               }),
           new Divider(),
           new ListTile(
@@ -96,19 +90,19 @@ class UserDrawer extends StatelessWidget {
               trailing: new Icon(Icons.home),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => HomePage(this.user, this.local)));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => HomePage()));
               }),
           new ListTile(
               title: new Text("Salir"),
               trailing: new Icon(Icons.exit_to_app),
               onTap: () {
-                Navigator.pop(context);
+//                Function to set null user and local
+                container.logOut();
+
                 Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => MyLoginPage(null)),
-                        (Route<dynamic> route) => false);
+                    MaterialPageRoute(builder: (context) => MyLoginPage()),
+                    (Route<dynamic> route) => false);
               }),
         ],
       ),

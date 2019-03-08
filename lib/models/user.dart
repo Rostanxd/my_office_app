@@ -1,3 +1,4 @@
+import 'package:my_office_th_app/models/holding.dart';
 import 'package:my_office_th_app/models/local.dart';
 
 class User {
@@ -6,8 +7,9 @@ class User {
   final String level;
   final String accessId;
   final String sellerId;
+  final Holding holding;
   final Local local;
 
   User(this.user, this.name, this.level, this.accessId, this.sellerId,
-      this.local);
+      this.holding, this.local);
 }

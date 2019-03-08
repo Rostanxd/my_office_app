@@ -4,19 +4,14 @@ import 'package:http/http.dart' as http;
 
 import 'package:my_office_th_app/models/holding.dart' as mh;
 import 'package:my_office_th_app/models/local.dart' as ml;
-import 'package:my_office_th_app/models/user.dart' as mu;
 import 'package:my_office_th_app/screens/home/index.dart';
 
 import 'package:my_office_th_app/screens/login/index.dart';
+import 'package:my_office_th_app/screens/login/login_state_container.dart';
 import 'package:my_office_th_app/services/fetch_holdings.dart' as sh;
 import 'package:my_office_th_app/services/fetch_locals.dart' as sl;
 
 class LoginLocalForm extends StatefulWidget {
-
-  final mu.User user;
-
-  LoginLocalForm(this.user);
-
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -90,7 +85,7 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
 
         this._boolLocals = false;
 
-//        TODO: updating the list variable for the holdings, and the dropdown
+//        Updating the list variable for the holdings, and the dropdown
         _listLocals.clear();
         for (ml.Local l in result) {
           _listLocals.add(l);
@@ -121,16 +116,17 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
   @override
   void initState(){
 
-//    TODO: Loading DropdownMenuItem for holdings
+//    Loading DropdownMenuItem for holdings
     this._getHoldings();
 
-//    TODO: Loading DropdownMenuItem for locals
+//    Loading DropdownMenuItem for locals
     this._getLocals('0');
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+//    Getting data from the item sate container
+    final container = LoginStateContainer.of(context);
 
     var _circularProgress = CircularProgressIndicator();
 
@@ -200,8 +196,11 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
               elevation: 7.0,
               child: GestureDetector(
                 onTap: () {
+                  container.updateHolding(this._currentHolding);
+                  container.updateLogin(this._currentLocal);
+
                   Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (context) => HomePage(widget.user, this._currentLocal)),
+                      MaterialPageRoute(builder: (context) => HomePage()),
                           (Route<dynamic> route) => false);
                 },
                 child: Center(
@@ -226,8 +225,10 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
               elevation: 7.0,
               child: GestureDetector(
                 onTap: () {
+                  container.logOut();
+
                   Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (context) => MyLoginPage(null)),
+                      MaterialPageRoute(builder: (context) => MyLoginPage()),
                           (Route<dynamic> route) => false);
                 },
                 child: Center(

@@ -4,15 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:my_office_th_app/components/card_dummy_loading.dart';
 
 import 'package:my_office_th_app/models/item_stock.dart' as ms;
-import 'package:my_office_th_app/models/local.dart' as ml;
 import 'package:my_office_th_app/screens/inventory/item_state_container.dart';
+import 'package:my_office_th_app/screens/login/login_state_container.dart';
 import 'package:my_office_th_app/services/fetch_item_stock.dart' as si;
 
 class ItemStockCard extends StatefulWidget {
   final List<ms.ItemStock> listItemStock;
-  final ml.Local local;
 
-  ItemStockCard(this.listItemStock, this.local);
+  ItemStockCard(this.listItemStock);
 
   @override
   State<StatefulWidget> createState() {
@@ -27,57 +26,59 @@ class _ItemStockCardState extends State<ItemStockCard> {
   String _itemSelected;
   List<ms.ItemStock> _listItemStock = new List<ms.ItemStock>();
 
+  void _getStockOtherLocal(LoginStateContainerState containerLogin, String itemId) {
+    setState(() {
+      _boolLocal = true;
+      _tableType = 'A';
+      _itemSelected = itemId;
+    });
+
+    si
+        .fetchModelItemStock(
+        http.Client(), itemId, containerLogin.local.id, _tableType)
+        .timeout(Duration(seconds: 30))
+        .then((result) {
+      setState(() {
+        _boolLocal = false;
+        this._listItemStock.clear();
+        for (ms.ItemStock i in result) {
+          this._listItemStock.add(i);
+        }
+      });
+    }, onError: (error) {
+      print('fetchModelItemStock onError: $error');
+    }).catchError((error) {
+      print('fetchModelItemStock catchError: $error');
+    });
+  }
+
+  TextStyle _textStyleStock(ItemStateContainerState containerItem, ms.ItemStock _itemStock) {
+    if (_itemStock.color == 'Total General') {
+      return TextStyle(
+          color: Colors.black, fontWeight: FontWeight.bold, fontSize: 11.0);
+    }
+
+    if (_itemStock.size == 'Total') {
+      return TextStyle(
+          color: Colors.black, fontWeight: FontWeight.bold, fontSize: 11.0);
+    }
+
+    if (_itemStock.itemId == containerItem.item.itemId) {
+      return TextStyle(
+          color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11.0);
+    }
+
+    return TextStyle(color: Colors.black, fontSize: 10.0);
+  }
+
   @override
   Widget build(BuildContext context) {
 //    Getting data from the item sate container
-    final container = ItemStateContainer.of(context);
+    final containerItem = ItemStateContainer.of(context);
+//    Getting data from the login sate container
+    final containerLogin = LoginStateContainer.of(context);
 
-    void _getStockOtherLocal(String itemId) {
-      setState(() {
-        _boolLocal = true;
-        _tableType = 'A';
-        _itemSelected = itemId;
-      });
-
-      si
-          .fetchModelItemStock(
-              http.Client(), itemId, widget.local.id, _tableType)
-          .timeout(Duration(seconds: 30))
-          .then((result) {
-        setState(() {
-          _boolLocal = false;
-          this._listItemStock.clear();
-          for (ms.ItemStock i in result) {
-            this._listItemStock.add(i);
-          }
-        });
-      }, onError: (error) {
-        print('fetchModelItemStock onError: $error');
-      }).catchError((error) {
-        print('fetchModelItemStock catchError: $error');
-      });
-    }
-
-    TextStyle _textStyleStock(ms.ItemStock _itemStock) {
-      if (_itemStock.color == 'Total General') {
-        return TextStyle(
-            color: Colors.black, fontWeight: FontWeight.bold, fontSize: 11.0);
-      }
-
-      if (_itemStock.size == 'Total') {
-        return TextStyle(
-            color: Colors.black, fontWeight: FontWeight.bold, fontSize: 11.0);
-      }
-
-      if (_itemStock.itemId == container.item.itemId) {
-        return TextStyle(
-            color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11.0);
-      }
-
-      return TextStyle(color: Colors.black, fontSize: 10.0);
-    }
-
-//    TODO: Generating the table based on the _tableType variable, "L" for the local, and 'A' for the others.
+//    Generating the table based on the _tableType variable, "L" for the local, and 'A' for the others.
     var _tableStock = new Table(
       border: TableBorder.all(color: Colors.grey, width: 1.0),
       children: [],
@@ -218,7 +219,7 @@ class _ItemStockCardState extends State<ItemStockCard> {
                     ),
                   )),
                   Container(
-                      color: f.itemId == container.item.itemId
+                      color: f.itemId == containerItem.item.itemId
                           ? Colors.red
                           : Colors.transparent,
                       child: Padding(
@@ -226,13 +227,13 @@ class _ItemStockCardState extends State<ItemStockCard> {
                         child: InkWell(
                           child: Center(
                             child: Text(f.local == 0 ? '' : f.local.toString(),
-                                style: _textStyleStock(f)),
+                                style: _textStyleStock(containerItem, f)),
                           ),
                           onTap: () {},
                         ),
                       )),
                   Container(
-                      color: f.itemId == container.item.itemId
+                      color: f.itemId == containerItem.item.itemId
                           ? Colors.red
                           : Colors.transparent,
                       child: Padding(
@@ -241,11 +242,11 @@ class _ItemStockCardState extends State<ItemStockCard> {
                           child: Center(
                               child: Text(
                             f.others == 0 ? '' : f.others.toString(),
-                            style: _textStyleStock(f),
+                            style: _textStyleStock(containerItem, f),
                           )),
                           onTap: () {
                             if (f.itemId.isNotEmpty) {
-                              _getStockOtherLocal(f.itemId);
+                              _getStockOtherLocal(containerLogin, f.itemId);
                             }
                           },
                         ),

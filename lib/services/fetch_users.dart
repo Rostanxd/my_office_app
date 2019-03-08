@@ -5,8 +5,9 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:my_office_th_app/factories/user.dart';
-import 'package:my_office_th_app/models/user.dart' as m;
+import 'package:my_office_th_app/models/holding.dart' as h;
 import 'package:my_office_th_app/models/local.dart' as l;
+import 'package:my_office_th_app/models/user.dart' as m;
 import 'package:my_office_th_app/utils/connection.dart' as con;
 
 Future<List<User>> fetchUsers(
@@ -36,6 +37,8 @@ Future<m.User> fetchAnUser(
         mapResponse['SdtUsers'][i]['level'],
         mapResponse['SdtUsers'][i]['accessId'],
         mapResponse['SdtUsers'][i]['sellerId'],
+        h.Holding(mapResponse['SdtUsers'][i]['holdingId'],
+            mapResponse['SdtUsers'][i]['holdingName']),
         l.Local(mapResponse['SdtUsers'][i]['localId'],
             mapResponse['SdtUsers'][i]['localName']));
   }

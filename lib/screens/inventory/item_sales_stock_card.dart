@@ -9,7 +9,6 @@ class ItemSalesStockCard extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return _ItemSalesStockCardState();
   }
 }
@@ -17,8 +16,6 @@ class ItemSalesStockCard extends StatefulWidget {
 class _ItemSalesStockCardState extends State<ItemSalesStockCard> {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-
     var _tableStock = new Table(
       border: TableBorder.all(color: Colors.grey, width: 1.0),
       children: [],

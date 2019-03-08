@@ -3,18 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:my_office_th_app/models/item.dart' as mi;
-import 'package:my_office_th_app/models/local.dart' as ml;
-import 'package:my_office_th_app/models/user.dart' as mu;
 import 'package:my_office_th_app/services/fetch_items.dart' as si;
 
 import 'package:my_office_th_app/screens/inventory/item_details.dart';
 
 class ItemsStyleListView extends StatefulWidget {
   final String styleId;
-  final ml.Local local;
-  final mu.User user;
 
-  ItemsStyleListView(this.styleId, this.local, this.user);
+  ItemsStyleListView(this.styleId);
 
   @override
   State<StatefulWidget> createState() {
@@ -57,7 +53,6 @@ class _ItemsStyleListViewState extends State<ItemsStyleListView> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return _boolStyle
         ? Center(
             child: CircularProgressIndicator(),
@@ -69,9 +64,7 @@ class _ItemsStyleListViewState extends State<ItemsStyleListView> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => ItemDetails(
-                                this._listItem[index].itemId,
-                                widget.local,
-                                widget.user)));
+                                this._listItem[index].itemId)));
                   },
                   leading: Icon(Icons.open_in_new),
                   title: Text(this._listItem[index].itemId),

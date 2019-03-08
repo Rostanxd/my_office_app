@@ -6,24 +6,17 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:my_office_th_app/factories/item.dart' as fi;
-import 'package:my_office_th_app/models/local.dart' as ml;
-import 'package:my_office_th_app/models/user.dart' as mu;
 import 'package:my_office_th_app/screens/home/user_drawer.dart';
 import 'package:my_office_th_app/screens/inventory/item_details.dart';
 import 'package:my_office_th_app/screens/inventory/items_style_list_view.dart';
+import 'package:my_office_th_app/screens/login/login_state_container.dart';
 import 'package:my_office_th_app/services/fetch_items.dart' as si;
 
 import 'package:webview_flutter/webview_flutter.dart';
 
 class InventoryHome extends StatefulWidget {
-  final mu.User user;
-  final ml.Local local;
-
-  InventoryHome(this.user, this.local);
-
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return _InventoryHomeState();
   }
 }
@@ -31,15 +24,12 @@ class InventoryHome extends StatefulWidget {
 class _InventoryHomeState extends State<InventoryHome> {
   String _barcode = '';
 
-  Future _barcodeScanning() async {
+  Future _barcodeScanning(LoginStateContainerState container) async {
     try {
       var _barcodeRead = await BarcodeScanner.scan();
       setState(() => this._barcode = _barcodeRead);
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  ItemDetails(this._barcode, widget.local, widget.user)));
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => ItemDetails(this._barcode)));
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.CameraAccessDenied) {
         setState(() => this._barcode = '');
@@ -55,25 +45,13 @@ class _InventoryHomeState extends State<InventoryHome> {
 
   @override
   Widget build(BuildContext context) {
-    String localId = widget.local.id;
+//    Getting data from the item sate container
+    final container = LoginStateContainer.of(context);
 
-    Widget cardEmpty = Align(
-        alignment: Alignment.center,
-        child: Container(
-            height: 100.0,
-            width: 200.0,
-            child: Center(
-                child: Column(
-              children: <Widget>[
-                Text(
-                  'Search the item!',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14.0,
-                  ),
-                ),
-              ],
-            ))));
+    String holdingId = container.holding.id;
+    String localId = container.local.id;
+
+    WebViewController _contoller;
 
     return Scaffold(
       appBar: AppBar(
@@ -83,41 +61,43 @@ class _InventoryHomeState extends State<InventoryHome> {
           IconButton(
             icon: Icon(Icons.search),
             onPressed: () {
-              showSearch(
-                  context: context,
-                  delegate: DataSearch(widget.local, widget.user));
+              showSearch(context: context, delegate: DataSearch());
             },
           ),
           IconButton(
             icon: Icon(Icons.bookmark_border),
             onPressed: () {
-              _barcodeScanning();
+              _barcodeScanning(container);
             },
           )
         ],
       ),
-      drawer: UserDrawer(widget.user, widget.local),
+      drawer: UserDrawer(),
       body: WebView(
+        javascriptMode: JavascriptMode.unrestricted,
         initialUrl:
-            'http://info.thgye.com.ec/InvLineasProveedor.html?bodCodigo=$localId',
-        javaScriptMode: JavaScriptMode.unrestricted,
+            'http://info.thgye.com.ec/InvLineasProveedor.html?hldCodigo=$holdingId&bodCodigo=$localId',
+        onWebViewCreated: (WebViewController webViewController) {
+          _contoller = webViewController;
+        },
       ),
+      floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.refresh),
+          onPressed: () {
+            _contoller.clearCache();
+            _contoller.reload();
+          }),
     );
   }
 }
 
-//  TODO: Implementation of search bar.
+//  Implementation of search bar.
 class DataSearch extends SearchDelegate<String> {
-  final ml.Local local;
-  final mu.User user;
-
-  DataSearch(this.local, this.user);
-
   String styleId;
 
   @override
   List<Widget> buildActions(BuildContext context) {
-//    TODO: Icon to close the search bar
+//    Icon to close the search bar
     return [
       IconButton(
         icon: Icon(Icons.clear),
@@ -131,7 +111,7 @@ class DataSearch extends SearchDelegate<String> {
 
   @override
   Widget buildLeading(BuildContext context) {
-//    TODO: Leading icon on the left of the app
+//    Leading icon on the left of the app
     return IconButton(
       icon: AnimatedIcon(
           icon: AnimatedIcons.menu_arrow, progress: transitionAnimation),
@@ -143,13 +123,13 @@ class DataSearch extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
-    //    TODO: Show some result based on the selection, in this case the list of items
-    return ItemsStyleListView(this.styleId, this.local, this.user);
+    //    Show some result based on the selection, in this case the list of items
+    return ItemsStyleListView(this.styleId);
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-//    TODO: Show when someone searches for something
+//    Show when someone searches for something
     return query.isEmpty
         ? Container(
             margin: EdgeInsets.all(20.0),
