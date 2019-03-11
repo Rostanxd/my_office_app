@@ -10,6 +10,7 @@ import 'package:my_office_th_app/screens/login/index.dart';
 import 'package:my_office_th_app/screens/login/login_state_container.dart';
 import 'package:my_office_th_app/services/fetch_holdings.dart' as sh;
 import 'package:my_office_th_app/services/fetch_locals.dart' as sl;
+import 'package:my_office_th_app/utils/connection.dart';
 
 class LoginLocalForm extends StatefulWidget {
   @override
@@ -34,15 +35,15 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
   bool _boolLocals = false;
 
   void _getHoldings() {
-
     setState(() {
       this._boolHolding = true;
     });
 
-    sh.fetchHoldings(http.Client()).timeout(Duration(seconds: 15)).then(
-        (result) {
+    sh
+        .fetchHoldings(http.Client())
+        .timeout(Duration(seconds: Connection.timeOutSec))
+        .then((result) {
       setState(() {
-
         this._boolHolding = false;
 
         for (mh.Holding h in result) {
@@ -50,13 +51,11 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
         }
 
         for (var _hld in _listHoldings) {
-          this
-              ._listDropDownHoldings
-              .add(new DropdownMenuItem(value: _hld, child: new Text(_hld.name)));
+          this._listDropDownHoldings.add(
+              new DropdownMenuItem(value: _hld, child: new Text(_hld.name)));
         }
 
         _currentHolding = _listDropDownHoldings[0].value;
-
       });
     }, onError: (error) {
       print(error);
@@ -79,10 +78,9 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
 
     sl
         .fetchLocals(http.Client(), holdingId)
-        .timeout(Duration(seconds: 15))
+        .timeout(Duration(seconds: Connection.timeOutSec))
         .then((result) {
       setState(() {
-
         this._boolLocals = false;
 
 //        Updating the list variable for the holdings, and the dropdown
@@ -93,9 +91,8 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
 
         _listDropDownLocals.clear();
         for (var _loc in this._listLocals) {
-          this
-              ._listDropDownLocals
-              .add(new DropdownMenuItem(value: _loc, child: new Text(_loc.name)));
+          this._listDropDownLocals.add(
+              new DropdownMenuItem(value: _loc, child: new Text(_loc.name)));
         }
 
         _currentLocal = _listDropDownLocals[0].value;
@@ -114,8 +111,7 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
   }
 
   @override
-  void initState(){
-
+  void initState() {
 //    Loading DropdownMenuItem for holdings
     this._getHoldings();
 
@@ -142,48 +138,45 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
               left: 20.0,
             ),
             child: Text('Holding',
-              style: TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-                color: Color(0xff011e41)
-              )
-            ),
+                style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xff011e41))),
           ),
           SizedBox(height: 10.0),
           Container(
             child: Center(
-              child: _boolHolding ? _circularProgress : DropdownButton<mh.Holding>(
-                value: _currentHolding,
-                items: _listDropDownHoldings,
-                onChanged: (mh.Holding h) {
-                  this._changeDropDownItemHolding(h);
-                },
-              ),
+              child: _boolHolding
+                  ? _circularProgress
+                  : DropdownButton<mh.Holding>(
+                      value: _currentHolding,
+                      items: _listDropDownHoldings,
+                      onChanged: (mh.Holding h) {
+                        this._changeDropDownItemHolding(h);
+                      },
+                    ),
             ),
           ),
           Container(
-            margin: EdgeInsets.only(
-                top: 20.0,
-                left: 20.0
-            ),
+            margin: EdgeInsets.only(top: 20.0, left: 20.0),
             child: Text('Local',
                 style: TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xff011e41)
-                )
-            ),
+                    color: Color(0xff011e41))),
           ),
           SizedBox(height: 10.0),
           Container(
             child: Center(
-              child: _boolLocals ? _circularProgress : DropdownButton<ml.Local>(
-                value: _currentLocal,
-                items: _listDropDownLocals,
-                onChanged: (ml.Local l) {
-                  this._changeDropDownItemLocal(l);
-                },
-              ),
+              child: _boolLocals
+                  ? _circularProgress
+                  : DropdownButton<ml.Local>(
+                      value: _currentLocal,
+                      items: _listDropDownLocals,
+                      onChanged: (ml.Local l) {
+                        this._changeDropDownItemLocal(l);
+                      },
+                    ),
             ),
           ),
           SizedBox(height: 40.0),
@@ -201,7 +194,7 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
 
                   Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(builder: (context) => HomePage()),
-                          (Route<dynamic> route) => false);
+                      (Route<dynamic> route) => false);
                 },
                 child: Center(
                   child: Text(
@@ -229,7 +222,7 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
 
                   Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(builder: (context) => MyLoginPage()),
-                          (Route<dynamic> route) => false);
+                      (Route<dynamic> route) => false);
                 },
                 child: Center(
                   child: Text(

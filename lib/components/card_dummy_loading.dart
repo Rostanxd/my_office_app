@@ -7,6 +7,7 @@ class CardDummyLoading extends StatelessWidget {
     return Container(
       height: 100.0,
       child: Card(
+        elevation: 5.0,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[

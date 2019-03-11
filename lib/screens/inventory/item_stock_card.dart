@@ -26,7 +26,8 @@ class _ItemStockCardState extends State<ItemStockCard> {
   String _itemSelected;
   List<ms.ItemStock> _listItemStock = new List<ms.ItemStock>();
 
-  void _getStockOtherLocal(LoginStateContainerState containerLogin, String itemId) {
+  void _getStockOtherLocal(
+      LoginStateContainerState containerLogin, String itemId) {
     setState(() {
       _boolLocal = true;
       _tableType = 'A';
@@ -35,7 +36,7 @@ class _ItemStockCardState extends State<ItemStockCard> {
 
     si
         .fetchModelItemStock(
-        http.Client(), itemId, containerLogin.local.id, _tableType)
+            http.Client(), itemId, containerLogin.local.id, _tableType)
         .timeout(Duration(seconds: 30))
         .then((result) {
       setState(() {
@@ -52,7 +53,8 @@ class _ItemStockCardState extends State<ItemStockCard> {
     });
   }
 
-  TextStyle _textStyleStock(ItemStateContainerState containerItem, ms.ItemStock _itemStock) {
+  TextStyle _textStyleStock(
+      ItemStateContainerState containerItem, ms.ItemStock _itemStock) {
     if (_itemStock.color == 'Total General') {
       return TextStyle(
           color: Colors.black, fontWeight: FontWeight.bold, fontSize: 11.0);
@@ -256,50 +258,51 @@ class _ItemStockCardState extends State<ItemStockCard> {
 
     return _boolLocal
         ? CardDummyLoading()
-        : Card(
-            elevation: 5.0,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
+        : Container(
+            child: Card(
+                elevation: 2.5,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    this._tableType == 'A'
-                        ? Container(
-                            margin: EdgeInsets.only(
-                              top: 20.0,
-                              left: 20.0,
-                              bottom: 5.0,
-                            ),
-                            child: InkWell(
-                              child: Icon(Icons.arrow_back),
-                              onTap: () {
-                                setState(() => _tableType = 'L');
-                              },
-                            ),
-                          )
-                        : Container(),
-                    Container(
-                      margin:
-                          EdgeInsets.only(top: 20.0, left: 20.0, bottom: 5.0),
-                      child: Text(
-                        this._tableType == 'L'
-                            ? 'Stock in local'
-                            ''
-                            : 'Stock of ' + this._itemSelected,
-                        style: TextStyle(
-                            fontSize: 16.0, fontWeight: FontWeight.bold),
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        this._tableType == 'A'
+                            ? Container(
+                                margin: EdgeInsets.only(
+                                  top: 20.0,
+                                  left: 20.0,
+                                  bottom: 5.0,
+                                ),
+                                child: InkWell(
+                                  child: Icon(Icons.arrow_back),
+                                  onTap: () {
+                                    setState(() => _tableType = 'L');
+                                  },
+                                ),
+                              )
+                            : Container(),
+                        Container(
+                          margin: EdgeInsets.only(
+                              top: 20.0, left: 20.0, bottom: 5.0),
+                          child: Text(
+                            this._tableType == 'L'
+                                ? 'Stock in local'
+                                    ''
+                                : 'Stock of ' + this._itemSelected,
+                            style: TextStyle(
+                                fontSize: 16.0, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
                     ),
+                    Divider(),
+                    Container(
+                        width: 300.0,
+                        margin: EdgeInsets.only(
+                            top: 5.0, left: 20.0, right: 20.0, bottom: 20.0),
+                        child: _tableStock),
                   ],
-                ),
-                Divider(),
-                Container(
-                    width: 300.0,
-                    margin: EdgeInsets.only(
-                        top: 5.0, left: 20.0, right: 20.0, bottom: 20.0),
-                    child: _tableStock),
-              ],
-            ));
+                )));
   }
 }

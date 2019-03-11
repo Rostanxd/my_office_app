@@ -6,6 +6,7 @@ import 'package:my_office_th_app/models/user.dart' as mu;
 import 'package:my_office_th_app/screens/home/index.dart';
 import 'package:my_office_th_app/screens/login/login_state_container.dart';
 import 'package:my_office_th_app/services/fetch_users.dart' as su;
+import 'package:my_office_th_app/utils/connection.dart';
 
 class LoginUserForm extends StatefulWidget {
   @override
@@ -22,7 +23,6 @@ class _LoginUserFormState extends State<LoginUserForm> {
   bool _login = false;
 
   void _checkLogin(BuildContext context) {
-
 //    Getting data from the item sate container
     final container = LoginStateContainer.of(context);
 
@@ -34,7 +34,8 @@ class _LoginUserFormState extends State<LoginUserForm> {
     var _userLogged = su.fetchAnUser(http.Client(), _user, _password);
 
 //    When I have a response from the future, take the result to evaluate.
-    _userLogged.timeout(new Duration(seconds: 30)).then((result) {
+    _userLogged.timeout(new Duration(seconds: Connection.timeOutSec)).then(
+        (result) {
       setState(() {
         this._login = false;
         if (result != null) {
@@ -50,10 +51,7 @@ class _LoginUserFormState extends State<LoginUserForm> {
             container.updateLogin(_myUser.local);
 
             Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        HomePage()));
+                context, MaterialPageRoute(builder: (context) => HomePage()));
           }
         } else {
           Scaffold.of(context)

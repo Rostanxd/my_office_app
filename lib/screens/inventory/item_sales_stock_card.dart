@@ -160,30 +160,32 @@ class _ItemSalesStockCardState extends State<ItemSalesStockCard> {
             ]))
         .toList());
 
-    return Card(
-        elevation: 5.0,
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.only(top: 20.0, left: 20.0, bottom: 5.0),
-                    child: Text(
-                      'Stock and Sales',
-                      style: TextStyle(
-                          fontSize: 16.0, fontWeight: FontWeight.bold),
+    return Container(
+      child: Card(
+          elevation: 2.5,
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.only(top: 20.0, left: 20.0, bottom: 5.0),
+                      child: Text(
+                        'Stock and Sales',
+                        style: TextStyle(
+                            fontSize: 16.0, fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              Divider(),
-              Container(
-                  width: 300.0,
-                  margin: EdgeInsets.only(
-                      top: 5.0, left: 20.0, right: 20.0, bottom: 20.0),
-                  child: _tableStock),
-            ]));
+                  ],
+                ),
+                Divider(),
+                Container(
+                    width: 300.0,
+                    margin: EdgeInsets.only(
+                        top: 5.0, left: 20.0, right: 20.0, bottom: 20.0),
+                    child: _tableStock),
+              ])),
+    );
   }
 }
