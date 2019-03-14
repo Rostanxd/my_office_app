@@ -3,24 +3,30 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import 'package:my_office_th_app/models/holding.dart' as mh;
-import 'package:my_office_th_app/utils/connection.dart' as con;
+import 'package:my_office_th_app/models/holding.dart';
+import 'package:my_office_th_app/utils/connection.dart';
 
-//TODO: Return a future list of holdings
-Future<List<mh.Holding>> fetchHoldings(http.Client client) async {
-  List<mh.Holding> listHoldings = new List<mh.Holding>();
-  var response = await http.post(con.Connection.host + '/rest/WsManHoldings',
-      headers: {"Content-Type": "application/json"});
+class HoldingApi {
+  final _httpClient = http.Client();
 
-  print(response.body);
+  Future<List<Holding>> fetchAllHoldings() async {
+    List<Holding> holdingList = new List<Holding>();
+    var response = await _httpClient.post(Connection.host + '/rest/WsManHoldings',
+        headers: {"Content-Type": "application/json"});
 
-  Map<String, dynamic> mapResponse = json.decode(response.body);
+    print('fetchAllHoldings >> ' + response.body);
 
-  for (var i = 0; i < mapResponse['SdtWsManHoldings'].length; i++) {
-    listHoldings.add(new mh.Holding(
-        mapResponse['SdtWsManHoldings'][i]['HldCodigo'],
-        mapResponse['SdtWsManHoldings'][i]['HldNombre']));
+    /// To get easily the gx response
+    Map<String, dynamic> gxResponse = json.decode(response.body);
+
+    /// Genexus response structure
+    var responseList = gxResponse['SdtWsManBodegas'] as List;
+
+    /// Loading the list from the response
+    holdingList = responseList.map((l) {
+      new Holding(l['HldCodigo'], l['HldNombre']);
+    }).toList();
+
+    return holdingList;
   }
-
-  return listHoldings;
 }

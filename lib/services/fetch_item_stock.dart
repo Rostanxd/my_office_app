@@ -1,63 +1,36 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:my_office_th_app/factories/item_stock.dart' as fi;
-import 'package:my_office_th_app/models/item_stock.dart' as mi;
-import 'package:my_office_th_app/utils/connection.dart' as con;
+import 'package:my_office_th_app/models/item_stock.dart';
+import 'package:my_office_th_app/utils/connection.dart';
 
-Future<List<fi.ItemStock>> fetchItemStock(
-    http.Client client, String itemId, String localId, String type) async {
-  final response = await client.post(con.Connection.host + '/rest/WsItemStock',
-      headers: {"Content-Type": "application/json"},
-      body: json.encode(
-          {"itemId": "$itemId", "BodCodigo": "$localId", "type": "$type"}));
+class ItemStockApi {
+  final _httpClient = http.Client();
 
-  //  Code generated for object sdt from genexus.
-  var mapSdt = <Map>[];
+  Future<List<ItemStock>> fetchItemStock(
+      String itemId, String localId, String type) async {
+    List<ItemStock> itemStockList = new List<ItemStock>();
+    var response = await _httpClient.post(Connection.host + '/rest/WsItemStock',
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(
+            {"itemId": "$itemId", "BodCodigo": "$localId", "type": "$type"}));
 
-  Map<String, dynamic> mapResponse = json.decode(response.body);
+    print('fetchItems >> ' + response.body);
 
-  for (var i = 0; i < mapResponse['SdtItemStock'].length; i++) {
-    mapSdt.add(mapResponse['SdtItemStock'][i]);
+    /// To get easily the gx response
+    Map<String, dynamic> gxResponse = json.decode(response.body);
+
+    /// Genexus response structure
+    var responseList = gxResponse['SdtWsManBodegas'] as List;
+
+    /// Loading the list from the response
+    itemStockList = responseList.map((l) {
+      new ItemStock(l['color'], l['Talla'], l['StockLocal'], l['StockOtros'],
+          l['ItmCodigo']);
+    }).toList();
+
+    return itemStockList;
   }
-
-  var jsonSdt = json.encode(mapSdt);
-
-  return compute(parseItemStock, jsonSdt);
-}
-
-Future<List<mi.ItemStock>> fetchModelItemStock(
-    http.Client client, String itemId, String localId, String type) async {
-  List<mi.ItemStock> itemStockModel = new List<mi.ItemStock>();
-  var response = await client.post(con.Connection.host + '/rest/WsItemStock',
-      headers: {"Content-Type": "application/json"},
-      body: json.encode(
-          {"itemId": "$itemId", "BodCodigo": "$localId", "type": "$type"}));
-
-  print(response.body);
-
-  //  Code generated for object sdt from genexus.
-  Map<String, dynamic> mapResponse = json.decode(response.body);
-
-  for (var i = 0; i < mapResponse['sdt_inv_estilos_app'].length; i++) {
-    itemStockModel.add(new mi.ItemStock(
-        mapResponse['sdt_inv_estilos_app'][i]['Color'],
-        mapResponse['sdt_inv_estilos_app'][i]['Talla'],
-        int.parse(mapResponse['sdt_inv_estilos_app'][i]['StockLocal']),
-        int.parse(mapResponse['sdt_inv_estilos_app'][i]['StockOtros']),
-        mapResponse['sdt_inv_estilos_app'][i]['ItmCodigo']));
-  }
-
-  return itemStockModel;
-}
-
-List<fi.ItemStock> parseItemStock(String responseBody) {
-  final parsed = json.decode(responseBody).cast<Map<String, dynamic>>();
-
-  return parsed
-      .map<fi.ItemStock>((json) => fi.ItemStock.fromJson(json))
-      .toList();
 }

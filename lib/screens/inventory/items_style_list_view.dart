@@ -28,22 +28,22 @@ class _ItemsStyleListViewState extends State<ItemsStyleListView> {
       this._boolStyle = true;
     });
 
-    si
-        .fetchItemsModel(http.Client(), '', widget.styleId)
-        .timeout(Duration(seconds: 15))
-        .then((result) {
-      setState(() {
-        this._boolStyle = false;
-      });
-
-      for (mi.Item _itm in result) {
-        this._listItem.add(_itm);
-      }
-    }, onError: (error) {
-      print(error);
-    }).catchError((error) {
-      print(error);
-    });
+//    si
+//        .fetchItems(http.Client(), '', widget.styleId)
+//        .timeout(Duration(seconds: 15))
+//        .then((result) {
+//      setState(() {
+//        this._boolStyle = false;
+//      });
+//
+//      for (mi.Item _itm in result) {
+//        this._listItem.add(_itm);
+//      }
+//    }, onError: (error) {
+//      print(error);
+//    }).catchError((error) {
+//      print(error);
+//    });
   }
 
   @override

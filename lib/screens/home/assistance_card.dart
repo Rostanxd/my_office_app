@@ -206,8 +206,8 @@ class _AssistanceCardState extends State<AssistanceCard> {
                 ),
               ),
               FutureBuilder(
-                future: fetchAnAssistance(
-                    http.Client(), this._dateToFind, '0915157473'),
+//                future: fetchDateAssistance(
+//                    http.Client(), this._dateToFind, '0915157473'),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) print(snapshot.error);
                   if (snapshot.data == null) {

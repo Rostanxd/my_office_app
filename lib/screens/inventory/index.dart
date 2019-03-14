@@ -5,12 +5,12 @@ import 'package:flutter/services.dart';
 
 import 'package:http/http.dart' as http;
 
-import 'package:my_office_th_app/factories/item.dart' as fi;
+import 'package:my_office_th_app/models/item.dart';
 import 'package:my_office_th_app/screens/home/user_drawer.dart';
 import 'package:my_office_th_app/screens/inventory/item_details.dart';
 import 'package:my_office_th_app/screens/inventory/items_style_list_view.dart';
 import 'package:my_office_th_app/screens/login/login_state_container.dart';
-import 'package:my_office_th_app/services/fetch_items.dart' as si;
+import 'package:my_office_th_app/services/fetch_items.dart';
 
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -137,10 +137,10 @@ class DataSearch extends SearchDelegate<String> {
               'Insert a Style...',
               style: TextStyle(fontSize: 16.0),
             ))
-        : FutureBuilder<List<fi.Item>>(
-            future: si.fetchStyles(http.Client(), query),
+        : FutureBuilder<List<Item>>(
+//            future: fetchStyles(http.Client(), query),
             builder:
-                (BuildContext context, AsyncSnapshot<List<fi.Item>> items) {
+                (BuildContext context, AsyncSnapshot<List<Item>> items) {
               if (!items.hasData) {
                 return Container(
                     margin: EdgeInsets.all(20.0),
@@ -155,7 +155,7 @@ class DataSearch extends SearchDelegate<String> {
           );
   }
 
-  Widget buildSuggestionItems(List<fi.Item> items) {
+  Widget buildSuggestionItems(List<Item> items) {
     return ListView.builder(
       itemBuilder: (context, index) => ListTile(
             onTap: () {

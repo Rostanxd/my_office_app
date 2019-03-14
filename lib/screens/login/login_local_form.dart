@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
 
-import 'package:my_office_th_app/models/holding.dart' as mh;
-import 'package:my_office_th_app/models/local.dart' as ml;
+import 'package:my_office_th_app/models/holding.dart';
+import 'package:my_office_th_app/models/local.dart';
 import 'package:my_office_th_app/screens/home/index.dart';
 
 import 'package:my_office_th_app/screens/login/index.dart';
 import 'package:my_office_th_app/screens/login/login_state_container.dart';
-import 'package:my_office_th_app/services/fetch_holdings.dart' as sh;
-import 'package:my_office_th_app/services/fetch_locals.dart' as sl;
+import 'package:my_office_th_app/services/fetch_holdings.dart';
+import 'package:my_office_th_app/services/fetch_locals.dart';
 import 'package:my_office_th_app/utils/connection.dart';
 
 class LoginLocalForm extends StatefulWidget {
@@ -21,14 +21,14 @@ class LoginLocalForm extends StatefulWidget {
 }
 
 class _LoginLocalFormState extends State<LoginLocalForm> {
-  mh.Holding _currentHolding;
-  ml.Local _currentLocal;
-  List<mh.Holding> _listHoldings = new List<mh.Holding>();
-  List<ml.Local> _listLocals = new List<ml.Local>();
-  List<DropdownMenuItem<mh.Holding>> _listDropDownHoldings =
-      new List<DropdownMenuItem<mh.Holding>>();
-  List<DropdownMenuItem<ml.Local>> _listDropDownLocals =
-      new List<DropdownMenuItem<ml.Local>>();
+  Holding _currentHolding;
+  Local _currentLocal;
+  List<Holding> _listHoldings = new List<Holding>();
+  List<Local> _listLocals = new List<Local>();
+  List<DropdownMenuItem<Holding>> _listDropDownHoldings =
+      new List<DropdownMenuItem<Holding>>();
+  List<DropdownMenuItem<Local>> _listDropDownLocals =
+      new List<DropdownMenuItem<Local>>();
 
 //  Variables to keep showing the circular progress.
   bool _boolHolding = false;
@@ -39,32 +39,31 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
       this._boolHolding = true;
     });
 
-    sh
-        .fetchHoldings(http.Client())
-        .timeout(Duration(seconds: Connection.timeOutSec))
-        .then((result) {
-      setState(() {
-        this._boolHolding = false;
-
-        for (mh.Holding h in result) {
-          this._listHoldings.add(h);
-        }
-
-        for (var _hld in _listHoldings) {
-          this._listDropDownHoldings.add(
-              new DropdownMenuItem(value: _hld, child: new Text(_hld.name)));
-        }
-
-        _currentHolding = _listDropDownHoldings[0].value;
-      });
-    }, onError: (error) {
-      print(error);
-    }).catchError((error) {
-      print(error);
-    });
+//    HoldingApi.fetchAllHoldings(http.Client())
+//        .timeout(Duration(seconds: Connection.timeOutSec))
+//        .then((result) {
+//      setState(() {
+//        this._boolHolding = false;
+//
+//        for (Holding h in result) {
+//          this._listHoldings.add(h);
+//        }
+//
+//        for (var _hld in _listHoldings) {
+//          this._listDropDownHoldings.add(
+//              new DropdownMenuItem(value: _hld, child: new Text(_hld.name)));
+//        }
+//
+//        _currentHolding = _listDropDownHoldings[0].value;
+//      });
+//    }, onError: (error) {
+//      print(error);
+//    }).catchError((error) {
+//      print(error);
+//    });
   }
 
-  void _changeDropDownItemHolding(mh.Holding _holdingSelected) {
+  void _changeDropDownItemHolding(Holding _holdingSelected) {
     setState(() {
       _currentHolding = _holdingSelected;
       _getLocals(_currentHolding.id);
@@ -76,35 +75,34 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
       this._boolLocals = true;
     });
 
-    sl
-        .fetchLocals(http.Client(), holdingId)
-        .timeout(Duration(seconds: Connection.timeOutSec))
-        .then((result) {
-      setState(() {
-        this._boolLocals = false;
-
-//        Updating the list variable for the holdings, and the dropdown
-        _listLocals.clear();
-        for (ml.Local l in result) {
-          _listLocals.add(l);
-        }
-
-        _listDropDownLocals.clear();
-        for (var _loc in this._listLocals) {
-          this._listDropDownLocals.add(
-              new DropdownMenuItem(value: _loc, child: new Text(_loc.name)));
-        }
-
-        _currentLocal = _listDropDownLocals[0].value;
-      });
-    }, onError: (error) {
-      print(error);
-    }).catchError((error) {
-      print(error);
-    });
+//    LocalApi.fetchLocals(holdingId)
+//        .timeout(Duration(seconds: Connection.timeOutSec))
+//        .then((result) {
+//      setState(() {
+//        this._boolLocals = false;
+//
+////        Updating the list variable for the holdings, and the dropdown
+//        _listLocals.clear();
+//        for (Local l in result) {
+//          _listLocals.add(l);
+//        }
+//
+//        _listDropDownLocals.clear();
+//        for (var _loc in this._listLocals) {
+//          this._listDropDownLocals.add(
+//              new DropdownMenuItem(value: _loc, child: new Text(_loc.name)));
+//        }
+//
+//        _currentLocal = _listDropDownLocals[0].value;
+//      });
+//    }, onError: (error) {
+//      print(error);
+//    }).catchError((error) {
+//      print(error);
+//    });
   }
 
-  void _changeDropDownItemLocal(ml.Local _localSelected) {
+  void _changeDropDownItemLocal(Local _localSelected) {
     setState(() {
       this._currentLocal = _localSelected;
     });
@@ -148,10 +146,10 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
             child: Center(
               child: _boolHolding
                   ? _circularProgress
-                  : DropdownButton<mh.Holding>(
+                  : DropdownButton<Holding>(
                       value: _currentHolding,
                       items: _listDropDownHoldings,
-                      onChanged: (mh.Holding h) {
+                      onChanged: (Holding h) {
                         this._changeDropDownItemHolding(h);
                       },
                     ),
@@ -170,10 +168,10 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
             child: Center(
               child: _boolLocals
                   ? _circularProgress
-                  : DropdownButton<ml.Local>(
+                  : DropdownButton<Local>(
                       value: _currentLocal,
                       items: _listDropDownLocals,
-                      onChanged: (ml.Local l) {
+                      onChanged: (Local l) {
                         this._changeDropDownItemLocal(l);
                       },
                     ),

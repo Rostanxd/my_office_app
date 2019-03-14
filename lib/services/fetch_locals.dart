@@ -3,25 +3,32 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import 'package:my_office_th_app/models/local.dart' as ml;
-import 'package:my_office_th_app/utils/connection.dart' as con;
+import 'package:my_office_th_app/models/local.dart';
+import 'package:my_office_th_app/utils/connection.dart';
 
-Future<List<ml.Local>> fetchLocals(http.Client client,
-    String holdingId) async {
-  List<ml.Local> listLocals = new List<ml.Local>();
-  var response = await http.post(con.Connection.host + '/rest/WsManBodegas',
-      headers: {"Content-Type": "application/json"},
-      body: json.encode({"HldCodigo": "$holdingId"}));
+class LocalApi {
+  final _httpClient = new http.Client();
 
-  print(response.body);
+  Future<List<Local>> fetchLocals(String holdingId) async {
+    List<Local> localList = new List<Local>();
+    var response = await _httpClient.post(
+        Connection.host + '/rest/WsManBodegas',
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({"HldCodigo": "$holdingId"}));
 
-  Map<String, dynamic> mapResponse = json.decode(response.body);
+    print('fetchLocals >> ' + response.body);
 
-  for (var i = 0; i < mapResponse['SdtWsManBodegas'].length; i++) {
-    listLocals.add(new ml.Local(
-        mapResponse['SdtWsManBodegas'][i]['BodCodigo'],
-        mapResponse['SdtWsManBodegas'][i]['BodNombre']));
+    /// To get easily the gx response
+    Map<String, dynamic> gxResponse = json.decode(response.body);
+
+    /// Genexus response structure
+    var responseList = gxResponse['SdtWsManBodegas'] as List;
+
+    /// Loading the list from the response
+    localList = responseList.map((l) {
+      new Local(l['BodCodigo'], l['BodNombre']);
+    }).toList();
+
+    return localList;
   }
-
-  return listLocals;
 }

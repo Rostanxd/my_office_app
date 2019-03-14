@@ -39,25 +39,25 @@ class _ItemDetailsState extends State<ItemDetails> {
       this._boolInfo = true;
     });
 
-    si
-        .fetchAnItem(http.Client(), widget.itemStr, '')
-        .timeout(Duration(seconds: Connection.timeOutSec))
-        .then((result) {
-      setState(() {
-        _item = result;
-        this._boolInfo = false;
-      });
-    }, onError: (error) {
-      print('fetchAnItem onError: $error');
-      setState(() {
-        this._boolInfo = false;
-      });
-    }).catchError((error) {
-      print('fetchAnItem catchError: $error');
-      setState(() {
-        this._boolInfo = false;
-      });
-    });
+//    si
+//        .fetchItem(http.Client(), widget.itemStr, '')
+//        .timeout(Duration(seconds: Connection.timeOutSec))
+//        .then((result) {
+//      setState(() {
+//        _item = result;
+//        this._boolInfo = false;
+//      });
+//    }, onError: (error) {
+//      print('fetchAnItem onError: $error');
+//      setState(() {
+//        this._boolInfo = false;
+//      });
+//    }).catchError((error) {
+//      print('fetchAnItem catchError: $error');
+//      setState(() {
+//        this._boolInfo = false;
+//      });
+//    });
   }
 
 //  Calling the fetch method to get the item's stock, second card.
@@ -67,26 +67,26 @@ class _ItemDetailsState extends State<ItemDetails> {
 
     setState(() => this._boolStock = true);
 
-    si
-        .fetchModelItemStock(
-            http.Client(), widget.itemStr, container.local.id, 'L')
-        .timeout(Duration(seconds: Connection.timeOutSec))
-        .then((result) {
-      setState(() {
-        this._boolStock = false;
-
-        this._listItemStock.clear();
-        for (mis.ItemStock i in result) {
-          this._listItemStock.add(i);
-        }
-      });
-    }, onError: (error) {
-      print('fetchModelItemStock onError: $error');
-      setState(() => this._boolStock = false);
-    }).catchError((error) {
-      print('fetchModelItemStock catchError: $error');
-      setState(() => this._boolStock = false);
-    });
+//    si
+//        .fetchItemStock(
+//            http.Client(), widget.itemStr, container.local.id, 'L')
+//        .timeout(Duration(seconds: Connection.timeOutSec))
+//        .then((result) {
+//      setState(() {
+//        this._boolStock = false;
+//
+//        this._listItemStock.clear();
+//        for (mis.ItemStock i in result) {
+//          this._listItemStock.add(i);
+//        }
+//      });
+//    }, onError: (error) {
+//      print('fetchModelItemStock onError: $error');
+//      setState(() => this._boolStock = false);
+//    }).catchError((error) {
+//      print('fetchModelItemStock catchError: $error');
+//      setState(() => this._boolStock = false);
+//    });
   }
 
   void _getItemStockSales(BuildContext context) {
@@ -95,26 +95,26 @@ class _ItemDetailsState extends State<ItemDetails> {
 
     setState(() => this._boolStockSales = true);
 
-    si
-        .fetchModelItemStock(
-            http.Client(), widget.itemStr, container.local.id, 'C')
-        .timeout(Duration(seconds: Connection.timeOutSec))
-        .then((result) {
-      setState(() {
-        this._boolStockSales = false;
-
-        this._listItemSalesStock.clear();
-        for (mis.ItemStock i in result) {
-          this._listItemSalesStock.add(i);
-        }
-      });
-    }, onError: (error) {
-      print('fetchModelItemStock onError: $error');
-      setState(() => this._boolStockSales = false);
-    }).catchError((error) {
-      print('fetchModelItemStock catchError: $error');
-      setState(() => this._boolStockSales = false);
-    });
+//    si
+//        .fetchItemStock(
+//            http.Client(), widget.itemStr, container.local.id, 'C')
+//        .timeout(Duration(seconds: Connection.timeOutSec))
+//        .then((result) {
+//      setState(() {
+//        this._boolStockSales = false;
+//
+//        this._listItemSalesStock.clear();
+//        for (mis.ItemStock i in result) {
+//          this._listItemSalesStock.add(i);
+//        }
+//      });
+//    }, onError: (error) {
+//      print('fetchModelItemStock onError: $error');
+//      setState(() => this._boolStockSales = false);
+//    }).catchError((error) {
+//      print('fetchModelItemStock catchError: $error');
+//      setState(() => this._boolStockSales = false);
+//    });
   }
 
   Container _getCardDummyReload(BuildContext context, String cardType) {

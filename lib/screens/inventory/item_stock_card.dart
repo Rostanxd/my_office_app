@@ -34,23 +34,23 @@ class _ItemStockCardState extends State<ItemStockCard> {
       _itemSelected = itemId;
     });
 
-    si
-        .fetchModelItemStock(
-            http.Client(), itemId, containerLogin.local.id, _tableType)
-        .timeout(Duration(seconds: 30))
-        .then((result) {
-      setState(() {
-        _boolLocal = false;
-        this._listItemStock.clear();
-        for (ms.ItemStock i in result) {
-          this._listItemStock.add(i);
-        }
-      });
-    }, onError: (error) {
-      print('fetchModelItemStock onError: $error');
-    }).catchError((error) {
-      print('fetchModelItemStock catchError: $error');
-    });
+//    si
+//        .fetchItemStock(
+//            http.Client(), itemId, containerLogin.local.id, _tableType)
+//        .timeout(Duration(seconds: 30))
+//        .then((result) {
+//      setState(() {
+//        _boolLocal = false;
+//        this._listItemStock.clear();
+//        for (ms.ItemStock i in result) {
+//          this._listItemStock.add(i);
+//        }
+//      });
+//    }, onError: (error) {
+//      print('fetchModelItemStock onError: $error');
+//    }).catchError((error) {
+//      print('fetchModelItemStock catchError: $error');
+//    });
   }
 
   TextStyle _textStyleStock(
