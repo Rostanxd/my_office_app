@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-
-import 'package:my_office_th_app/blocs/login_local_bloc.dart';
+import 'package:my_office_th_app/blocs/bloc_provider.dart';
+import 'package:my_office_th_app/blocs/login_bloc.dart';
 
 import 'package:my_office_th_app/models/holding.dart';
 import 'package:my_office_th_app/models/local.dart';
 import 'package:my_office_th_app/screens/home/index.dart';
 
 import 'package:my_office_th_app/screens/login/index.dart';
-import 'package:my_office_th_app/screens/login/login_state_container.dart';
 
 class LoginLocalForm extends StatefulWidget {
   @override
@@ -17,42 +16,63 @@ class LoginLocalForm extends StatefulWidget {
 }
 
 class _LoginLocalFormState extends State<LoginLocalForm> {
-  Holding _currentHolding;
-  Local _currentLocal;
+  LoginBloc bloc;
   List<DropdownMenuItem<Holding>> _listDropDownHoldings =
       new List<DropdownMenuItem<Holding>>();
   List<DropdownMenuItem<Local>> _listDropDownLocals =
       new List<DropdownMenuItem<Local>>();
 
+  void _updateDropdownListHolding(List<Holding> _holdingList) {
+    _listDropDownHoldings.clear();
+    _holdingList.map((h) {
+      _listDropDownHoldings
+          .add(new DropdownMenuItem(value: h, child: Text(h.name)));
+    }).toList();
+  }
+
+  void _updateDropdownListLocal(List<Local> _localList) {
+    _listDropDownLocals.clear();
+    _localList.map((l) {
+      _listDropDownLocals
+          .add(new DropdownMenuItem(value: l, child: Text(l.name)));
+    }).toList();
+  }
+
   /// Function to be called from the holding dropdown to change its current value
   void _changeDropDownItemHolding(Holding _holdingSelected) {
-    setState(() {
-      _currentHolding = _holdingSelected;
-      loginLocalBloc.fetchLocal(_currentHolding.id);
-    });
+    bloc.fetchLocal(_holdingSelected.id);
+    bloc.changeCurrentHolding(_holdingSelected);
   }
 
   /// Function to be called from the local dropdown to change its current value
   void _changeDropDownItemLocal(Local _localSelected) {
-    setState(() {
-      this._currentLocal = _localSelected;
-    });
+    bloc.changeCurrentLocal(_localSelected);
   }
 
   @override
   // ignore: must_call_super
-  void initState() {
-    /// Loading DropdownMenuItem for holdings
-    loginLocalBloc.fetchAllHolding();
-
-    /// Loading DropdownMenuItem for locals
-    loginLocalBloc.fetchLocal('0');
-  }
+  void initState() {}
 
   @override
   Widget build(BuildContext context) {
     /// Getting data from the login state container
-    final container = LoginStateContainer.of(context);
+    bloc = BlocProvider.of<LoginBloc>(context);
+
+    /// Loading DropdownMenuItem for holdings
+    bloc.fetchAllHolding();
+
+    /// Loading DropdownMenuItem for locals
+    bloc.fetchLocal('0');
+
+    /// Listener to update the holding dropdown
+    bloc.obsHoldingList.listen((data) {
+      _updateDropdownListHolding(data);
+    });
+
+    /// Listener to update the local dropdown
+    bloc.obsLocalList.listen((data) {
+      _updateDropdownListLocal(data);
+    });
 
     return Container(
       padding: EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0),
@@ -75,12 +95,6 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
     );
   }
 
-  @override
-  // ignore: must_call_super
-  void dispose() {
-    loginLocalBloc.dispose();
-  }
-
   Widget _optionTitleText(String title) {
     return Container(
       margin: EdgeInsets.only(top: 20.0, left: 20.0),
@@ -94,39 +108,58 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
 
   Widget _holdingDropDown() {
     return StreamBuilder(
-        stream: loginLocalBloc.obsHoldingList,
-        builder: (BuildContext context,
-            AsyncSnapshot<List<Holding>> holdingSnapshot) {
+        stream: bloc.holding,
+        builder: (BuildContext context, AsyncSnapshot<Holding> snapshot) {
           return Container(
             child: Center(
-                child: holdingSnapshot.hasData
-                    ? DropdownButton<Holding>(
-                        value: _currentHolding,
-                        items: _listDropDownHoldings,
-                        onChanged: (Holding h) {
-                          _changeDropDownItemHolding(h);
-                        })
-                    : CircularProgressIndicator()),
+                child: snapshot.hasData
+                    ? StreamBuilder(
+                        stream: bloc.obsHoldingList,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<List<Holding>> holdingListSnapshot) {
+                          return holdingListSnapshot.hasData
+                              ? DropdownButton<Holding>(
+                                  value: snapshot.data,
+                                  items: _listDropDownHoldings,
+                                  onChanged: (Holding h) {
+                                    _changeDropDownItemHolding(h);
+                                  },
+                                )
+                              : CircularProgressIndicator();
+                        },
+                      )
+                    : CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                      )),
           );
         });
   }
 
   Widget _localDropDown() {
     return StreamBuilder(
-        stream: loginLocalBloc.obsLocalList,
-        builder:
-            (BuildContext context, AsyncSnapshot<List<Local>> localSnapshot) {
+        stream: bloc.local,
+        builder: (BuildContext context, AsyncSnapshot<Local> snapshot) {
           return Container(
             child: Center(
-              child: localSnapshot.hasData
-                  ? DropdownButton<Local>(
-                      value: _currentLocal,
-                      items: _listDropDownLocals,
-                      onChanged: (Local l) {
-                        _changeDropDownItemLocal(l);
+              child: snapshot.hasData
+                  ? StreamBuilder(
+                      stream: bloc.obsLocalList,
+                      builder: (BuildContext context,
+                          AsyncSnapshot<List<Local>> localListSnapshot) {
+                        return localListSnapshot.hasData
+                            ? DropdownButton<Local>(
+                                value: snapshot.data,
+                                items: _listDropDownLocals,
+                                onChanged: (Local l) {
+                                  _changeDropDownItemLocal(l);
+                                },
+                              )
+                            : CircularProgressIndicator();
                       },
                     )
-                  : CircularProgressIndicator(),
+                  : CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                    ),
             ),
           );
         });
@@ -142,9 +175,6 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
         elevation: 7.0,
         child: GestureDetector(
           onTap: () {
-//            container.updateHolding(this._currentHolding);
-//            container.updateLogin(this._currentLocal);
-
             Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => HomePage()),
                 (Route<dynamic> route) => false);
@@ -173,8 +203,7 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
         elevation: 7.0,
         child: GestureDetector(
           onTap: () {
-//            container.logOut();
-
+            bloc.logOut();
             Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => MyLoginPage()),
                 (Route<dynamic> route) => false);

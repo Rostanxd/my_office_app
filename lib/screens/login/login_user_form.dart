@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:my_office_th_app/blocs/login_user_bloc.dart';
+import 'package:my_office_th_app/blocs/bloc_provider.dart';
+import 'package:my_office_th_app/blocs/login_bloc.dart';
+import 'package:my_office_th_app/models/user.dart';
 import 'package:my_office_th_app/screens/home/index.dart';
 
 class LoginUserForm extends StatefulWidget {
@@ -10,23 +12,34 @@ class LoginUserForm extends StatefulWidget {
 }
 
 class _LoginUserFormState extends State<LoginUserForm> {
+  LoginBloc bloc;
+
   @override
-  // ignore: must_call_super
   void initState() {
-    loginUserBloc.obsUser.listen((data) {
-      _moveNextPage();
-    }, onError: (error) {
-      _showSnackBarMsg(error.toString());
-    });
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    return (new Container(
+    /// Searching for the login bloc in the provider
+    bloc = BlocProvider.of<LoginBloc>(context);
+
+    bloc.obsUser.listen((User user) {
+      _moveNextPage(user);
+    }, onError: (error) {
+      _showSnackBarMsg(error.toString());
+    });
+
+    return (Container(
       padding: EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0),
-      child: new Column(
+      child: Column(
         children: <Widget>[
-          new Form(
+          Form(
               child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
@@ -44,20 +57,13 @@ class _LoginUserFormState extends State<LoginUserForm> {
     ));
   }
 
-  @override
-  // ignore: must_call_super
-  void dispose() {
-    loginUserBloc.dispose();
-    super.dispose();
-  }
-
   /// Field for the user's Id
   Widget _idField() {
     return StreamBuilder(
-      stream: loginUserBloc.id,
+      stream: bloc.id,
       builder: (context, snapshot) {
         return TextField(
-          onChanged: loginUserBloc.changeId,
+          onChanged: bloc.changeId,
           decoration: InputDecoration(
               labelText: 'USER',
               labelStyle: TextStyle(
@@ -75,10 +81,10 @@ class _LoginUserFormState extends State<LoginUserForm> {
   /// Field for the user's password
   Widget _passwordField() {
     return StreamBuilder(
-      stream: loginUserBloc.password,
+      stream: bloc.password,
       builder: (context, snapshot) {
         return TextField(
-          onChanged: loginUserBloc.changePassword,
+          onChanged: bloc.changePassword,
           obscureText: true,
           decoration: InputDecoration(
               labelText: 'PASSWORD',
@@ -115,7 +121,7 @@ class _LoginUserFormState extends State<LoginUserForm> {
   /// Submit button for the form
   Widget _submitButton(BuildContext context) {
     return StreamBuilder(
-        stream: loginUserBloc.submitValid,
+        stream: bloc.submitValid,
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
           return Container(
             height: 40.0,
@@ -129,7 +135,7 @@ class _LoginUserFormState extends State<LoginUserForm> {
               child: GestureDetector(
                 onTap: () {
                   if (snapshot.data != null && snapshot.data) {
-                    loginUserBloc.submit();
+                    bloc.logIn();
                   }
                 },
                 child: Center(
@@ -150,7 +156,7 @@ class _LoginUserFormState extends State<LoginUserForm> {
   /// Streamer to build button login or circular progress indicator
   Widget _streamButtonSubmit(BuildContext context) {
     return StreamBuilder(
-      stream: loginUserBloc.logging,
+      stream: bloc.logging,
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
         return snapshot.hasData
             ? snapshot.data
@@ -165,10 +171,17 @@ class _LoginUserFormState extends State<LoginUserForm> {
     );
   }
 
-  /// Function to call the next page
-  void _moveNextPage() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => HomePage()));
+  /// Function to call the next page, if user have a local
+  /// he will be sent to the home page and updating holding and local streams,
+  /// if he doesn't, sent to the login page with conditional interface (form).
+  void _moveNextPage(User user) {
+    if (user.local.name.isNotEmpty) {
+      bloc.changeCurrentHolding(user.holding);
+      bloc.changeCurrentLocal(user.local);
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => HomePage()),
+              (Route<dynamic> route) => false);
+    }
   }
 
   /// Show a snack bar with a message

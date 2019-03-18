@@ -20,11 +20,11 @@ class HoldingApi {
     Map<String, dynamic> gxResponse = json.decode(response.body);
 
     /// Genexus response structure
-    var responseList = gxResponse['SdtWsManBodegas'] as List;
+    var responseList = gxResponse['SdtWsManHoldings'] as List;
 
     /// Loading the list from the response
-    holdingList = responseList.map((l) {
-      new Holding(l['HldCodigo'], l['HldNombre']);
+    responseList.map((l) {
+      holdingList.add(Holding(l['HldCodigo'], l['HldNombre']));
     }).toList();
 
     return holdingList;

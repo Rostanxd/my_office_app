@@ -25,8 +25,8 @@ class LocalApi {
     var responseList = gxResponse['SdtWsManBodegas'] as List;
 
     /// Loading the list from the response
-    localList = responseList.map((l) {
-      new Local(l['BodCodigo'], l['BodNombre']);
+    responseList.map((l) {
+      localList.add(Local(l['BodCodigo'], l['BodNombre']));
     }).toList();
 
     return localList;
