@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_office_th_app/blocs/login_bloc.dart';
-import 'package:my_office_th_app/models/user.dart';
+import 'package:my_office_th_app/blocs/login_user_bloc.dart';
+import 'package:my_office_th_app/screens/home/index.dart';
 
 class LoginUserForm extends StatefulWidget {
   @override
@@ -10,10 +10,15 @@ class LoginUserForm extends StatefulWidget {
 }
 
 class _LoginUserFormState extends State<LoginUserForm> {
-  bool _login = false;
-
   @override
-  void initState() {}
+  // ignore: must_call_super
+  void initState() {
+    loginUserBloc.obsUser.listen((data) {
+      _moveNextPage();
+    }, onError: (error) {
+      _showSnackBarMsg(error.toString());
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,73 +26,38 @@ class _LoginUserFormState extends State<LoginUserForm> {
       padding: EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0),
       child: new Column(
         children: <Widget>[
-          new Form(child: _buildingColumn(context)),
+          new Form(
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              _idField(),
+              SizedBox(height: 20.0),
+              _passwordField(),
+              SizedBox(height: 5.0),
+              _forgotInkWell(),
+              SizedBox(height: 40.0),
+              _streamButtonSubmit(context)
+            ],
+          )),
         ],
       ),
     ));
   }
 
   @override
+  // ignore: must_call_super
   void dispose() {
-    bloc.dispose();
+    loginUserBloc.dispose();
+    super.dispose();
   }
-
-//  void _checkLogin(BuildContext context) {
-////    Getting data from the item sate container
-//    final container = LoginStateContainer.of(context);
-//
-////    Change the state to true to keep the circle loading
-//    setState(() {
-//      _login = true;
-//    });
-//
-//    var _userLogged = su.fetchUser(http.Client(), _user, _password);
-//
-////    When I have a response from the future, take the result to evaluate.
-//    _userLogged.timeout(new Duration(seconds: Connection.timeOutSec)).then(
-//        (result) {
-//      setState(() {
-//        this._login = false;
-//        if (result != null) {
-//          this._myUser = result;
-//
-//          if (this._myUser.local.id.isEmpty) {
-////            Update the user inherited
-//            container.updateUser(_myUser);
-//          } else {
-////            Update the user and local inherited
-//            container.updateUser(_myUser);
-//            container.updateHolding(_myUser.holding);
-//            container.updateLogin(_myUser.local);
-//
-//            Navigator.push(
-//                context, MaterialPageRoute(builder: (context) => HomePage()));
-//          }
-//        } else {
-//          Scaffold.of(context)
-//              .showSnackBar(SnackBar(content: Text("User login failed!")));
-//        }
-//      });
-//    }, onError: (error) {
-//      setState(() => this._login = false);
-//      Scaffold.of(context)
-//          .showSnackBar(SnackBar(content: Text("Connection time-out!")));
-//    }).catchError((error) {
-//      print(error);
-//
-//      setState(() => this._login = false);
-//      Scaffold.of(context)
-//          .showSnackBar(SnackBar(content: Text("Error connection!")));
-//    });
-//  }
 
   /// Field for the user's Id
   Widget _idField() {
     return StreamBuilder(
-      stream: bloc.id,
+      stream: loginUserBloc.id,
       builder: (context, snapshot) {
         return TextField(
-          onChanged: bloc.changeId,
+          onChanged: loginUserBloc.changeId,
           decoration: InputDecoration(
               labelText: 'USER',
               labelStyle: TextStyle(
@@ -105,10 +75,10 @@ class _LoginUserFormState extends State<LoginUserForm> {
   /// Field for the user's password
   Widget _passwordField() {
     return StreamBuilder(
-      stream: bloc.password,
+      stream: loginUserBloc.password,
       builder: (context, snapshot) {
         return TextField(
-          onChanged: bloc.changePassword,
+          onChanged: loginUserBloc.changePassword,
           obscureText: true,
           decoration: InputDecoration(
               labelText: 'PASSWORD',
@@ -144,88 +114,65 @@ class _LoginUserFormState extends State<LoginUserForm> {
 
   /// Submit button for the form
   Widget _submitButton(BuildContext context) {
-    return Container(
-      height: 40.0,
-      child: Material(
-        borderRadius: BorderRadius.circular(20.0),
-        shadowColor: Color(0xff212121),
-        color: Color(0xff011e41),
-        elevation: 7.0,
-        child: GestureDetector(
-          onTap: () {
-            bloc.submit();
-          },
-          child: Center(
-            child: Text(
-              'LOGIN',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Montserrat'),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Streamer
-  Widget _streamer(BuildContext context) {
     return StreamBuilder(
-        stream: bloc.obsUser,
-        builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
-
-          /// If we have a error in the snapshot
-          if (snapshot.hasError) {
-            Scaffold.of(context)
-                .showSnackBar(new SnackBar(content: Text(snapshot.error)));
-          }
-
-          /// Handle streaming states
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-//              print('Select lot');
-              break;
-            case ConnectionState.waiting:
-//              print('Awaiting bids...');
-              break;
-            case ConnectionState.active:
-              print(snapshot.data.user);
-              break;
-            case ConnectionState.done:
-//              print('\$${snapshot.data} (closed)');
-              break;
-          }
-
-          /// Returning submit button
-          return _submitButton(context);
+        stream: loginUserBloc.submitValid,
+        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+          return Container(
+            height: 40.0,
+            child: Material(
+              borderRadius: BorderRadius.circular(20.0),
+              shadowColor: Color(0xff212121),
+              color: snapshot.data != null
+                  ? snapshot.data ? Color(0xff011e41) : Colors.grey
+                  : Colors.grey,
+              elevation: 7.0,
+              child: GestureDetector(
+                onTap: () {
+                  if (snapshot.data != null && snapshot.data) {
+                    loginUserBloc.submit();
+                  }
+                },
+                child: Center(
+                  child: Text(
+                    'LOGIN',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Montserrat'),
+                  ),
+                ),
+              ),
+            ),
+          );
         });
   }
 
-  /// Function to build te body of the form (column).
-  Widget _buildingColumn(BuildContext context) {
-    Column formColumn = Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: <Widget>[
-        _idField(),
-        SizedBox(height: 20.0),
-        _passwordField(),
-        SizedBox(height: 5.0),
-        _forgotInkWell(),
-        SizedBox(height: 40.0),
-      ],
+  /// Streamer to build button login or circular progress indicator
+  Widget _streamButtonSubmit(BuildContext context) {
+    return StreamBuilder(
+      stream: loginUserBloc.logging,
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        return snapshot.hasData
+            ? snapshot.data
+                ? Container(
+                    height: 40.0,
+                    color: Colors.transparent,
+                    child: CircularProgressIndicator(),
+                  )
+                : _submitButton(context)
+            : _submitButton(context);
+      },
     );
+  }
 
-    if (_login) {
-      formColumn.children.add(Container(
-        height: 40.0,
-        color: Colors.transparent,
-        child: CircularProgressIndicator(),
-      ));
-    } else {
-      formColumn.children.add(_streamer(context));
-    }
+  /// Function to call the next page
+  void _moveNextPage() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => HomePage()));
+  }
 
-    return formColumn;
+  /// Show a snack bar with a message
+  void _showSnackBarMsg(String message) {
+    Scaffold.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 }

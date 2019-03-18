@@ -1,12 +1,12 @@
 import 'dart:async';
 
-class LoginValidator {
+class LoginUserValidator {
   final validateId = StreamTransformer<String, String>.fromHandlers(
     handleData: (id, sink){
       if (id.isNotEmpty) {
         sink.add(id);
       }else{
-        sink.addError('Enter a user!');
+        sink.addError('Enter your user.');
       }
     }
   );
@@ -16,7 +16,7 @@ class LoginValidator {
         if (password.isNotEmpty) {
           sink.add(password);
         }else{
-          sink.addError('Enter the password to continue!');
+          sink.addError('Enter the password to continue.');
         }
       }
   );

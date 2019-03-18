@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:http/http.dart' as http;
+import 'package:my_office_th_app/blocs/login_local_bloc.dart';
 
 import 'package:my_office_th_app/models/holding.dart';
 import 'package:my_office_th_app/models/local.dart';
@@ -8,14 +8,10 @@ import 'package:my_office_th_app/screens/home/index.dart';
 
 import 'package:my_office_th_app/screens/login/index.dart';
 import 'package:my_office_th_app/screens/login/login_state_container.dart';
-import 'package:my_office_th_app/services/fetch_holdings.dart';
-import 'package:my_office_th_app/services/fetch_locals.dart';
-import 'package:my_office_th_app/utils/connection.dart';
 
 class LoginLocalForm extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return _LoginLocalFormState();
   }
 }
@@ -23,85 +19,20 @@ class LoginLocalForm extends StatefulWidget {
 class _LoginLocalFormState extends State<LoginLocalForm> {
   Holding _currentHolding;
   Local _currentLocal;
-  List<Holding> _listHoldings = new List<Holding>();
-  List<Local> _listLocals = new List<Local>();
   List<DropdownMenuItem<Holding>> _listDropDownHoldings =
       new List<DropdownMenuItem<Holding>>();
   List<DropdownMenuItem<Local>> _listDropDownLocals =
       new List<DropdownMenuItem<Local>>();
 
-//  Variables to keep showing the circular progress.
-  bool _boolHolding = false;
-  bool _boolLocals = false;
-
-  void _getHoldings() {
-    setState(() {
-      this._boolHolding = true;
-    });
-
-//    HoldingApi.fetchAllHoldings(http.Client())
-//        .timeout(Duration(seconds: Connection.timeOutSec))
-//        .then((result) {
-//      setState(() {
-//        this._boolHolding = false;
-//
-//        for (Holding h in result) {
-//          this._listHoldings.add(h);
-//        }
-//
-//        for (var _hld in _listHoldings) {
-//          this._listDropDownHoldings.add(
-//              new DropdownMenuItem(value: _hld, child: new Text(_hld.name)));
-//        }
-//
-//        _currentHolding = _listDropDownHoldings[0].value;
-//      });
-//    }, onError: (error) {
-//      print(error);
-//    }).catchError((error) {
-//      print(error);
-//    });
-  }
-
+  /// Function to be called from the holding dropdown to change its current value
   void _changeDropDownItemHolding(Holding _holdingSelected) {
     setState(() {
       _currentHolding = _holdingSelected;
-      _getLocals(_currentHolding.id);
+      loginLocalBloc.fetchLocal(_currentHolding.id);
     });
   }
 
-  void _getLocals(String holdingId) {
-    setState(() {
-      this._boolLocals = true;
-    });
-
-//    LocalApi.fetchLocals(holdingId)
-//        .timeout(Duration(seconds: Connection.timeOutSec))
-//        .then((result) {
-//      setState(() {
-//        this._boolLocals = false;
-//
-////        Updating the list variable for the holdings, and the dropdown
-//        _listLocals.clear();
-//        for (Local l in result) {
-//          _listLocals.add(l);
-//        }
-//
-//        _listDropDownLocals.clear();
-//        for (var _loc in this._listLocals) {
-//          this._listDropDownLocals.add(
-//              new DropdownMenuItem(value: _loc, child: new Text(_loc.name)));
-//        }
-//
-//        _currentLocal = _listDropDownLocals[0].value;
-//      });
-//    }, onError: (error) {
-//      print(error);
-//    }).catchError((error) {
-//      print(error);
-//    });
-  }
-
+  /// Function to be called from the local dropdown to change its current value
   void _changeDropDownItemLocal(Local _localSelected) {
     setState(() {
       this._currentLocal = _localSelected;
@@ -109,20 +40,19 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
   }
 
   @override
+  // ignore: must_call_super
   void initState() {
-//    Loading DropdownMenuItem for holdings
-    this._getHoldings();
+    /// Loading DropdownMenuItem for holdings
+    loginLocalBloc.fetchAllHolding();
 
-//    Loading DropdownMenuItem for locals
-    this._getLocals('0');
+    /// Loading DropdownMenuItem for locals
+    loginLocalBloc.fetchLocal('0');
   }
 
   @override
   Widget build(BuildContext context) {
-//    Getting data from the item sate container
+    /// Getting data from the login state container
     final container = LoginStateContainer.of(context);
-
-    var _circularProgress = CircularProgressIndicator();
 
     return Container(
       padding: EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0),
@@ -130,111 +60,135 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          Container(
-            margin: EdgeInsets.only(
-              top: 20.0,
-              left: 20.0,
-            ),
-            child: Text('Holding',
-                style: TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xff011e41))),
-          ),
+          _optionTitleText('Holding'),
           SizedBox(height: 10.0),
-          Container(
-            child: Center(
-              child: _boolHolding
-                  ? _circularProgress
-                  : DropdownButton<Holding>(
-                      value: _currentHolding,
-                      items: _listDropDownHoldings,
-                      onChanged: (Holding h) {
-                        this._changeDropDownItemHolding(h);
-                      },
-                    ),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(top: 20.0, left: 20.0),
-            child: Text('Local',
-                style: TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xff011e41))),
-          ),
+          _holdingDropDown(),
+          _optionTitleText('Local'),
           SizedBox(height: 10.0),
-          Container(
+          _localDropDown(),
+          SizedBox(height: 40.0),
+          _continueButton(),
+          SizedBox(height: 20.0),
+          _cancelButton(),
+        ],
+      ),
+    );
+  }
+
+  @override
+  // ignore: must_call_super
+  void dispose() {
+    loginLocalBloc.dispose();
+  }
+
+  Widget _optionTitleText(String title) {
+    return Container(
+      margin: EdgeInsets.only(top: 20.0, left: 20.0),
+      child: Text(title,
+          style: TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+              color: Color(0xff011e41))),
+    );
+  }
+
+  Widget _holdingDropDown() {
+    return StreamBuilder(
+        stream: loginLocalBloc.obsHoldingList,
+        builder: (BuildContext context,
+            AsyncSnapshot<List<Holding>> holdingSnapshot) {
+          return Container(
             child: Center(
-              child: _boolLocals
-                  ? _circularProgress
-                  : DropdownButton<Local>(
+                child: holdingSnapshot.hasData
+                    ? DropdownButton<Holding>(
+                        value: _currentHolding,
+                        items: _listDropDownHoldings,
+                        onChanged: (Holding h) {
+                          _changeDropDownItemHolding(h);
+                        })
+                    : CircularProgressIndicator()),
+          );
+        });
+  }
+
+  Widget _localDropDown() {
+    return StreamBuilder(
+        stream: loginLocalBloc.obsLocalList,
+        builder:
+            (BuildContext context, AsyncSnapshot<List<Local>> localSnapshot) {
+          return Container(
+            child: Center(
+              child: localSnapshot.hasData
+                  ? DropdownButton<Local>(
                       value: _currentLocal,
                       items: _listDropDownLocals,
                       onChanged: (Local l) {
-                        this._changeDropDownItemLocal(l);
+                        _changeDropDownItemLocal(l);
                       },
-                    ),
+                    )
+                  : CircularProgressIndicator(),
             ),
-          ),
-          SizedBox(height: 40.0),
-          Container(
-            height: 40.0,
-            child: Material(
-              borderRadius: BorderRadius.circular(20.0),
-              shadowColor: Color(0xff212121),
-              color: Color(0xff011e41),
-              elevation: 7.0,
-              child: GestureDetector(
-                onTap: () {
-                  container.updateHolding(this._currentHolding);
-                  container.updateLogin(this._currentLocal);
+          );
+        });
+  }
 
-                  Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (context) => HomePage()),
-                      (Route<dynamic> route) => false);
-                },
-                child: Center(
-                  child: Text(
-                    'CONTINUE',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Montserrat'),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(height: 20.0),
-          Container(
-            height: 40.0,
-            child: Material(
-              borderRadius: BorderRadius.circular(20.0),
-              shadowColor: Color(0xff212121),
-              color: Color(0xFFeb2227),
-              elevation: 7.0,
-              child: GestureDetector(
-                onTap: () {
-                  container.logOut();
+  Widget _continueButton() {
+    return Container(
+      height: 40.0,
+      child: Material(
+        borderRadius: BorderRadius.circular(20.0),
+        shadowColor: Color(0xff212121),
+        color: Color(0xff011e41),
+        elevation: 7.0,
+        child: GestureDetector(
+          onTap: () {
+//            container.updateHolding(this._currentHolding);
+//            container.updateLogin(this._currentLocal);
 
-                  Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (context) => MyLoginPage()),
-                      (Route<dynamic> route) => false);
-                },
-                child: Center(
-                  child: Text(
-                    'CANCEL',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Montserrat'),
-                  ),
-                ),
-              ),
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => HomePage()),
+                (Route<dynamic> route) => false);
+          },
+          child: Center(
+            child: Text(
+              'CONTINUE',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Montserrat'),
             ),
           ),
-        ],
+        ),
+      ),
+    );
+  }
+
+  Widget _cancelButton() {
+    return Container(
+      height: 40.0,
+      child: Material(
+        borderRadius: BorderRadius.circular(20.0),
+        shadowColor: Color(0xff212121),
+        color: Color(0xFFeb2227),
+        elevation: 7.0,
+        child: GestureDetector(
+          onTap: () {
+//            container.logOut();
+
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => MyLoginPage()),
+                (Route<dynamic> route) => false);
+          },
+          child: Center(
+            child: Text(
+              'CANCEL',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Montserrat'),
+            ),
+          ),
+        ),
       ),
     );
   }
