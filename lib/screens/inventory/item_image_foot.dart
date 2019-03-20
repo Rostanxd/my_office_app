@@ -23,7 +23,6 @@ class ItemImageFoot extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return _ItemImageFootState();
   }
 }
@@ -161,8 +160,6 @@ class _ItemImageFootState extends State<ItemImageFoot> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-
     _row = Row(
       children: <Widget>[
         InkWell(

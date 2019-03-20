@@ -13,11 +13,11 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
   final _id = BehaviorSubject<String>();
   final _password = BehaviorSubject<String>();
   final _logging = BehaviorSubject<bool>();
-  final _userFetcher = PublishSubject<User>();
+  final _user = BehaviorSubject<User>();
   final _local = BehaviorSubject<Local>();
   final _holding = BehaviorSubject<Holding>();
-  final _localList = PublishSubject<List<Local>>();
-  final _holdingList = PublishSubject<List<Holding>>();
+  final _localList = BehaviorSubject<List<Local>>();
+  final _holdingList = BehaviorSubject<List<Holding>>();
   final UserRepository _repository = UserRepository();
   final HoldingRepository _holdingRepository = HoldingRepository();
   final LocalRepository _localRepository = LocalRepository();
@@ -32,15 +32,15 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
 
   Stream<bool> get logging => _logging.stream;
 
-  Stream<Local> get local => _local.stream;
+  ValueObservable<Local> get local => _local.stream;
 
-  Stream<Holding> get holding => _holding.stream;
+  ValueObservable<Holding> get holding => _holding.stream;
 
-  Observable<User> get obsUser => _userFetcher.stream;
+  ValueObservable<User> get user => _user.stream;
 
-  Observable<List<Local>> get obsLocalList => _localList.stream;
+  ValueObservable<List<Local>> get localList => _localList.stream;
 
-  Observable<List<Holding>> get obsHoldingList => _holdingList.stream;
+  ValueObservable<List<Holding>> get holdingList => _holdingList.stream;
 
   /// Add data to stream
   Function(String) get changeId => _id.sink.add;
@@ -60,18 +60,18 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
     await _repository
         .fetchUser(_id.value, _password.value)
         .then((response) {
-          _userFetcher.sink.add(response);
+          _user.sink.add(response);
           _logging.sink.add(false);
         }, onError: (error) {
           ///  If we got an error we add the error to the stream
-          _userFetcher.sink.addError('Login error!');
+          _user.sink.addError('Login error!');
           _logging.sink.add(false);
           print('onError');
         })
         .timeout(Duration(seconds: Connection.timeOutSec))
         .catchError((error) {
           ///  If we got a time out we add the error to the stream
-          _userFetcher.sink.addError(error.toString());
+          _user.sink.addError(error.toString());
           _logging.sink.add(false);
           print('catchError');
         })
@@ -83,8 +83,8 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
     await _holdingRepository
         .fetchAllHoldings()
         .then((response) {
-          _holding.sink.add(response[0]);
           _holdingList.sink.add(response);
+          _holding.sink.add(response[0]);
         }, onError: (error) {
           /// If we got an error we add the error on the stream
           _holdingList.sink.addError('Error loading data!');
@@ -103,8 +103,8 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
     await _localRepository
         .fetchAllLocals(holdingId)
         .then((response) {
-          _local.sink.add(response[0]);
           _localList.sink.add(response);
+          _local.sink.add(response[0]);
         }, onError: (error) {
           /// If we got an error we add the error on the stream
           _localList.sink.addError('Error loading data!');
@@ -124,7 +124,7 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
   }
 
   logOut() {
-    _userFetcher.sink.add(null);
+    _user.sink.add(null);
     changeCurrentLocal(null);
     changeCurrentHolding(null);
   }
@@ -134,7 +134,7 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
   void dispose() {
     _id.close();
     _password.close();
-    _userFetcher.close();
+    _user.close();
     _logging.close();
     _local.close();
     _holding.close();

@@ -1,21 +1,54 @@
 import 'package:flutter/material.dart';
-
-import 'package:my_office_th_app/models/item_stock.dart' as ms;
+import 'package:my_office_th_app/blocs/inventory_bloc.dart';
+import 'package:my_office_th_app/models/item_stock.dart';
 
 class ItemSalesStockCard extends StatefulWidget {
-  final List<ms.ItemStock> listItemStock;
-
-  ItemSalesStockCard(this.listItemStock);
-
   @override
-  State<StatefulWidget> createState() {
-    return _ItemSalesStockCardState();
-  }
+  State<StatefulWidget> createState() => _ItemSalesStockCardState();
 }
 
 class _ItemSalesStockCardState extends State<ItemSalesStockCard> {
   @override
   Widget build(BuildContext context) {
+    return Container(
+      child: Card(
+          elevation: 2.5,
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      margin:
+                      EdgeInsets.only(top: 20.0, left: 20.0, bottom: 5.0),
+                      child: Text(
+                        'Stock and Sales',
+                        style: TextStyle(
+                            fontSize: 16.0, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
+                Divider(),
+                Container(
+                    width: 300.0,
+                    margin: EdgeInsets.only(
+                        top: 5.0, left: 20.0, right: 20.0, bottom: 20.0),
+                    child: StreamBuilder<List<ItemStock>>(
+                      stream: inventoryBloc.itemStockSaleList,
+                      builder: (BuildContext context,
+                          AsyncSnapshot<List<ItemStock>> snapshot) {
+                        if (snapshot.hasError) print(snapshot.error.toString());
+                        return snapshot.hasData ?
+                        _tableStockSales(snapshot.data) : _myCircularProgress();
+                      },
+                    )),
+              ])),
+    );
+  }
+
+  Widget _tableStockSales(List<ItemStock> _itemStockSaleList) {
     var _tableStock = new Table(
       border: TableBorder.all(color: Colors.grey, width: 1.0),
       children: [],
@@ -93,18 +126,19 @@ class _ItemSalesStockCardState extends State<ItemSalesStockCard> {
 
     _tableStock.children.add(_titleRow);
 
-    _tableStock.children.addAll(widget.listItemStock
-        .map((f) => TableRow(children: [
-              Container(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(f.color,
-                      style: TextStyle(
-                          fontSize: 10.0, fontWeight: FontWeight.bold)),
-                ),
-              ),
-              Container(
-                  child: Padding(
+    _tableStock.children.addAll(_itemStockSaleList
+        .map((f) =>
+        TableRow(children: [
+          Container(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(f.color,
+                  style: TextStyle(
+                      fontSize: 10.0, fontWeight: FontWeight.bold)),
+            ),
+          ),
+          Container(
+              child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   f.size,
@@ -113,79 +147,68 @@ class _ItemSalesStockCardState extends State<ItemSalesStockCard> {
                       : TextStyle(fontSize: 10.0),
                 ),
               )),
-              Container(
-                  child: Padding(
+          Container(
+              child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: f.local == 0
                     ? Text('')
                     : Text(
-                        f.local.toString(),
-                        style: f.size == 'Total' || f.color == 'Total'
-                            ? TextStyle(
-                                fontSize: 10.0, fontWeight: FontWeight.bold)
-                            : TextStyle(fontSize: 10.0),
-                      ),
+                  f.local.toString(),
+                  style: f.size == 'Total' || f.color == 'Total'
+                      ? TextStyle(
+                      fontSize: 10.0, fontWeight: FontWeight.bold)
+                      : TextStyle(fontSize: 10.0),
+                ),
               )),
-              Container(
-                  child: Padding(
+          Container(
+              child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: f.others == 0
                     ? Text('')
                     : Text(
-                        f.others.toString(),
-                        style: f.size == 'Total' || f.color == 'Total'
-                            ? TextStyle(
-                                fontSize: 10.0, fontWeight: FontWeight.bold)
-                            : TextStyle(fontSize: 10.0),
-                      ),
+                  f.others.toString(),
+                  style: f.size == 'Total' || f.color == 'Total'
+                      ? TextStyle(
+                      fontSize: 10.0, fontWeight: FontWeight.bold)
+                      : TextStyle(fontSize: 10.0),
+                ),
               )),
-              Container(
-                  child: Padding(
+          Container(
+              child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: InkWell(
                   child: Center(
                       child: f.local == 0 && f.others == 0
                           ? Text('')
                           : Text(
-                              (f.local - f.others).toString(),
-                              style: f.size == 'Total' || f.color == 'Total'
-                                  ? TextStyle(
-                                      fontSize: 10.0,
-                                      fontWeight: FontWeight.bold)
-                                  : TextStyle(fontSize: 10.0),
-                            )),
+                        (f.local - f.others).toString(),
+                        style: f.size == 'Total' || f.color == 'Total'
+                            ? TextStyle(
+                            fontSize: 10.0,
+                            fontWeight: FontWeight.bold)
+                            : TextStyle(fontSize: 10.0),
+                      )),
                   onTap: () {},
                 ),
               )),
-            ]))
+        ]))
         .toList());
 
+    return _tableStock;
+  }
+
+  Widget _myCircularProgress() {
     return Container(
-      child: Card(
-          elevation: 2.5,
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      margin: EdgeInsets.only(top: 20.0, left: 20.0, bottom: 5.0),
-                      child: Text(
-                        'Stock and Sales',
-                        style: TextStyle(
-                            fontSize: 16.0, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
+        height: 80.0,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Container(
+                margin: EdgeInsets.only(
+                  top: 20.0,
                 ),
-                Divider(),
-                Container(
-                    width: 300.0,
-                    margin: EdgeInsets.only(
-                        top: 5.0, left: 20.0, right: 20.0, bottom: 20.0),
-                    child: _tableStock),
-              ])),
-    );
+                child: new CircularProgressIndicator()),
+          ],
+        ));
   }
 }

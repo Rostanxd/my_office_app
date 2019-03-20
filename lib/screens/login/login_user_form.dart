@@ -29,8 +29,10 @@ class _LoginUserFormState extends State<LoginUserForm> {
     /// Searching for the login bloc in the provider
     bloc = BlocProvider.of<LoginBloc>(context);
 
-    bloc.obsUser.listen((User user) {
-      _moveNextPage(user);
+    bloc.user.listen((User user) {
+      if (user != null){
+        _moveNextPage(user);
+      }
     }, onError: (error) {
       _showSnackBarMsg(error.toString());
     });

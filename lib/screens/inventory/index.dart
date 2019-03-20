@@ -2,15 +2,13 @@ import 'package:barcode_scan/barcode_scan.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import 'package:http/http.dart' as http;
-
+import 'package:my_office_th_app/blocs/bloc_provider.dart';
+import 'package:my_office_th_app/blocs/inventory_bloc.dart';
+import 'package:my_office_th_app/blocs/login_bloc.dart';
 import 'package:my_office_th_app/models/item.dart';
 import 'package:my_office_th_app/screens/home/user_drawer.dart';
 import 'package:my_office_th_app/screens/inventory/item_details.dart';
 import 'package:my_office_th_app/screens/inventory/items_style_list_view.dart';
-import 'package:my_office_th_app/screens/login/login_state_container.dart';
-import 'package:my_office_th_app/services/fetch_items.dart';
 
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -22,9 +20,11 @@ class InventoryHome extends StatefulWidget {
 }
 
 class _InventoryHomeState extends State<InventoryHome> {
+  LoginBloc _loginBloc;
+  WebViewController _controller;
   String _barcode = '';
 
-  Future _barcodeScanning(LoginStateContainerState container) async {
+  Future _barcodeScanning() async {
     try {
       var _barcodeRead = await BarcodeScanner.scan();
       setState(() => this._barcode = _barcodeRead);
@@ -44,14 +44,14 @@ class _InventoryHomeState extends State<InventoryHome> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-//    Getting data from the item sate container
-    final container = LoginStateContainer.of(context);
-
-    String holdingId = container.holding.id;
-    String localId = container.local.id;
-
-    WebViewController _contoller;
+    /// Getting login bloc from provider
+    _loginBloc = BlocProvider.of<LoginBloc>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -67,7 +67,7 @@ class _InventoryHomeState extends State<InventoryHome> {
           IconButton(
             icon: Icon(Icons.bookmark_border),
             onPressed: () {
-              _barcodeScanning(container);
+              _barcodeScanning();
             },
           )
         ],
@@ -76,28 +76,30 @@ class _InventoryHomeState extends State<InventoryHome> {
       body: WebView(
         javascriptMode: JavascriptMode.unrestricted,
         initialUrl:
-            'http://info.thgye.com.ec/InvLineasProveedor.html?hldCodigo=$holdingId&bodCodigo=$localId',
+            'http://info.thgye.com.ec/InvLineasProveedor.html?hldCodigo='
+                '${_loginBloc.holding.value.id}&bodCodigo='
+                '${_loginBloc.local.value.id}',
         onWebViewCreated: (WebViewController webViewController) {
-          _contoller = webViewController;
+          _controller = webViewController;
         },
       ),
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.refresh),
           onPressed: () {
-            _contoller.clearCache();
-            _contoller.reload();
+            _controller.clearCache();
+            _controller.reload();
           }),
     );
   }
 }
 
-//  Implementation of search bar.
+///  Implementation of search bar.
 class DataSearch extends SearchDelegate<String> {
   String styleId;
 
   @override
   List<Widget> buildActions(BuildContext context) {
-//    Icon to close the search bar
+    /// Icon to close the search bar
     return [
       IconButton(
         icon: Icon(Icons.clear),
@@ -111,7 +113,7 @@ class DataSearch extends SearchDelegate<String> {
 
   @override
   Widget buildLeading(BuildContext context) {
-//    Leading icon on the left of the app
+    /// Leading icon on the left of the app
     return IconButton(
       icon: AnimatedIcon(
           icon: AnimatedIcons.menu_arrow, progress: transitionAnimation),
@@ -123,39 +125,44 @@ class DataSearch extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
-    //    Show some result based on the selection, in this case the list of items
+    /// Show some result based on the selection, in this case the list of items
     return ItemsStyleListView(this.styleId);
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-//    Show when someone searches for something
-    return query.isEmpty
-        ? Container(
-            margin: EdgeInsets.all(20.0),
-            child: Text(
-              'Insert a Style...',
-              style: TextStyle(fontSize: 16.0),
-            ))
-        : FutureBuilder<List<Item>>(
-//            future: fetchStyles(http.Client(), query),
-            builder:
-                (BuildContext context, AsyncSnapshot<List<Item>> items) {
-              if (!items.hasData) {
-                return Container(
+    /// Show when someone searches for something
+    if (query.isEmpty) {
+      return Container(
+          margin: EdgeInsets.all(20.0),
+          child: Text(
+            'Insert a Style...',
+            style: TextStyle(fontSize: 16.0),
+          ));
+    } else {
+      /// Update the stream
+      inventoryBloc.changeSearchStyle(query);
+
+      /// Fetching styles by query (stream)
+      inventoryBloc.fetchStyles();
+
+      /// Returning the stream builder
+      return StreamBuilder(
+          stream: inventoryBloc.styleList,
+          builder: (BuildContext context, AsyncSnapshot<List<Item>> snapshot) {
+            return snapshot.hasData
+                ? _buildSuggestionItems(snapshot.data)
+                : Container(
                     margin: EdgeInsets.all(20.0),
                     child: Text(
                       'No result',
                       style: TextStyle(fontSize: 16.0),
                     ));
-              }
-
-              return buildSuggestionItems(items.data);
-            },
-          );
+          });
+    }
   }
 
-  Widget buildSuggestionItems(List<Item> items) {
+  Widget _buildSuggestionItems(List<Item> items) {
     return ListView.builder(
       itemBuilder: (context, index) => ListTile(
             onTap: () {

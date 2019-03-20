@@ -69,7 +69,7 @@ class _MyLoginPageState extends State<MyLoginPage> {
 
   Widget _userLogged() {
     return StreamBuilder(
-      stream: bloc.obsUser,
+      stream: bloc.user,
       builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
         return snapshot != null
             ? snapshot.hasData
@@ -85,7 +85,7 @@ class _MyLoginPageState extends State<MyLoginPage> {
 
   Widget _form() {
     return StreamBuilder(
-      stream: bloc.obsUser,
+      stream: bloc.user,
       builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
         return snapshot.hasData ? LoginLocalForm() : LoginUserForm();
       },
@@ -94,7 +94,7 @@ class _MyLoginPageState extends State<MyLoginPage> {
 
   Widget _footPage() {
     return StreamBuilder(
-      stream: bloc.obsUser,
+      stream: bloc.user,
       builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
         return snapshot.hasData
             ? Text('')

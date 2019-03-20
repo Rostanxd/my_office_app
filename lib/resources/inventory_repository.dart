@@ -1,9 +1,10 @@
 import 'dart:async';
 
 import 'package:my_office_th_app/models/item.dart';
+import 'package:my_office_th_app/models/item_stock.dart';
 import 'package:my_office_th_app/services/fetch_items.dart';
 
-class ItemRepository {
+class InventoryRepository {
   final itemApi = ItemApi();
 
   Future<List<Item>> fetchItems(String itemId, String styleId) =>
@@ -13,5 +14,9 @@ class ItemRepository {
       itemApi.fetchStyles(styleId);
 
   Future<Item> fetchItem(String itemId, String styleId) =>
-      fetchItem(itemId, styleId);
+      itemApi.fetchItem(itemId, styleId);
+
+  Future<List<ItemStock>> fetchItemStock(
+          String itemId, String localId, String type) =>
+      itemApi.fetchItemStock(itemId, localId, type);
 }

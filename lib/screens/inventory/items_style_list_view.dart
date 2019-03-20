@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:http/http.dart' as http;
-
-import 'package:my_office_th_app/models/item.dart' as mi;
-import 'package:my_office_th_app/services/fetch_items.dart' as si;
-
+import 'package:my_office_th_app/blocs/inventory_bloc.dart';
 import 'package:my_office_th_app/screens/inventory/item_details.dart';
+import 'package:my_office_th_app/models/item.dart';
 
 class ItemsStyleListView extends StatefulWidget {
   final String styleId;
@@ -14,68 +11,47 @@ class ItemsStyleListView extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return _ItemsStyleListViewState();
   }
 }
 
 class _ItemsStyleListViewState extends State<ItemsStyleListView> {
-  List<mi.Item> _listItem = new List<mi.Item>();
-  bool _boolStyle = false;
-
-  void _getItemsStyle() {
-    setState(() {
-      this._boolStyle = true;
-    });
-
-//    si
-//        .fetchItems(http.Client(), '', widget.styleId)
-//        .timeout(Duration(seconds: 15))
-//        .then((result) {
-//      setState(() {
-//        this._boolStyle = false;
-//      });
-//
-//      for (mi.Item _itm in result) {
-//        this._listItem.add(_itm);
-//      }
-//    }, onError: (error) {
-//      print(error);
-//    }).catchError((error) {
-//      print(error);
-//    });
-  }
-
   @override
   void initState() {
-    this._getItemsStyle();
+    inventoryBloc.fetchItemsStyle('', widget.styleId);
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return _boolStyle
-        ? Center(
-            child: CircularProgressIndicator(),
-          )
-        : ListView.builder(
-            itemBuilder: (context, index) => ListTile(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ItemDetails(
-                                this._listItem[index].itemId)));
-                  },
-                  leading: Icon(Icons.open_in_new),
-                  title: Text(this._listItem[index].itemId),
-                  subtitle: Text(
-                    this._listItem[index].styleName +
-                        ' / ' +
-                        this._listItem[index].lineName,
-                    style: TextStyle(fontSize: 10.00),
-                  ),
-                ),
-            itemCount: this._listItem.length,
-          );
+    return StreamBuilder(
+      stream: inventoryBloc.itemList,
+      builder: (BuildContext context, AsyncSnapshot<List<Item>> snapshot) {
+        return snapshot.hasData
+            ? ListView.builder(
+                itemBuilder: (context, index) => ListTile(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    ItemDetails(snapshot.data[index].itemId)));
+                      },
+                      leading: Icon(Icons.open_in_new),
+                      title: Text(snapshot.data[index].itemId),
+                      subtitle: Text(
+                        snapshot.data[index].styleName +
+                            ' / ' +
+                            snapshot.data[index].lineName,
+                        style: TextStyle(fontSize: 10.00),
+                      ),
+                    ),
+                itemCount: snapshot.data.length,
+              )
+            : Center(
+                child: CircularProgressIndicator(),
+              );
+      },
+    );
   }
 }

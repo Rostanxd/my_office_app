@@ -24,18 +24,16 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
 
   void _updateDropdownListHolding(List<Holding> _holdingList) {
     _listDropDownHoldings.clear();
-    _holdingList.map((h) {
-      _listDropDownHoldings
-          .add(new DropdownMenuItem(value: h, child: Text(h.name)));
-    }).toList();
+    _listDropDownHoldings = _holdingList
+        .map((h) => DropdownMenuItem(value: h, child: Text(h.name)))
+        .toList();
   }
 
   void _updateDropdownListLocal(List<Local> _localList) {
     _listDropDownLocals.clear();
-    _localList.map((l) {
-      _listDropDownLocals
-          .add(new DropdownMenuItem(value: l, child: Text(l.name)));
-    }).toList();
+    _listDropDownLocals = _localList
+        .map((l) => DropdownMenuItem(value: l, child: Text(l.name)))
+        .toList();
   }
 
   /// Function to be called from the holding dropdown to change its current value
@@ -65,12 +63,12 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
     bloc.fetchLocal('0');
 
     /// Listener to update the holding dropdown
-    bloc.obsHoldingList.listen((data) {
+    bloc.holdingList.listen((data) {
       _updateDropdownListHolding(data);
     });
 
     /// Listener to update the local dropdown
-    bloc.obsLocalList.listen((data) {
+    bloc.localList.listen((data) {
       _updateDropdownListLocal(data);
     });
 
@@ -114,7 +112,8 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
             child: Center(
                 child: snapshot.hasData
                     ? StreamBuilder(
-                        stream: bloc.obsHoldingList,
+                        stream: bloc.holdingList,
+                        initialData: bloc.holdingList.value,
                         builder: (BuildContext context,
                             AsyncSnapshot<List<Holding>> holdingListSnapshot) {
                           return holdingListSnapshot.hasData
@@ -143,7 +142,8 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
             child: Center(
               child: snapshot.hasData
                   ? StreamBuilder(
-                      stream: bloc.obsLocalList,
+                      stream: bloc.localList,
+                      initialData: bloc.localList.value,
                       builder: (BuildContext context,
                           AsyncSnapshot<List<Local>> localListSnapshot) {
                         return localListSnapshot.hasData

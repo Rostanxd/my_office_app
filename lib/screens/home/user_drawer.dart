@@ -1,74 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:my_office_th_app/blocs/bloc_provider.dart';
+import 'package:my_office_th_app/blocs/login_bloc.dart';
+import 'package:my_office_th_app/models/local.dart';
+import 'package:my_office_th_app/models/user.dart';
 
 import 'package:my_office_th_app/screens/home/index.dart';
 import 'package:my_office_th_app/screens/inventory/index.dart';
 import 'package:my_office_th_app/screens/login/index.dart';
-import 'package:my_office_th_app/screens/login/login_state_container.dart';
 
+// ignore: must_be_immutable
 class UserDrawer extends StatelessWidget {
+  LoginBloc bloc;
+
   @override
   Widget build(BuildContext context) {
-//    Getting data from the item sate container
-    final container = LoginStateContainer.of(context);
+    /// Searching for the login bloc in the provider
+    bloc = BlocProvider.of<LoginBloc>(context);
 
     return Drawer(
       child: new ListView(
         children: <Widget>[
-          new DrawerHeader(
-            child: Row(
-              children: <Widget>[
-                Container(
-                  height: 60.0,
-                  width: 60.0,
-                  margin: EdgeInsets.only(left: 0.0),
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: AssetImage('assets/img/people.jpg'))),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      margin: EdgeInsets.only(
-                        top: 40.0,
-                        left: 20.0,
-                      ),
-                      child: Text(
-                        container.user != null ? container.user.name : '',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14.0),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(
-                        top: 10.0,
-                        left: 20.0,
-                      ),
-                      child: Text(
-                        container.local != null ? container.local.name : '',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14.0),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-//                    color: Color(0xff011e41),
-                image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: AssetImage('assets/img/drawer_image.jpg'))),
-          ),
-          new Divider(),
-          new ListTile(
+          _header(),
+          Divider(),
+          ListTile(
               title: new Text("Inventario"),
               trailing: new Icon(Icons.apps),
               onTap: () {
@@ -76,7 +30,7 @@ class UserDrawer extends StatelessWidget {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => InventoryHome()));
               }),
-          new ListTile(
+          ListTile(
               title: new Text("CRM"),
               trailing: new Icon(Icons.people),
               onTap: () {
@@ -84,8 +38,8 @@ class UserDrawer extends StatelessWidget {
                 Scaffold.of(context).showSnackBar(
                     new SnackBar(content: Text('In developing, hold on!')));
               }),
-          new Divider(),
-          new ListTile(
+          Divider(),
+          ListTile(
               title: new Text("Inicio"),
               trailing: new Icon(Icons.home),
               onTap: () {
@@ -93,19 +47,87 @@ class UserDrawer extends StatelessWidget {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => HomePage()));
               }),
-          new ListTile(
+          ListTile(
               title: new Text("Salir"),
               trailing: new Icon(Icons.exit_to_app),
               onTap: () {
-//                Function to set null user and local
-                container.logOut();
-
+                /// Function to set null user and local
+                bloc.logOut();
                 Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => MyLoginPage()),
-                    (Route<dynamic> route) => false);
+                        (Route<dynamic> route) => false);
               }),
         ],
       ),
+    );
+  }
+
+  Widget _header() {
+    return DrawerHeader(
+      child: Row(
+        children: <Widget>[
+          Container(
+            height: 60.0,
+            width: 60.0,
+            margin: EdgeInsets.only(left: 0.0),
+            decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: AssetImage('assets/img/people.jpg'))),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.only(
+                  top: 40.0,
+                  left: 20.0,
+                ),
+                child: StreamBuilder(
+                    stream: bloc.user,
+                    builder:
+                        (BuildContext context, AsyncSnapshot<User> snapshot) {
+                      return snapshot.hasData
+                          ? Text(
+                              snapshot.data.name,
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14.0),
+                            )
+                          : CircularProgressIndicator();
+                    }),
+              ),
+              Container(
+                margin: EdgeInsets.only(
+                  top: 10.0,
+                  left: 20.0,
+                ),
+                child: StreamBuilder(
+                    stream: bloc.local,
+                    builder:
+                        (BuildContext context, AsyncSnapshot<Local> snapshot) {
+                      return snapshot.hasData
+                          ? Text(
+                              snapshot.data.name,
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14.0),
+                            )
+                          : CircularProgressIndicator();
+                    }),
+              ),
+            ],
+          ),
+        ],
+      ),
+      decoration: BoxDecoration(
+          shape: BoxShape.rectangle,
+          image: DecorationImage(
+              fit: BoxFit.cover,
+              image: AssetImage('assets/img/drawer_image.jpg'))),
     );
   }
 }

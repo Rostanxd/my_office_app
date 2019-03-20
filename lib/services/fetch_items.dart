@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import 'package:my_office_th_app/models/item.dart';
+import 'package:my_office_th_app/models/item_stock.dart';
 import 'package:my_office_th_app/utils/connection.dart';
 
 class ItemApi {
@@ -21,7 +22,7 @@ class ItemApi {
     Map<String, dynamic> gxResponse = json.decode(response.body);
 
     /// Genexus response structure
-    var responseList = gxResponse['SdtWsManBodegas'] as List;
+    var responseList = gxResponse['SdtItems'] as List;
 
     /// Loading the list from the response
     itemList = responseList.map((l) => Item.fromJson(l)).toList();
@@ -30,6 +31,7 @@ class ItemApi {
   }
 
   Future<List<Item>> fetchStyles(String styleId) async {
+    print('fetchStyles >> ' + styleId);
     List<Item> itemList = new List<Item>();
     final response = await _httpClient.post(Connection.host + '/rest/WsEstilo',
         headers: {"Content-Type": "application/json"},
@@ -37,13 +39,13 @@ class ItemApi {
           "styleId": "$styleId",
         }));
 
-    print('fetchStyles >> ' + response.body);
+    print('fetchStyles << ' + response.body);
 
     /// To get easily the gx response
     Map<String, dynamic> gxResponse = json.decode(response.body);
 
     /// Genexus response structure
-    var responseList = gxResponse['SdtWsManBodegas'] as List;
+    var responseList = gxResponse['SdtItems'] as List;
 
     /// Loading the list from the response
     itemList = responseList.map((l) => Item.fromJson(l)).toList();
@@ -52,12 +54,14 @@ class ItemApi {
   }
 
   Future<Item> fetchItem(String itemId, String styleId) async {
+    print('fetchItem >> $itemId $styleId');
+
     Item item;
     final response = await _httpClient.post(Connection.host + '/rest/WsItem',
         headers: {"Content-Type": "application/json"},
         body: json.encode({"itemId": "$itemId", "styleId": "$styleId"}));
 
-    print('fetchItem >> ' + response.body);
+    print('fetchItem << ' + response.body);
 
     /// To get easily the gx response
     Map<String, dynamic> gxResponse = json.decode(response.body);
@@ -76,5 +80,32 @@ class ItemApi {
         gxResponse['SdtItems'][0]['rank']);
 
     return item;
+  }
+
+  Future<List<ItemStock>> fetchItemStock(
+      String itemId, String localId, String type) async {
+    print('fetchItemStock >> $itemId $localId $type');
+
+    List<ItemStock> itemStockList = new List<ItemStock>();
+    var response = await _httpClient.post(Connection.host + '/rest/WsItemStock',
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(
+            {"itemId": "$itemId", "BodCodigo": "$localId", "type": "$type"}));
+
+    print('fetchItemStock << ' + response.body);
+
+    /// To get easily the gx response
+    Map<String, dynamic> gxResponse = json.decode(response.body);
+
+    /// Genexus response structure
+    var responseList = gxResponse['sdt_inv_estilos_app'] as List;
+
+    /// Loading the list from the response
+    responseList.map((l) {
+      itemStockList.add(ItemStock(l['Color'], l['Talla'], int.parse(l['StockLocal']),
+          int.parse(l['StockOtros']), l['ItmCodigo']));
+    }).toList();
+
+    return itemStockList;
   }
 }
