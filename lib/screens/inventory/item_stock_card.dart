@@ -15,6 +15,7 @@ class _ItemStockCardState extends State<ItemStockCard> {
 
   @override
   void initState() {
+    inventoryBloc.changeLoadingData(false);
     super.initState();
   }
 
@@ -38,7 +39,7 @@ class _ItemStockCardState extends State<ItemStockCard> {
       child: Card(
           elevation: 5.0,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -62,11 +63,11 @@ class _ItemStockCardState extends State<ItemStockCard> {
                     margin: EdgeInsets.only(top: 20.0, left: 20.0, bottom: 5.0),
                     child: Text(
                       _tableType == 'L'
-                          ? 'Stock in local'
+                          ? 'Saldos en el local'
                               ''
-                          : 'Stock of ' + inventoryBloc.itemId.value,
-                      style:
-                          TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                          : 'Saldos de ' + inventoryBloc.itemId.value,
+                      style: TextStyle(
+                          fontSize: 16.0, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
@@ -81,21 +82,37 @@ class _ItemStockCardState extends State<ItemStockCard> {
                           stream: inventoryBloc.itemStockLocalList,
                           builder: (BuildContext context,
                               AsyncSnapshot<List<ItemStock>> snapshot) {
-                            if (snapshot.hasError)
+                            if (snapshot.hasError) {
                               print(snapshot.error.toString());
+                              return Center(child: Text(snapshot.error));
+                            }
                             return snapshot.hasData
                                 ? _tableStockLocal()
                                 : _myCircularProgress();
                           },
                         )
-                      : StreamBuilder<List<ItemStock>>(
-                          stream: inventoryBloc.itemStockAllList,
+                      : StreamBuilder<bool>(
+                          stream: inventoryBloc.loadingData,
                           builder: (BuildContext context,
-                              AsyncSnapshot<List<ItemStock>> snapshot) {
+                              AsyncSnapshot<bool> snapshot) {
                             if (snapshot.hasError)
                               print(snapshot.error.toString());
-                            return snapshot.hasData
-                                ? _tableStockAll(snapshot.data)
+                            return snapshot.hasData && !snapshot.data
+                                ? StreamBuilder<List<ItemStock>>(
+                                    stream: inventoryBloc.itemStockAllList,
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot<List<ItemStock>>
+                                            snapshot) {
+                                      if (snapshot.hasError) {
+                                        print(snapshot.error.toString());
+                                        return Center(
+                                            child: Text(snapshot.error));
+                                      }
+                                      return snapshot.hasData
+                                          ? _tableStockAll(snapshot.data)
+                                          : _myCircularProgress();
+                                    },
+                                  )
                                 : _myCircularProgress();
                           },
                         )),
@@ -133,7 +150,7 @@ class _ItemStockCardState extends State<ItemStockCard> {
               padding: const EdgeInsets.all(8.0),
               child: Center(
                 child: Text(
-                  'Size',
+                  'Talla',
                   style: TextStyle(
                       color: Colors.white, fontWeight: FontWeight.bold),
                 ),
@@ -159,7 +176,7 @@ class _ItemStockCardState extends State<ItemStockCard> {
               padding: const EdgeInsets.all(8.0),
               child: Center(
                 child: Text(
-                  'Others',
+                  'Otros',
                   style: TextStyle(
                       color: Colors.white, fontWeight: FontWeight.bold),
                 ),
@@ -199,7 +216,7 @@ class _ItemStockCardState extends State<ItemStockCard> {
                     child: InkWell(
                       child: Center(
                         child: Text(f.local == 0 ? '' : f.local.toString(),
-                            style: _textStyleStock(f)),
+                            style: _textStyleStock(f, 'L')),
                       ),
                       onTap: () {},
                     ),
@@ -214,7 +231,7 @@ class _ItemStockCardState extends State<ItemStockCard> {
                       child: Center(
                           child: Text(
                         f.others == 0 ? '' : f.others.toString(),
-                        style: _textStyleStock(f),
+                        style: _textStyleStock(f, 'O'),
                       )),
                       onTap: () {
                         if (f.itemId.isNotEmpty) {
@@ -300,21 +317,25 @@ class _ItemStockCardState extends State<ItemStockCard> {
     return _tableStock;
   }
 
-  TextStyle _textStyleStock(ItemStock _itemStock) {
-    if (_itemStock.color == 'Total General') {
+  /// Function to return a parameterized text style.
+  TextStyle _textStyleStock(ItemStock _itemStock, String _column) {
+    if (_itemStock.color == 'Total General')
       return TextStyle(
           color: Colors.black, fontWeight: FontWeight.bold, fontSize: 11.0);
-    }
 
-    if (_itemStock.size == 'Total') {
+    if (_itemStock.size == 'Total')
       return TextStyle(
           color: Colors.black, fontWeight: FontWeight.bold, fontSize: 11.0);
-    }
 
-    if (_itemStock.itemId == inventoryBloc.item.value.itemId) {
+    if (_itemStock.itemId == inventoryBloc.item.value.itemId)
       return TextStyle(
           color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11.0);
-    }
+
+    if (_itemStock.color != 'Total' && _column == 'O')
+      return TextStyle(
+          color: Colors.blueAccent,
+          fontWeight: FontWeight.bold,
+          fontSize: 11.0);
 
     return TextStyle(color: Colors.black, fontSize: 10.0);
   }

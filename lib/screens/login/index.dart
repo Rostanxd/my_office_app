@@ -26,16 +26,25 @@ class _MyLoginPageState extends State<MyLoginPage> {
     bloc = BlocProvider.of<LoginBloc>(context);
 
     return Scaffold(
-        resizeToAvoidBottomPadding: false,
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        resizeToAvoidBottomPadding: true,
+        appBar: AppBar(
+          title: Text(''),
+          backgroundColor: Color(0xff011e41),
+        ),
+        drawer: _infoDrawer(context),
+        body: ListView(
           children: <Widget>[
-            _header(),
-            SizedBox(height: 15.0),
-            _userLogged(),
-            _form(),
-            SizedBox(height: 15.0),
-            _footPage()
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                _header(),
+                SizedBox(height: 15.0),
+                _userLogged(),
+                _form(),
+                SizedBox(height: 15.0),
+                _footPage()
+              ],
+            ),
           ],
         ));
   }
@@ -45,17 +54,17 @@ class _MyLoginPageState extends State<MyLoginPage> {
       child: Stack(
         children: <Widget>[
           Container(
-            padding: EdgeInsets.fromLTRB(15.0, 110.0, 0.0, 0.0),
+            padding: EdgeInsets.fromLTRB(15.0, 40.0, 0.0, 0.0),
             child: Text('Smart Sales',
                 style: TextStyle(fontSize: 60.0, fontWeight: FontWeight.bold)),
           ),
           Container(
-            padding: EdgeInsets.fromLTRB(16.0, 175.0, 0.0, 0.0),
+            padding: EdgeInsets.fromLTRB(16.0, 100.0, 0.0, 0.0),
             child: Text('Force',
                 style: TextStyle(fontSize: 60.0, fontWeight: FontWeight.bold)),
           ),
           Container(
-            padding: EdgeInsets.fromLTRB(175.0, 175.0, 0.0, 0.0),
+            padding: EdgeInsets.fromLTRB(175.0, 100.0, 0.0, 0.0),
             child: Text('.',
                 style: TextStyle(
                     fontSize: 60.0,
@@ -71,13 +80,14 @@ class _MyLoginPageState extends State<MyLoginPage> {
     return StreamBuilder(
       stream: bloc.user,
       builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
-        return snapshot != null
-            ? snapshot.hasData
-                ? Center(
-                    child: Container(
-                    child: Text(snapshot.data.name),
-                  ))
-                : Text('')
+        return snapshot.hasData
+            ? Center(
+                child: Container(
+                child: Text(
+                  snapshot.data.name,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+                ),
+              ))
             : Text('');
       },
     );
@@ -102,16 +112,17 @@ class _MyLoginPageState extends State<MyLoginPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    'New to app ?',
+                    'Nuevo en la app ?',
                     style: TextStyle(fontFamily: 'Montserrat'),
                   ),
                   SizedBox(width: 5.0),
                   InkWell(
                     onTap: () {
-                      Navigator.of(context).pushNamed('/signup');
+                      Scaffold.of(context).showSnackBar(
+                          SnackBar(content: Text('En desarrollo!')));
                     },
                     child: Text(
-                      'Register',
+                      'Regístrate',
                       style: TextStyle(
                           color: Color(0xFFeb2227),
                           fontFamily: 'Montserrat',
@@ -123,5 +134,31 @@ class _MyLoginPageState extends State<MyLoginPage> {
               );
       },
     );
+  }
+
+  Widget _infoDrawer(BuildContext context) {
+    return Drawer(
+        child: new ListView(children: <Widget>[
+      DrawerHeader(
+          child: Text(
+            'Configuración',
+            style: TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.white),
+          ),
+          decoration: BoxDecoration(
+              shape: BoxShape.rectangle,
+              image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: AssetImage('assets/img/drawer_image.jpg')))),
+      Divider(),
+      ListTile(
+          title: new Text("Sobre el dispositivo"),
+          trailing: new Icon(Icons.info),
+          onTap: () {
+            Navigator.pushNamed(context, '/device_info');
+          }),
+    ]));
   }
 }

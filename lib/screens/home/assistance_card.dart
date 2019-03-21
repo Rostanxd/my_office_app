@@ -48,6 +48,7 @@ class _AssistanceCardState extends State<AssistanceCard> {
           child: Column(
             children: <Widget>[
               _cardHeader(),
+              Divider(),
               _cardBody(),
             ],
           )),
@@ -56,10 +57,12 @@ class _AssistanceCardState extends State<AssistanceCard> {
 
   Widget _cardHeader() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Container(
-          margin: EdgeInsets.only(top: 20.0, left: 20.0, bottom: 10.0),
-          child: Text('Assistance',
+          margin:
+              EdgeInsets.only(top: 20.0, left: 20.0, bottom: 10.0, right: 20.0),
+          child: Text('Asistencia',
               style: TextStyle(
                   fontSize: 18.0,
                   fontWeight: FontWeight.bold,
@@ -70,19 +73,22 @@ class _AssistanceCardState extends State<AssistanceCard> {
             builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
               return snapshot.hasData
                   ? Container(
-                      margin:
-                          EdgeInsets.only(top: 20.0, left: 10.0, bottom: 10.0),
+                      margin: EdgeInsets.only(
+                          top: 20.0, left: 10.0, bottom: 10.0, right: 20.0),
                       child: Text(snapshot.data,
                           style: TextStyle(
                               fontSize: 18.0, color: Color(0xff011e41))),
                     )
-                  : Text('No data');
+                  : Text('No hay datos');
             }),
         Container(
-          margin: EdgeInsets.only(top: 20.0, left: 10.0, bottom: 10.0),
-          child: RaisedButton(
-            onPressed: _selectDate,
-            child: Text('Search'),
+          margin:
+              EdgeInsets.only(top: 20.0, left: 20.0, bottom: 10.0, right: 20.0),
+          child: InkWell(
+            child: Icon(Icons.search),
+            onTap: () {
+              _selectDate();
+            },
           ),
         )
       ],
@@ -100,19 +106,18 @@ class _AssistanceCardState extends State<AssistanceCard> {
                 bottom: 20.0,
               ),
               height: 40.0,
-              child: Text(snapshot.error.toString()));
+              child: Text(snapshot.error));
         }
         return snapshot.hasData
             ? Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  SizedBox(height: 15.0),
                   Row(
                     children: <Widget>[
-                      AssistanceCardHour('assets/img/beach.jpeg', 'Entrance',
+                      AssistanceCardHour('assets/img/entrance.jpg', 'Entrada',
                           snapshot.data.entryHour, snapshot.data.entryMsg),
                       AssistanceCardHour(
-                          'assets/img/girl.jpg',
+                          'assets/img/lunch_out.jpg',
                           'Lunch-Out',
                           snapshot.data.lunchOutHour,
                           snapshot.data.lunchOutMsg),
@@ -120,9 +125,9 @@ class _AssistanceCardState extends State<AssistanceCard> {
                   ),
                   Row(
                     children: <Widget>[
-                      AssistanceCardHour('assets/img/mountain.jpeg', 'Lunch-In',
+                      AssistanceCardHour('assets/img/lunch_in.jpg', 'Lunch-In',
                           snapshot.data.lunchInHour, snapshot.data.lunchInMsg),
-                      AssistanceCardHour('assets/img/people.jpg', 'Exit',
+                      AssistanceCardHour('assets/img/exit.jpg', 'Salida',
                           snapshot.data.exitHour, snapshot.data.exitMsg),
                     ],
                   ),
@@ -132,14 +137,14 @@ class _AssistanceCardState extends State<AssistanceCard> {
                       children: <Widget>[
                         FlatButton(
                           child: const Text(
-                            'RECLAIM',
+                            'JUSTIFICAR',
                             style: TextStyle(
                               color: Color(0xFFeb2227),
                             ),
                           ),
                           onPressed: () {
                             Scaffold.of(context).showSnackBar(
-                                SnackBar(content: Text('On development!')));
+                                SnackBar(content: Text('En desarrollo!')));
                           },
                         ),
                       ],

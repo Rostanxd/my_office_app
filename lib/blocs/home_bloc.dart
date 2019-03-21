@@ -2,10 +2,11 @@ import 'package:my_office_th_app/blocs/bloc_base.dart';
 import 'package:my_office_th_app/blocs/home_validator.dart';
 import 'package:my_office_th_app/models/assistance.dart';
 import 'package:my_office_th_app/resources/home_repository.dart';
+import 'package:my_office_th_app/utils/connection.dart';
 import 'package:rxdart/rxdart.dart';
 
 class HomeBloc extends Object with HomeValidator implements BlocBase {
-  final _assistanceFetcher = BehaviorSubject<Assistance>();
+  final _assistance = BehaviorSubject<Assistance>();
   final _dateToFind = BehaviorSubject<String>();
   final HomeRepository _repository = HomeRepository();
 
@@ -13,27 +14,35 @@ class HomeBloc extends Object with HomeValidator implements BlocBase {
   Stream<String> get dateToFind => _dateToFind.stream.transform(validateDate);
 
   /// To observe the stream
-  Observable<Assistance> get allAssistance => _assistanceFetcher.stream;
+  Observable<Assistance> get allAssistance => _assistance.stream;
 
   /// Add data to stream
   Function(String) get changeDateToFind => _dateToFind.sink.add;
 
   /// To call de api
   fetchAssistance(String employeeId) async {
-    await _repository.fetchDateAssistance(_dateToFind.value, employeeId).then((response) {
-      _assistanceFetcher.sink.add(response);
-    }, onError: (error){
+    _assistance.sink.add(null);
+    await _repository
+        .fetchDateAssistance(_dateToFind.value, employeeId)
+        .timeout(Duration(seconds: Connection.timeOutSec))
+        .then((response) {
+      _assistance.sink.add(response);
+    }, onError: (error) {
       print('fetchDateAssistance << ' + error.toString());
-      _assistanceFetcher.sink.addError('No data');
-    }).catchError((error){
-      print('fetchDateAssistance << ' +error.toString());
-      _assistanceFetcher.sink.addError(error.toString());
+      if (error.runtimeType == RangeError) {
+        _assistance.sink.addError('No hay datos.');
+      } else {
+        _assistance.sink.addError(error.runtimeType.toString());
+      }
+    }).catchError((error) {
+      print('fetchDateAssistance << ' + error.toString());
+      _assistance.sink.addError(error.runtimeType.toString());
     });
   }
 
   /// To close the stream
   dispose() {
-    _assistanceFetcher.close();
+    _assistance.close();
     _dateToFind.close();
   }
 }

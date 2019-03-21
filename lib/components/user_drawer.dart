@@ -36,9 +36,15 @@ class UserDrawer extends StatelessWidget {
               onTap: () {
                 Navigator.pop(context);
                 Scaffold.of(context).showSnackBar(
-                    new SnackBar(content: Text('In developing, hold on!')));
+                    new SnackBar(content: Text('En desarrollo!')));
               }),
           Divider(),
+          ListTile(
+              title: new Text("Dispositivo"),
+              trailing: new Icon(Icons.info),
+              onTap: () {
+                Navigator.pushNamed(context, '/device_info');
+              }),
           ListTile(
               title: new Text("Inicio"),
               trailing: new Icon(Icons.home),
@@ -46,6 +52,14 @@ class UserDrawer extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => HomePage()));
+              }),
+          ListTile(
+              title: new Text("Cambiar Local"),
+              trailing: new Icon(Icons.location_on),
+              onTap: () {
+                Navigator.pop(context);
+                Scaffold.of(context).showSnackBar(
+                    SnackBar(content: Text('En desarrollo!')));
               }),
           ListTile(
               title: new Text("Salir"),
@@ -56,6 +70,15 @@ class UserDrawer extends StatelessWidget {
                 Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => MyLoginPage()),
                         (Route<dynamic> route) => false);
+              }),
+          Divider(),
+          ListTile(
+              title: new Text("Configuración"),
+              trailing: new Icon(Icons.settings),
+              onTap: () {
+                Navigator.pop(context);
+                Scaffold.of(context).showSnackBar(
+                    SnackBar(content: Text('En desarrollo!')));
               }),
         ],
       ),
@@ -90,12 +113,12 @@ class UserDrawer extends StatelessWidget {
                         (BuildContext context, AsyncSnapshot<User> snapshot) {
                       return snapshot.hasData
                           ? Text(
-                              snapshot.data.name,
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14.0),
-                            )
+                        snapshot.data.name,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14.0),
+                      )
                           : CircularProgressIndicator();
                     }),
               ),
@@ -110,12 +133,12 @@ class UserDrawer extends StatelessWidget {
                         (BuildContext context, AsyncSnapshot<Local> snapshot) {
                       return snapshot.hasData
                           ? Text(
-                              snapshot.data.name,
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14.0),
-                            )
+                        snapshot.data.name,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14.0),
+                      )
                           : CircularProgressIndicator();
                     }),
               ),

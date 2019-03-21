@@ -14,11 +14,13 @@ class UserApi {
   Future<User> fetchUser(String id, String password) async {
     User user;
 
+    print('fetchUser >> $id $password');
+
     var response = await _httpClient.post(Connection.host + '/rest/WsLogin',
         headers: {"Content-Type": "application/json"},
         body: json.encode({"user": "$id", "password": "$password"}));
 
-    print('fetchUser >> ' + response.body);
+    print('fetchUser << ' + response.body);
 
     /// To get easily the gx response
     Map<String, dynamic> gxResponse = json.decode(response.body);

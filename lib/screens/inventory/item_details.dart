@@ -4,6 +4,7 @@ import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
 import 'package:my_office_th_app/blocs/inventory_bloc.dart';
 import 'package:my_office_th_app/components/card_dummy_loading.dart';
+import 'package:my_office_th_app/models/item.dart';
 import 'package:my_office_th_app/screens/inventory/item_info_card.dart';
 import 'package:my_office_th_app/screens/inventory/item_sales_stock_card.dart';
 import 'package:my_office_th_app/screens/inventory/item_stock_card.dart';
@@ -18,7 +19,6 @@ class _ItemDetailsState extends State<ItemDetails> {
 
   @override
   void initState() {
-
     super.initState();
   }
 
@@ -38,13 +38,15 @@ class _ItemDetailsState extends State<ItemDetails> {
     /// Item's stock
     inventoryBloc.fetchItemStockLocal(
         inventoryBloc.itemId.value, _loginBloc.local.value.id);
+
+    /// To set what kind of stock report we want to see first.
     inventoryBloc.changeTypeReport('L');
 
     /// Item's stock/sale
     inventoryBloc.fetchItemStockSales(
         inventoryBloc.itemId.value, _loginBloc.local.value.id, 'C');
 
-    /// Default index
+    /// Default index for the bottom navigation bar.
     inventoryBloc.changeIndex(0);
 
     var _widgetOptions = [
@@ -65,14 +67,23 @@ class _ItemDetailsState extends State<ItemDetails> {
         backgroundColor: Color(0xff011e41),
       ),
       body: Center(
-        child: StreamBuilder<int>(
-            stream: inventoryBloc.index,
-            builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
-              if (snapshot.hasError) print(snapshot.error);
-              return snapshot.hasData
-                  ? _widgetOptions.elementAt(inventoryBloc.index.value)
-                  : CardDummyLoading();
-            }),
+        child: StreamBuilder<Item>(
+          stream: inventoryBloc.item,
+          builder: (BuildContext context, AsyncSnapshot<Item> itemSnapshot) {
+            if (itemSnapshot.hasError) return Text(itemSnapshot.error);
+            return itemSnapshot.hasData
+                ? StreamBuilder<int>(
+                    stream: inventoryBloc.index,
+                    builder:
+                        (BuildContext context, AsyncSnapshot<int> snapshot) {
+                      if (snapshot.hasError) print(snapshot.error);
+                      return snapshot.hasData
+                          ? _widgetOptions.elementAt(inventoryBloc.index.value)
+                          : CardDummyLoading();
+                    })
+                : CircularProgressIndicator();
+          },
+        ),
       ),
       bottomNavigationBar: StreamBuilder<int>(
         stream: inventoryBloc.index,
@@ -85,10 +96,10 @@ class _ItemDetailsState extends State<ItemDetails> {
                         icon: Icon(Icons.info), title: Text('Info')),
                     BottomNavigationBarItem(
                         icon: Icon(Icons.format_list_numbered),
-                        title: Text('Stock')),
+                        title: Text('Saldos')),
                     BottomNavigationBarItem(
                         icon: Icon(Icons.monetization_on),
-                        title: Text('Sales')),
+                        title: Text('Ventas')),
                   ],
                   currentIndex: snapshot.data,
                   fixedColor: Colors.deepPurple,

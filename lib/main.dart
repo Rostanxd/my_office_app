@@ -6,7 +6,8 @@ import 'package:my_office_th_app/blocs/login_bloc.dart';
 import 'package:my_office_th_app/screens/home/index.dart';
 import 'package:my_office_th_app/screens/inventory/index.dart';
 import 'package:my_office_th_app/screens/login/index.dart';
-import 'package:my_office_th_app/screens/signup/signup.dart';
+import 'package:my_office_th_app/screens/settings/device_info.dart';
+import 'package:my_office_th_app/screens/settings/signup.dart';
 
 void main() => runApp(BlocProvider<LoginBloc>(
   bloc: loginBloc,
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
         '/signup': (BuildContext context) => new SignupPage(),
         '/home': (BuildContext context) => new HomePage(),
         '/item_home': (BuildContext context) => new InventoryHome(),
+        '/device_info': (BuildContext context) => new DeviceInfo(),
       },
       home: MyLoginPage(),
     );

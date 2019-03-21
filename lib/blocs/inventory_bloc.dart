@@ -2,6 +2,7 @@ import 'package:my_office_th_app/blocs/bloc_base.dart';
 import 'package:my_office_th_app/models/item.dart';
 import 'package:my_office_th_app/models/item_stock.dart';
 import 'package:my_office_th_app/resources/inventory_repository.dart';
+import 'package:my_office_th_app/utils/connection.dart';
 import 'package:rxdart/rxdart.dart';
 
 class InventoryBloc extends Object implements BlocBase {
@@ -14,6 +15,7 @@ class InventoryBloc extends Object implements BlocBase {
   final _itemStockLocalList = BehaviorSubject<List<ItemStock>>();
   final _itemStockAllList = BehaviorSubject<List<ItemStock>>();
   final _itemStockSaleList = BehaviorSubject<List<ItemStock>>();
+  final _loadingData = BehaviorSubject<bool>();
   final InventoryRepository _itemRepository = InventoryRepository();
 
   Observable<List<Item>> _styleList;
@@ -42,6 +44,8 @@ class InventoryBloc extends Object implements BlocBase {
 
   ValueObservable<String> get typeReport => _typeReport.stream;
 
+  Observable<bool> get loadingData => _loadingData.stream;
+
   /// Add data to streams
   Function(Item) get changeCurrentItem => _item.sink.add;
 
@@ -53,12 +57,21 @@ class InventoryBloc extends Object implements BlocBase {
 
   Function(int) get changeIndex => _index.sink.add;
 
+  Function(bool) get changeLoadingData => _loadingData.sink.add;
+
   fetchItem(String itemId, String styleId) async {
-    await _itemRepository.fetchItem(itemId, styleId).then((response) {
+    await _itemRepository
+        .fetchItem(itemId, styleId)
+        .timeout(Duration(seconds: Connection.timeOutSec))
+        .then((response) {
       _item.sink.add(response);
     }, onError: (error) {
       print(error.toString());
-      _item.sink.addError('No data!');
+      if (error.runtimeType == RangeError){
+        _item.sink.addError('Item no existe!');
+      }else{
+        _item.sink.addError(error.runtimeType.toString());
+      }
     }).catchError((error) {
       print(error.toString());
       _item.sink.addError(error.toString());
@@ -74,11 +87,18 @@ class InventoryBloc extends Object implements BlocBase {
   }
 
   fetchItemsStyle(String itemId, String styleId) async {
-    await _itemRepository.fetchItems(itemId, styleId).then((response) {
+    await _itemRepository
+        .fetchItems(itemId, styleId)
+        .timeout(Duration(seconds: Connection.timeOutSec))
+        .then((response) {
       _itemList.sink.add(response);
     }, onError: (error) {
       print(error.toString());
-      _itemList.sink.addError('No data!');
+      if (error.runtimeType == RangeError){
+        _itemList.sink.addError('No data!');
+      }else{
+        _itemList.sink.addError(error.toString());
+      }
     }).catchError((error) {
       print(error.toString());
       _itemList.sink.addError(error.toString());
@@ -88,12 +108,16 @@ class InventoryBloc extends Object implements BlocBase {
   fetchItemStockLocal(String itemId, String localId) async {
     await _itemRepository
         .fetchItemStock(itemId, localId, 'L')
-        .timeout(Duration(seconds: 30))
+        .timeout(Duration(seconds: Connection.timeOutSec))
         .then((response) {
-        _itemStockLocalList.sink.add(response);
+      _itemStockLocalList.sink.add(response);
     }, onError: (error) {
       print(error.toString());
-      _itemStockLocalList.sink.addError('No data');
+      if (error.runtimeType == RangeError){
+        _itemStockLocalList.sink.addError('No data');
+      } else {
+        _itemStockLocalList.sink.addError(error.toString());
+      }
     }).catchError((error) {
       print(error.toString());
       _itemStockLocalList.addError(error.toString());
@@ -101,28 +125,37 @@ class InventoryBloc extends Object implements BlocBase {
   }
 
   fetchItemStockAll(String itemId, String localId) async {
-    _itemStockAllList.sink.add(null);
+    _loadingData.sink.add(true);
     await _itemRepository
         .fetchItemStock(itemId, localId, 'A')
-        .timeout(Duration(seconds: 30))
+        .timeout(Duration(seconds: Connection.timeOutSec))
         .then((response) {
-        _itemStockAllList.sink.add(response);
+      _itemStockAllList.sink.add(response);
+      _loadingData.sink.add(false);
     }, onError: (error) {
       print(error.toString());
       _itemStockAllList.sink.addError('No data');
+      _loadingData.sink.add(false);
     }).catchError((error) {
       print(error.toString());
       _itemStockAllList.addError(error.toString());
+      _loadingData.sink.add(false);
     });
   }
 
   fetchItemStockSales(String itemId, String localId, String type) async {
-    await _itemRepository.fetchItemStock(itemId, localId, type).then(
-        (response) {
+    await _itemRepository
+        .fetchItemStock(itemId, localId, type)
+        .timeout(Duration(seconds: Connection.timeOutSec))
+        .then((response) {
       _itemStockSaleList.sink.add(response);
     }, onError: (error) {
       print(error.toString());
-      _itemStockSaleList.sink.addError('No data');
+      if (error.runtimeType == RangeError){
+        _itemStockSaleList.sink.addError('No data');
+      }else{
+        _itemStockSaleList.sink.addError(error.toString());
+      }
     }).catchError((error) {
       print(error.toString());
       _itemStockSaleList.addError(error.toString());
@@ -148,6 +181,7 @@ class InventoryBloc extends Object implements BlocBase {
     _itemStockAllList.close();
     _itemStockSaleList.close();
     _typeReport.close();
+    _loadingData.close();
   }
 }
 

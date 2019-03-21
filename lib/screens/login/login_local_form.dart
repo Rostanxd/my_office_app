@@ -181,7 +181,7 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
           },
           child: Center(
             child: Text(
-              'CONTINUE',
+              'CONTINUAR',
               style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -210,7 +210,7 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
           },
           child: Center(
             child: Text(
-              'CANCEL',
+              'CANCELAR',
               style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,

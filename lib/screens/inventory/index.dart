@@ -6,7 +6,7 @@ import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/inventory_bloc.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
 import 'package:my_office_th_app/models/item.dart';
-import 'package:my_office_th_app/screens/home/user_drawer.dart';
+import 'package:my_office_th_app/components/user_drawer.dart';
 import 'package:my_office_th_app/screens/inventory/item_details.dart';
 import 'package:my_office_th_app/screens/inventory/items_style_list_view.dart';
 
@@ -27,8 +27,8 @@ class _InventoryHomeState extends State<InventoryHome> {
     try {
       var _barcodeRead = await BarcodeScanner.scan();
       inventoryBloc.changeCurrentItemId(_barcodeRead);
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => ItemDetails()));
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => ItemDetails()));
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.CameraAccessDenied) {
         inventoryBloc.changeCurrentItemId('');
@@ -76,8 +76,8 @@ class _InventoryHomeState extends State<InventoryHome> {
         javascriptMode: JavascriptMode.unrestricted,
         initialUrl:
             'http://info.thgye.com.ec/InvLineasProveedor.html?hldCodigo='
-                '${_loginBloc.holding.value.id}&bodCodigo='
-                '${_loginBloc.local.value.id}',
+            '${_loginBloc.holding.value.id}&bodCodigo='
+            '${_loginBloc.local.value.id}',
         onWebViewCreated: (WebViewController webViewController) {
           _controller = webViewController;
         },
@@ -136,7 +136,7 @@ class DataSearch extends SearchDelegate<String> {
       return Container(
           margin: EdgeInsets.all(20.0),
           child: Text(
-            'Insert a Style...',
+            'Ingrese un estilo.',
             style: TextStyle(fontSize: 16.0),
           ));
     } else {
@@ -150,14 +150,29 @@ class DataSearch extends SearchDelegate<String> {
       return StreamBuilder(
           stream: inventoryBloc.styleList,
           builder: (BuildContext context, AsyncSnapshot<List<Item>> snapshot) {
-            return snapshot.hasData
-                ? _buildSuggestionItems(snapshot.data)
-                : Container(
+            if (snapshot.hasError) {
+              return Container(
+                  margin: EdgeInsets.all(20.0),
+                  child: Text(
+                    'Se ha encontrado un Error. ' +
+                        'Comunicar al Dpto. de Sistemas.\n\n'
+                            'Tipo: ${snapshot.error.runtimeType}',
+                    style: TextStyle(fontSize: 16.0),
+                  ));
+            }
+            if (snapshot.hasData) {
+              if (snapshot.data.length == 0)
+                return Container(
                     margin: EdgeInsets.all(20.0),
                     child: Text(
-                      'No result',
+                      'No se ha encontrado el estilo.',
                       style: TextStyle(fontSize: 16.0),
                     ));
+
+              return _buildSuggestionItems(snapshot.data);
+            } else {
+              return Center(child: CircularProgressIndicator());
+            }
           });
     }
   }
@@ -167,6 +182,7 @@ class DataSearch extends SearchDelegate<String> {
       itemBuilder: (context, index) => ListTile(
             onTap: () {
               showResults(context);
+
               /// Loading items if the style in the bloc
               inventoryBloc.fetchItemsStyle('', items[index].styleId);
             },

@@ -15,7 +15,7 @@ class _ItemSalesStockCardState extends State<ItemSalesStockCard> {
       child: Card(
           elevation: 2.5,
           child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -24,7 +24,7 @@ class _ItemSalesStockCardState extends State<ItemSalesStockCard> {
                       margin:
                       EdgeInsets.only(top: 20.0, left: 20.0, bottom: 5.0),
                       child: Text(
-                        'Stock and Sales',
+                        'Saldos y Ventas',
                         style: TextStyle(
                             fontSize: 16.0, fontWeight: FontWeight.bold),
                       ),
@@ -151,27 +151,31 @@ class _ItemSalesStockCardState extends State<ItemSalesStockCard> {
           Container(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: f.local == 0
-                    ? Text('')
-                    : Text(
-                  f.local.toString(),
-                  style: f.size == 'Total' || f.color == 'Total'
-                      ? TextStyle(
-                      fontSize: 10.0, fontWeight: FontWeight.bold)
-                      : TextStyle(fontSize: 10.0),
+                child: Center(
+                  child: f.local == 0
+                      ? Text('')
+                      : Text(
+                    f.local.toString(),
+                    style: f.size == 'Total' || f.color == 'Total'
+                        ? TextStyle(
+                        fontSize: 10.0, fontWeight: FontWeight.bold)
+                        : TextStyle(fontSize: 10.0),
+                  ),
                 ),
               )),
           Container(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: f.others == 0
-                    ? Text('')
-                    : Text(
-                  f.others.toString(),
-                  style: f.size == 'Total' || f.color == 'Total'
-                      ? TextStyle(
-                      fontSize: 10.0, fontWeight: FontWeight.bold)
-                      : TextStyle(fontSize: 10.0),
+                child: Center(
+                  child: f.others == 0
+                      ? Text('')
+                      : Text(
+                    f.others.toString(),
+                    style: f.size == 'Total' || f.color == 'Total'
+                        ? TextStyle(
+                        fontSize: 10.0, fontWeight: FontWeight.bold)
+                        : TextStyle(fontSize: 10.0),
+                  ),
                 ),
               )),
           Container(

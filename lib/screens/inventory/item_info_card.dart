@@ -29,6 +29,7 @@ class ItemInfoCardState extends State<ItemInfoCard> {
         child: StreamBuilder(
             stream: inventoryBloc.item,
             builder: (BuildContext context, AsyncSnapshot<Item> snapshot) {
+              if (snapshot.hasError) return Center(child: Text(snapshot.error),);
               return snapshot.hasData ? _cardInfo() : CardDummyLoading();
             }));
   }

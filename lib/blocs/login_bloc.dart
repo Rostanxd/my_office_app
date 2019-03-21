@@ -60,16 +60,20 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
           _logging.sink.add(false);
         }, onError: (error) {
           ///  If we got an error we add the error to the stream
-          _user.sink.addError('Login error!');
+          if (error.runtimeType == RangeError) {
+            _user.sink.addError('Login error.');
+          } else {
+            _user.sink.addError(error.runtimeType.toString());
+          }
           _logging.sink.add(false);
-          print('onError');
+          print(error.toString());
         })
         .timeout(Duration(seconds: Connection.timeOutSec))
         .catchError((error) {
           ///  If we got a time out we add the error to the stream
-          _user.sink.addError(error.toString());
+          _user.sink.addError(error.runtimeType.toString());
           _logging.sink.add(false);
-          print('catchError');
+          print(error.toString());
         })
         .whenComplete(() => print('fetchUser >> Complete!'));
   }
@@ -83,13 +87,18 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
           _holding.sink.add(response[0]);
         }, onError: (error) {
           /// If we got an error we add the error on the stream
-          _holdingList.sink.addError('Error loading data!');
+          if (error.runtimeType == RangeError) {
+            _holdingList.sink.addError('No hay datos');
+          } else {
+            _holdingList.sink.addError(error.runtimeType.toString());
+          }
           print(error.toString());
         })
         .timeout(Duration(seconds: Connection.timeOutSec))
         .catchError((error) {
           /// If we got an error we add the error on the stream
-          _holdingList.sink.addError(error.toString());
+          _holdingList.sink.addError(error);
+          print(error.toString());
         })
         .whenComplete(() => print('fetchAllHolding >> Complete!!'));
   }
@@ -103,20 +112,24 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
           _local.sink.add(response[0]);
         }, onError: (error) {
           /// If we got an error we add the error on the stream
-          _localList.sink.addError('Error loading data!');
+          if (error.runtimeType == RangeError) {
+            _localList.sink.addError('No hay datos');
+          } else {
+            _localList.sink.addError(error.runtimeType.toString());
+          }
           print(error.toString());
         })
         .timeout(Duration(seconds: Connection.timeOutSec))
         .catchError((error) {
           /// If we got an error we add the error on the stream
-          _localList.sink.addError(error.toString());
+          _localList.sink.addError(runtimeType.toString());
+          print(error.toString());
         })
         .whenComplete(() => print('fetchLocal >> Complete!!'));
   }
 
   logIn() {
     fetchUser();
-    print('${_id.value} and ${_password.value}');
   }
 
   logOut() {

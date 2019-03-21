@@ -29,12 +29,13 @@ class _LoginUserFormState extends State<LoginUserForm> {
     /// Searching for the login bloc in the provider
     bloc = BlocProvider.of<LoginBloc>(context);
 
+    /// Listener to the observable to catch the response.
     bloc.user.listen((User user) {
-      if (user != null){
+      if (user != null) {
         _moveNextPage(user);
       }
     }, onError: (error) {
-      _showSnackBarMsg(error.toString());
+      _showSnackBarMsg(error, context);
     });
 
     return (Container(
@@ -67,7 +68,7 @@ class _LoginUserFormState extends State<LoginUserForm> {
         return TextField(
           onChanged: bloc.changeId,
           decoration: InputDecoration(
-              labelText: 'USER',
+              labelText: 'USUARIO',
               labelStyle: TextStyle(
                   fontFamily: 'Montserrat',
                   fontWeight: FontWeight.bold,
@@ -89,7 +90,7 @@ class _LoginUserFormState extends State<LoginUserForm> {
           onChanged: bloc.changePassword,
           obscureText: true,
           decoration: InputDecoration(
-              labelText: 'PASSWORD',
+              labelText: 'CLAVE',
               labelStyle: TextStyle(
                   fontFamily: 'Montserrat',
                   fontWeight: FontWeight.bold,
@@ -109,13 +110,17 @@ class _LoginUserFormState extends State<LoginUserForm> {
       padding: EdgeInsets.only(top: 15.0, left: 20.0),
       child: InkWell(
         child: Text(
-          'Forgot Password',
+          'Olvidé mi clave',
           style: TextStyle(
               color: Color(0xFFeb2227),
               fontWeight: FontWeight.bold,
               fontFamily: 'Montserrat',
               decoration: TextDecoration.underline),
         ),
+        onTap: () {
+          Scaffold.of(context)
+              .showSnackBar(SnackBar(content: Text('En desarrollo!')));
+        },
       ),
     );
   }
@@ -142,7 +147,7 @@ class _LoginUserFormState extends State<LoginUserForm> {
                 },
                 child: Center(
                   child: Text(
-                    'LOGIN',
+                    'CONFIRMAR',
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -182,12 +187,12 @@ class _LoginUserFormState extends State<LoginUserForm> {
       bloc.changeCurrentLocal(user.local);
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => HomePage()),
-              (Route<dynamic> route) => false);
+          (Route<dynamic> route) => false);
     }
   }
 
   /// Show a snack bar with a message
-  void _showSnackBarMsg(String message) {
+  void _showSnackBarMsg(String message, BuildContext context) {
     Scaffold.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 }
