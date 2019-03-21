@@ -22,24 +22,23 @@ class InventoryHome extends StatefulWidget {
 class _InventoryHomeState extends State<InventoryHome> {
   LoginBloc _loginBloc;
   WebViewController _controller;
-  String _barcode = '';
 
   Future _barcodeScanning() async {
     try {
       var _barcodeRead = await BarcodeScanner.scan();
-      setState(() => this._barcode = _barcodeRead);
+      inventoryBloc.changeCurrentItemId(_barcodeRead);
       Navigator.push(context,
-          MaterialPageRoute(builder: (context) => ItemDetails(this._barcode)));
+          MaterialPageRoute(builder: (context) => ItemDetails()));
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.CameraAccessDenied) {
-        setState(() => this._barcode = '');
+        inventoryBloc.changeCurrentItemId('');
       } else {
-        setState(() => this._barcode = '');
+        inventoryBloc.changeCurrentItemId('');
       }
     } on FormatException {
-      setState(() => this._barcode = '');
+      inventoryBloc.changeCurrentItemId('');
     } catch (e) {
-      setState(() => this._barcode = '');
+      inventoryBloc.changeCurrentItemId('');
     }
   }
 
@@ -126,7 +125,8 @@ class DataSearch extends SearchDelegate<String> {
   @override
   Widget buildResults(BuildContext context) {
     /// Show some result based on the selection, in this case the list of items
-    return ItemsStyleListView(this.styleId);
+    /// of the style.
+    return ItemsStyleListView();
   }
 
   @override
@@ -167,7 +167,8 @@ class DataSearch extends SearchDelegate<String> {
       itemBuilder: (context, index) => ListTile(
             onTap: () {
               showResults(context);
-              this.styleId = items[index].styleId;
+              /// Loading items if the style in the bloc
+              inventoryBloc.fetchItemsStyle('', items[index].styleId);
             },
             leading: Icon(Icons.style),
             title: RichText(

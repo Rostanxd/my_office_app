@@ -1,13 +1,13 @@
 import 'package:my_office_th_app/blocs/bloc_base.dart';
 import 'package:my_office_th_app/blocs/home_validator.dart';
 import 'package:my_office_th_app/models/assistance.dart';
-import 'package:my_office_th_app/resources/assistance_repository.dart';
+import 'package:my_office_th_app/resources/home_repository.dart';
 import 'package:rxdart/rxdart.dart';
 
 class HomeBloc extends Object with HomeValidator implements BlocBase {
   final _assistanceFetcher = BehaviorSubject<Assistance>();
   final _dateToFind = BehaviorSubject<String>();
-  final AssistanceRepository _repository = AssistanceRepository();
+  final HomeRepository _repository = HomeRepository();
 
   /// Retrieve data from the stream
   Stream<String> get dateToFind => _dateToFind.stream.transform(validateDate);

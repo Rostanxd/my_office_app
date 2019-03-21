@@ -11,6 +11,7 @@ class _ItemSalesStockCardState extends State<ItemSalesStockCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
       child: Card(
           elevation: 2.5,
           child: Column(

@@ -146,13 +146,13 @@ class _ItemImageFootState extends State<ItemImageFoot> {
               "image64": "$_imageBase64"
             }))
         .then((res) {
-//      Navigation to recall the item's detail and reload the list images
+      /// Navigation to recall the item's detail and reload the list images
       Navigator.pop(context);
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  ItemDetails(widget.item.itemId)));
+                  ItemDetails()));
     }).catchError((err) {
       print(err);
     });

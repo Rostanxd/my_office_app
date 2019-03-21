@@ -33,72 +33,75 @@ class _ItemStockCardState extends State<ItemStockCard> {
   }
 
   Widget _cardStock(String _tableType) {
-    return Card(
-        elevation: 2.5,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                _tableType == 'A'
-                    ? Container(
-                        margin: EdgeInsets.only(
-                          top: 20.0,
-                          left: 20.0,
-                          bottom: 5.0,
-                        ),
-                        child: InkWell(
-                          child: Icon(Icons.arrow_back),
-                          onTap: () {
-                            inventoryBloc.changeTypeReport('L');
-                          },
-                        ),
-                      )
-                    : Container(),
-                Container(
-                  margin: EdgeInsets.only(top: 20.0, left: 20.0, bottom: 5.0),
-                  child: Text(
-                    _tableType == 'L'
-                        ? 'Stock in local'
-                            ''
-                        : 'Stock of ' + inventoryBloc.itemId.value,
-                    style:
-                        TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+    return Container(
+      margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
+      child: Card(
+          elevation: 5.0,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  _tableType == 'A'
+                      ? Container(
+                          margin: EdgeInsets.only(
+                            top: 20.0,
+                            left: 20.0,
+                            bottom: 5.0,
+                          ),
+                          child: InkWell(
+                            child: Icon(Icons.arrow_back),
+                            onTap: () {
+                              inventoryBloc.changeTypeReport('L');
+                            },
+                          ),
+                        )
+                      : Container(),
+                  Container(
+                    margin: EdgeInsets.only(top: 20.0, left: 20.0, bottom: 5.0),
+                    child: Text(
+                      _tableType == 'L'
+                          ? 'Stock in local'
+                              ''
+                          : 'Stock of ' + inventoryBloc.itemId.value,
+                      style:
+                          TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                    ),
                   ),
-                ),
-              ],
-            ),
-            Divider(),
-            Container(
-                width: 300.0,
-                margin: EdgeInsets.only(
-                    top: 5.0, left: 20.0, right: 20.0, bottom: 20.0),
-                child: _tableType == 'L'
-                    ? StreamBuilder<List<ItemStock>>(
-                        stream: inventoryBloc.itemStockLocalList,
-                        builder: (BuildContext context,
-                            AsyncSnapshot<List<ItemStock>> snapshot) {
-                          if (snapshot.hasError)
-                            print(snapshot.error.toString());
-                          return snapshot.hasData
-                              ? _tableStockLocal()
-                              : _myCircularProgress();
-                        },
-                      )
-                    : StreamBuilder<List<ItemStock>>(
-                        stream: inventoryBloc.itemStockAllList,
-                        builder: (BuildContext context,
-                            AsyncSnapshot<List<ItemStock>> snapshot) {
-                          if (snapshot.hasError)
-                            print(snapshot.error.toString());
-                          return snapshot.hasData
-                              ? _tableStockAll(snapshot.data)
-                              : _myCircularProgress();
-                        },
-                      )),
-          ],
-        ));
+                ],
+              ),
+              Divider(),
+              Container(
+                  width: 300.0,
+                  margin: EdgeInsets.only(
+                      top: 5.0, left: 20.0, right: 20.0, bottom: 20.0),
+                  child: _tableType == 'L'
+                      ? StreamBuilder<List<ItemStock>>(
+                          stream: inventoryBloc.itemStockLocalList,
+                          builder: (BuildContext context,
+                              AsyncSnapshot<List<ItemStock>> snapshot) {
+                            if (snapshot.hasError)
+                              print(snapshot.error.toString());
+                            return snapshot.hasData
+                                ? _tableStockLocal()
+                                : _myCircularProgress();
+                          },
+                        )
+                      : StreamBuilder<List<ItemStock>>(
+                          stream: inventoryBloc.itemStockAllList,
+                          builder: (BuildContext context,
+                              AsyncSnapshot<List<ItemStock>> snapshot) {
+                            if (snapshot.hasError)
+                              print(snapshot.error.toString());
+                            return snapshot.hasData
+                                ? _tableStockAll(snapshot.data)
+                                : _myCircularProgress();
+                          },
+                        )),
+            ],
+          )),
+    );
   }
 
   /// Table for local stock

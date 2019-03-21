@@ -3,9 +3,7 @@ import 'package:my_office_th_app/blocs/login_validator.dart';
 import 'package:my_office_th_app/models/holding.dart';
 import 'package:my_office_th_app/models/local.dart';
 import 'package:my_office_th_app/models/user.dart';
-import 'package:my_office_th_app/resources/holding_repository.dart';
-import 'package:my_office_th_app/resources/local_repository.dart';
-import 'package:my_office_th_app/resources/user_repository.dart';
+import 'package:my_office_th_app/resources/login_repository.dart';
 import 'package:my_office_th_app/utils/connection.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -18,9 +16,7 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
   final _holding = BehaviorSubject<Holding>();
   final _localList = BehaviorSubject<List<Local>>();
   final _holdingList = BehaviorSubject<List<Holding>>();
-  final UserRepository _repository = UserRepository();
-  final HoldingRepository _holdingRepository = HoldingRepository();
-  final LocalRepository _localRepository = LocalRepository();
+  final LoginRepository _loginRepository = LoginRepository();
 
   /// Retrieve data from stream
   Stream<String> get id => _id.stream.transform(validateId);
@@ -57,7 +53,7 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
   fetchUser() async {
     _logging.sink.add(true);
 
-    await _repository
+    await _loginRepository
         .fetchUser(_id.value, _password.value)
         .then((response) {
           _user.sink.add(response);
@@ -80,7 +76,7 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
 
   /// To call holding api
   fetchAllHolding() async {
-    await _holdingRepository
+    await _loginRepository
         .fetchAllHoldings()
         .then((response) {
           _holdingList.sink.add(response);
@@ -100,7 +96,7 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
 
   /// To call local api
   fetchLocal(String holdingId) async {
-    await _localRepository
+    await _loginRepository
         .fetchAllLocals(holdingId)
         .then((response) {
           _localList.sink.add(response);

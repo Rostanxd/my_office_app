@@ -4,20 +4,13 @@ import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
 import 'package:my_office_th_app/blocs/inventory_bloc.dart';
 import 'package:my_office_th_app/components/card_dummy_loading.dart';
-import 'package:my_office_th_app/models/item.dart';
 import 'package:my_office_th_app/screens/inventory/item_info_card.dart';
 import 'package:my_office_th_app/screens/inventory/item_sales_stock_card.dart';
 import 'package:my_office_th_app/screens/inventory/item_stock_card.dart';
 
 class ItemDetails extends StatefulWidget {
-  final String itemStr;
-
-  ItemDetails(this.itemStr);
-
   @override
-  State<StatefulWidget> createState() {
-    return _ItemDetailsState();
-  }
+  State<StatefulWidget> createState() => _ItemDetailsState();
 }
 
 class _ItemDetailsState extends State<ItemDetails> {
@@ -40,35 +33,35 @@ class _ItemDetailsState extends State<ItemDetails> {
     _loginBloc = BlocProvider.of<LoginBloc>(context);
 
     /// Item's detail
-    inventoryBloc.fetchItem(widget.itemStr, '');
+    inventoryBloc.fetchItem(inventoryBloc.itemId.value, '');
 
     /// Item's stock
     inventoryBloc.fetchItemStockLocal(
-        widget.itemStr, _loginBloc.local.value.id);
+        inventoryBloc.itemId.value, _loginBloc.local.value.id);
     inventoryBloc.changeTypeReport('L');
 
     /// Item's stock/sale
     inventoryBloc.fetchItemStockSales(
-        widget.itemStr, _loginBloc.local.value.id, 'C');
+        inventoryBloc.itemId.value, _loginBloc.local.value.id, 'C');
 
     /// Default index
     inventoryBloc.changeIndex(0);
 
     var _widgetOptions = [
       ListView(
-        children: <Widget>[_itemInformation()],
+        children: <Widget>[ItemInfoCard()],
       ),
       ListView(
-        children: <Widget>[_itemStock()],
+        children: <Widget>[ItemStockCard()],
       ),
       ListView(
-        children: <Widget>[_itemStockSales()],
+        children: <Widget>[ItemSalesStockCard()],
       ),
     ];
 
     return Scaffold(
       appBar: new AppBar(
-        title: new Text(widget.itemStr),
+        title: new Text(inventoryBloc.itemId.value),
         backgroundColor: Color(0xff011e41),
       ),
       body: Center(
@@ -100,7 +93,6 @@ class _ItemDetailsState extends State<ItemDetails> {
                   currentIndex: snapshot.data,
                   fixedColor: Colors.deepPurple,
                   onTap: (index) {
-                    print(index.toString());
                     inventoryBloc.changeIndex(index);
                   },
                 )
@@ -108,29 +100,5 @@ class _ItemDetailsState extends State<ItemDetails> {
         },
       ),
     );
-  }
-
-  Widget _itemInformation() {
-    return StreamBuilder(
-        stream: inventoryBloc.item,
-        builder: (BuildContext context, AsyncSnapshot<Item> snapshot) {
-          return Container(
-              margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
-              child: snapshot.hasData
-                  ? ItemInfoCard(snapshot.data)
-                  : CardDummyLoading());
-        });
-  }
-
-  Widget _itemStock() {
-    return Container(
-        margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
-        child: ItemStockCard());
-  }
-
-  Widget _itemStockSales() {
-    return Container(
-        margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
-        child: ItemSalesStockCard());
   }
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
+import 'package:my_office_th_app/blocs/inventory_bloc.dart';
 
 import 'package:my_office_th_app/blocs/login_bloc.dart';
+import 'package:my_office_th_app/components/card_dummy_loading.dart';
 import 'package:my_office_th_app/components/gradient_back.dart';
 import 'package:my_office_th_app/models/item.dart';
 import 'package:my_office_th_app/screens/inventory/item_price_inkwell.dart';
@@ -9,10 +11,6 @@ import 'package:my_office_th_app/screens/inventory/item_image_foot.dart';
 import 'package:my_office_th_app/screens/inventory/item_page_photos.dart';
 
 class ItemInfoCard extends StatefulWidget {
-  final Item item;
-
-  ItemInfoCard(this.item);
-
   @override
   State<StatefulWidget> createState() {
     return ItemInfoCardState();
@@ -26,6 +24,31 @@ class ItemInfoCardState extends State<ItemInfoCard> {
   Widget build(BuildContext context) {
     _loginBloc = BlocProvider.of<LoginBloc>(context);
 
+    return Container(
+        margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
+        child: StreamBuilder(
+            stream: inventoryBloc.item,
+            builder: (BuildContext context, AsyncSnapshot<Item> snapshot) {
+              return snapshot.hasData ? _cardInfo() : CardDummyLoading();
+            }));
+  }
+
+  Widget _itemImageList() {
+    return Container(
+      height: 350.0,
+      child: ListView(
+        padding: EdgeInsets.only(top: 10, left: 25.0, bottom: 40.0),
+        scrollDirection: Axis.horizontal,
+        children: inventoryBloc.item.value.listImagesPath.length != 0
+            ? inventoryBloc.item.value.listImagesPath
+                .map((i) => _imageCard(i))
+                .toList()
+            : _imageCard(''),
+      ),
+    );
+  }
+
+  Widget _cardInfo() {
     return Card(
       elevation: 5.0,
       child: Container(
@@ -38,21 +61,21 @@ class ItemInfoCardState extends State<ItemInfoCard> {
                   child: Align(
                     alignment: Alignment.topCenter,
                     child: GradientBack(
-                        widget.item.styleName,
-                        widget.item.lineName +
+                        inventoryBloc.item.value.styleName,
+                        inventoryBloc.item.value.lineName +
                             ' \/ ' +
-                            widget.item.productName,
-                        widget.item.seasonName),
+                            inventoryBloc.item.value.productName,
+                        inventoryBloc.item.value.seasonName),
                   ),
                 ),
                 _itemImageList(),
                 Container(
                     margin: EdgeInsets.only(top: 350.0, left: 10.0),
-                    child: ItemImageFoot(widget.item,
+                    child: ItemImageFoot(inventoryBloc.item.value,
                         _loginBloc.local.value, _loginBloc.user.value)),
                 Container(
                     margin: EdgeInsets.only(top: 325.0, left: 200.0),
-                    child: ItemPriceInkwell(widget.item)),
+                    child: ItemPriceInkwell(inventoryBloc.item.value)),
               ],
             ),
           ],
@@ -61,23 +84,7 @@ class ItemInfoCardState extends State<ItemInfoCard> {
     );
   }
 
-  Widget _itemImageList(){
-    return Container(
-      height: 350.0,
-      child: ListView(
-        padding: EdgeInsets.only(
-            top: 10,
-            left: 25.0,
-            bottom: 40.0
-        ),
-        scrollDirection: Axis.horizontal,
-        children: widget.item.listImagesPath.length != 0 ? widget.item.listImagesPath.map((i) =>
-            _imageCard(i)).toList() : _imageCard(''),
-      ),
-    );
-  }
-
-  Widget _imageCard(String imageUrl){
+  Widget _imageCard(String imageUrl) {
     return InkWell(
       child: Container(
         height: 350.0,
@@ -104,9 +111,8 @@ class ItemInfoCardState extends State<ItemInfoCard> {
             context,
             MaterialPageRoute(
                 builder: (context) =>
-                    ItemPagePhotos(widget.item.listImagesPath)));
+                    ItemPagePhotos(inventoryBloc.item.value.listImagesPath)));
       },
     );
   }
-
 }

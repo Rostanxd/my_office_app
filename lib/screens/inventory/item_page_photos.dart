@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:my_office_th_app/screens/inventory/item_state_container.dart';
-
 class ItemPagePhotos extends StatelessWidget {
 
   final List<String> listImagePath;

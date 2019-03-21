@@ -7,7 +7,6 @@ import 'package:rxdart/rxdart.dart';
 class InventoryBloc extends Object implements BlocBase {
   final _item = BehaviorSubject<Item>();
   final _itemId = BehaviorSubject<String>();
-  final _styleId = BehaviorSubject<String>();
   final _searchedStyle = BehaviorSubject<String>();
   final _typeReport = BehaviorSubject<String>();
   final _index = BehaviorSubject<int>();
@@ -142,9 +141,9 @@ class InventoryBloc extends Object implements BlocBase {
   void dispose() {
     _item.close();
     _itemId.close();
-    _styleId.close();
     _searchedStyle.close();
     _itemList.close();
+    _index.close();
     _itemStockLocalList.close();
     _itemStockAllList.close();
     _itemStockSaleList.close();

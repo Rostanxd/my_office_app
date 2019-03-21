@@ -5,20 +5,13 @@ import 'package:my_office_th_app/screens/inventory/item_details.dart';
 import 'package:my_office_th_app/models/item.dart';
 
 class ItemsStyleListView extends StatefulWidget {
-  final String styleId;
-
-  ItemsStyleListView(this.styleId);
-
   @override
-  State<StatefulWidget> createState() {
-    return _ItemsStyleListViewState();
-  }
+  State<StatefulWidget> createState() => _ItemsStyleListViewState();
 }
 
 class _ItemsStyleListViewState extends State<ItemsStyleListView> {
   @override
   void initState() {
-    inventoryBloc.fetchItemsStyle('', widget.styleId);
     super.initState();
   }
 
@@ -31,11 +24,15 @@ class _ItemsStyleListViewState extends State<ItemsStyleListView> {
             ? ListView.builder(
                 itemBuilder: (context, index) => ListTile(
                       onTap: () {
+                        /// Add to the item id string data
+                        inventoryBloc
+                            .changeCurrentItemId(snapshot.data[index].itemId);
+
+                        /// Navigation to the item's detail
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    ItemDetails(snapshot.data[index].itemId)));
+                                builder: (context) => ItemDetails()));
                       },
                       leading: Icon(Icons.open_in_new),
                       title: Text(snapshot.data[index].itemId),
