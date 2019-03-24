@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/inventory_bloc.dart';
+import 'package:my_office_th_app/blocs/item_details_bloc.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
 import 'package:my_office_th_app/models/item.dart';
 import 'package:my_office_th_app/components/user_drawer.dart';
 import 'package:my_office_th_app/screens/inventory/item_details.dart';
-import 'package:my_office_th_app/screens/inventory/items_style_list_view.dart';
 
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -21,34 +21,50 @@ class InventoryHome extends StatefulWidget {
 
 class _InventoryHomeState extends State<InventoryHome> {
   LoginBloc _loginBloc;
+  InventoryBloc _inventoryBloc;
   WebViewController _controller;
 
   Future _barcodeScanning() async {
     try {
       var _barcodeRead = await BarcodeScanner.scan();
-      inventoryBloc.changeCurrentItemId(_barcodeRead);
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => ItemDetails()));
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => ItemDetails(_barcodeRead)));
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.CameraAccessDenied) {
-        inventoryBloc.changeCurrentItemId('');
       } else {
-        inventoryBloc.changeCurrentItemId('');
+        Scaffold.of(context).showSnackBar(
+            SnackBar(content: Text('Error acceso a cámara denegado.')));
       }
-    } on FormatException {
-      inventoryBloc.changeCurrentItemId('');
-    } catch (e) {
-      inventoryBloc.changeCurrentItemId('');
+    } on FormatException {} catch (e) {
+      Scaffold.of(context).showSnackBar(
+          SnackBar(content: Text('Error ${e.toString()}')));
     }
   }
 
   @override
   void initState() {
+    print('Inventory Home >> initState');
     super.initState();
   }
 
   @override
+  void didChangeDependencies() {
+    print('Inventory Home >> didChangeDependecies');
+    _inventoryBloc = BlocProvider.of<InventoryBloc>(context);
+    super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    print('Inventory Home >> dispose');
+    _inventoryBloc.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    print('Inventory Home >> build');
+
     /// Getting login bloc from provider
     _loginBloc = BlocProvider.of<LoginBloc>(context);
 
@@ -60,7 +76,8 @@ class _InventoryHomeState extends State<InventoryHome> {
           IconButton(
             icon: Icon(Icons.search),
             onPressed: () {
-              showSearch(context: context, delegate: DataSearch());
+              showSearch(
+                  context: context, delegate: DataSearch(_inventoryBloc));
             },
           ),
           IconButton(
@@ -94,7 +111,9 @@ class _InventoryHomeState extends State<InventoryHome> {
 
 ///  Implementation of search bar.
 class DataSearch extends SearchDelegate<String> {
-  String styleId;
+  final InventoryBloc _inventoryBloc;
+
+  DataSearch(this._inventoryBloc);
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -126,7 +145,7 @@ class DataSearch extends SearchDelegate<String> {
   Widget buildResults(BuildContext context) {
     /// Show some result based on the selection, in this case the list of items
     /// of the style.
-    return ItemsStyleListView();
+    return _itemsOfStyleList();
   }
 
   @override
@@ -141,14 +160,14 @@ class DataSearch extends SearchDelegate<String> {
           ));
     } else {
       /// Update the stream
-      inventoryBloc.changeSearchStyle(query);
+      _inventoryBloc.changeSearchStyle(query);
 
       /// Fetching styles by query (stream)
-      inventoryBloc.fetchStyles();
+      _inventoryBloc.fetchStyles();
 
       /// Returning the stream builder
       return StreamBuilder(
-          stream: inventoryBloc.styleList,
+          stream: _inventoryBloc.styleList,
           builder: (BuildContext context, AsyncSnapshot<List<Item>> snapshot) {
             if (snapshot.hasError) {
               return Container(
@@ -156,7 +175,7 @@ class DataSearch extends SearchDelegate<String> {
                   child: Text(
                     'Se ha encontrado un Error. ' +
                         'Comunicar al Dpto. de Sistemas.\n\n'
-                            'Tipo: ${snapshot.error.runtimeType}',
+                        'Tipo: ${snapshot.error.runtimeType}',
                     style: TextStyle(fontSize: 16.0),
                   ));
             }
@@ -169,6 +188,8 @@ class DataSearch extends SearchDelegate<String> {
                       style: TextStyle(fontSize: 16.0),
                     ));
 
+              /// Passing the list of style from the stream to the function to
+              /// build the list view
               return _buildSuggestionItems(snapshot.data);
             } else {
               return Center(child: CircularProgressIndicator());
@@ -177,6 +198,7 @@ class DataSearch extends SearchDelegate<String> {
     }
   }
 
+  /// List view with the styles.
   Widget _buildSuggestionItems(List<Item> items) {
     return ListView.builder(
       itemBuilder: (context, index) => ListTile(
@@ -184,7 +206,7 @@ class DataSearch extends SearchDelegate<String> {
               showResults(context);
 
               /// Loading items if the style in the bloc
-              inventoryBloc.fetchItemsStyle('', items[index].styleId);
+              _inventoryBloc.fetchItemsStyle('', items[index].styleId);
             },
             leading: Icon(Icons.style),
             title: RichText(
@@ -203,6 +225,42 @@ class DataSearch extends SearchDelegate<String> {
             ),
           ),
       itemCount: items.length,
+    );
+  }
+
+  /// List view with the style's items.
+  Widget _itemsOfStyleList(){
+    return StreamBuilder(
+      stream: _inventoryBloc.itemList,
+      builder: (BuildContext context, AsyncSnapshot<List<Item>> snapshot) {
+        return snapshot.hasData
+            ? ListView.builder(
+          itemBuilder: (context, index) => ListTile(
+            onTap: () {
+              /// Navigation to the item's detail
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => BlocProvider(
+                        bloc: ItemDetailsBloc(),
+                        child: ItemDetails(snapshot.data[index].itemId),
+                      )));
+            },
+            leading: Icon(Icons.open_in_new),
+            title: Text(snapshot.data[index].itemId),
+            subtitle: Text(
+              snapshot.data[index].styleName +
+                  ' / ' +
+                  snapshot.data[index].lineName,
+              style: TextStyle(fontSize: 10.00),
+            ),
+          ),
+          itemCount: snapshot.data.length,
+        )
+            : Center(
+          child: CircularProgressIndicator(),
+        );
+      },
     );
   }
 }

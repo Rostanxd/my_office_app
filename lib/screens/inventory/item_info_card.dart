@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
-import 'package:my_office_th_app/blocs/inventory_bloc.dart';
+import 'package:my_office_th_app/blocs/item_details_bloc.dart';
 
 import 'package:my_office_th_app/blocs/login_bloc.dart';
 import 'package:my_office_th_app/components/card_dummy_loading.dart';
@@ -19,15 +19,26 @@ class ItemInfoCard extends StatefulWidget {
 
 class ItemInfoCardState extends State<ItemInfoCard> {
   LoginBloc _loginBloc;
+  ItemDetailsBloc _itemDetailsBloc;
+
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
+    /// Getting the bloc of the login
     _loginBloc = BlocProvider.of<LoginBloc>(context);
+
+    /// Getting the bloc of the item details
+    _itemDetailsBloc = BlocProvider.of<ItemDetailsBloc>(context);
 
     return Container(
         margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
         child: StreamBuilder(
-            stream: inventoryBloc.item,
+            stream: _itemDetailsBloc.item,
             builder: (BuildContext context, AsyncSnapshot<Item> snapshot) {
               if (snapshot.hasError) return Center(child: Text(snapshot.error),);
               return snapshot.hasData ? _cardInfo() : CardDummyLoading();
@@ -40,8 +51,8 @@ class ItemInfoCardState extends State<ItemInfoCard> {
       child: ListView(
         padding: EdgeInsets.only(top: 10, left: 25.0, bottom: 40.0),
         scrollDirection: Axis.horizontal,
-        children: inventoryBloc.item.value.listImagesPath.length != 0
-            ? inventoryBloc.item.value.listImagesPath
+        children: _itemDetailsBloc.item.value.listImagesPath.length != 0
+            ? _itemDetailsBloc.item.value.listImagesPath
                 .map((i) => _imageCard(i))
                 .toList()
             : _imageCard(''),
@@ -62,21 +73,21 @@ class ItemInfoCardState extends State<ItemInfoCard> {
                   child: Align(
                     alignment: Alignment.topCenter,
                     child: GradientBack(
-                        inventoryBloc.item.value.styleName,
-                        inventoryBloc.item.value.lineName +
+                        _itemDetailsBloc.item.value.styleName,
+                        _itemDetailsBloc.item.value.lineName +
                             ' \/ ' +
-                            inventoryBloc.item.value.productName,
-                        inventoryBloc.item.value.seasonName),
+                            _itemDetailsBloc.item.value.productName,
+                        _itemDetailsBloc.item.value.seasonName),
                   ),
                 ),
                 _itemImageList(),
                 Container(
                     margin: EdgeInsets.only(top: 350.0, left: 10.0),
-                    child: ItemImageFoot(inventoryBloc.item.value,
+                    child: ItemImageFoot(_itemDetailsBloc.item.value,
                         _loginBloc.local.value, _loginBloc.user.value)),
                 Container(
                     margin: EdgeInsets.only(top: 325.0, left: 200.0),
-                    child: ItemPriceInkwell(inventoryBloc.item.value)),
+                    child: ItemPriceInkwell(_itemDetailsBloc.item.value)),
               ],
             ),
           ],
@@ -112,7 +123,7 @@ class ItemInfoCardState extends State<ItemInfoCard> {
             context,
             MaterialPageRoute(
                 builder: (context) =>
-                    ItemPagePhotos(inventoryBloc.item.value.listImagesPath)));
+                    ItemPagePhotos(_itemDetailsBloc.item.value.listImagesPath)));
       },
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_office_th_app/blocs/inventory_bloc.dart';
+import 'package:my_office_th_app/blocs/bloc_provider.dart';
+import 'package:my_office_th_app/blocs/item_details_bloc.dart';
 import 'package:my_office_th_app/models/item_stock.dart';
 
 class ItemSalesStockCard extends StatefulWidget {
@@ -8,8 +9,18 @@ class ItemSalesStockCard extends StatefulWidget {
 }
 
 class _ItemSalesStockCardState extends State<ItemSalesStockCard> {
+  ItemDetailsBloc _itemDetailsBloc;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
+    /// Getting the bloc of the item details
+    _itemDetailsBloc = BlocProvider.of<ItemDetailsBloc>(context);
+
     return Container(
       margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
       child: Card(
@@ -37,7 +48,7 @@ class _ItemSalesStockCardState extends State<ItemSalesStockCard> {
                     margin: EdgeInsets.only(
                         top: 5.0, left: 20.0, right: 20.0, bottom: 20.0),
                     child: StreamBuilder<List<ItemStock>>(
-                      stream: inventoryBloc.itemStockSaleList,
+                      stream: _itemDetailsBloc.itemStockSaleList,
                       builder: (BuildContext context,
                           AsyncSnapshot<List<ItemStock>> snapshot) {
                         if (snapshot.hasError) print(snapshot.error.toString());

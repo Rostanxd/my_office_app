@@ -152,7 +152,7 @@ class _ItemImageFootState extends State<ItemImageFoot> {
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  ItemDetails()));
+                  ItemDetails(widget.item.itemId)));
     }).catchError((err) {
       print(err);
     });

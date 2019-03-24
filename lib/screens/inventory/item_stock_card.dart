@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
-
+import 'package:my_office_th_app/blocs/item_details_bloc.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
-import 'package:my_office_th_app/blocs/inventory_bloc.dart';
 import 'package:my_office_th_app/models/item_stock.dart';
 
 class ItemStockCard extends StatefulWidget {
@@ -12,19 +11,30 @@ class ItemStockCard extends StatefulWidget {
 
 class _ItemStockCardState extends State<ItemStockCard> {
   LoginBloc _loginBloc;
+  ItemDetailsBloc _itemDetailsBloc;
+
+
+  @override
+  void didChangeDependencies() {
+    /// Getting the bloc of the item details
+    _itemDetailsBloc = BlocProvider.of<ItemDetailsBloc>(context);
+    super.didChangeDependencies();
+  }
 
   @override
   void initState() {
-    inventoryBloc.changeLoadingData(false);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    /// Getting the bloc of the item details
     _loginBloc = BlocProvider.of<LoginBloc>(context);
 
+    _itemDetailsBloc.changeLoadingData(false);
+
     return StreamBuilder<String>(
-        stream: inventoryBloc.typeReport,
+        stream: _itemDetailsBloc.typeReport,
         builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
           if (snapshot.hasError) print(snapshot.error.toString());
           return snapshot.hasData
@@ -54,7 +64,7 @@ class _ItemStockCardState extends State<ItemStockCard> {
                           child: InkWell(
                             child: Icon(Icons.arrow_back),
                             onTap: () {
-                              inventoryBloc.changeTypeReport('L');
+                              _itemDetailsBloc.changeTypeReport('L');
                             },
                           ),
                         )
@@ -65,7 +75,7 @@ class _ItemStockCardState extends State<ItemStockCard> {
                       _tableType == 'L'
                           ? 'Saldos en el local'
                               ''
-                          : 'Saldos de ' + inventoryBloc.itemId.value,
+                          : 'Saldos de ' + _itemDetailsBloc.itemId.value,
                       style: TextStyle(
                           fontSize: 16.0, fontWeight: FontWeight.bold),
                     ),
@@ -79,7 +89,7 @@ class _ItemStockCardState extends State<ItemStockCard> {
                       top: 5.0, left: 20.0, right: 20.0, bottom: 20.0),
                   child: _tableType == 'L'
                       ? StreamBuilder<List<ItemStock>>(
-                          stream: inventoryBloc.itemStockLocalList,
+                          stream: _itemDetailsBloc.itemStockLocalList,
                           builder: (BuildContext context,
                               AsyncSnapshot<List<ItemStock>> snapshot) {
                             if (snapshot.hasError) {
@@ -92,14 +102,14 @@ class _ItemStockCardState extends State<ItemStockCard> {
                           },
                         )
                       : StreamBuilder<bool>(
-                          stream: inventoryBloc.loadingData,
+                          stream: _itemDetailsBloc.loadingData,
                           builder: (BuildContext context,
                               AsyncSnapshot<bool> snapshot) {
                             if (snapshot.hasError)
                               print(snapshot.error.toString());
                             return snapshot.hasData && !snapshot.data
                                 ? StreamBuilder<List<ItemStock>>(
-                                    stream: inventoryBloc.itemStockAllList,
+                                    stream: _itemDetailsBloc.itemStockAllList,
                                     builder: (BuildContext context,
                                         AsyncSnapshot<List<ItemStock>>
                                             snapshot) {
@@ -187,7 +197,7 @@ class _ItemStockCardState extends State<ItemStockCard> {
 
     _tableStock.children.add(_titleRow);
 
-    _tableStock.children.addAll(inventoryBloc.itemStockLocalList.value
+    _tableStock.children.addAll(_itemDetailsBloc.itemStockLocalList.value
         .map((f) => TableRow(children: [
               Container(
                 child: Padding(
@@ -208,7 +218,7 @@ class _ItemStockCardState extends State<ItemStockCard> {
                 ),
               )),
               Container(
-                  color: f.itemId == inventoryBloc.item.value.itemId
+                  color: f.itemId == _itemDetailsBloc.item.value.itemId
                       ? Colors.red
                       : Colors.transparent,
                   child: Padding(
@@ -222,7 +232,7 @@ class _ItemStockCardState extends State<ItemStockCard> {
                     ),
                   )),
               Container(
-                  color: f.itemId == inventoryBloc.item.value.itemId
+                  color: f.itemId == _itemDetailsBloc.item.value.itemId
                       ? Colors.red
                       : Colors.transparent,
                   child: Padding(
@@ -235,9 +245,9 @@ class _ItemStockCardState extends State<ItemStockCard> {
                       )),
                       onTap: () {
                         if (f.itemId.isNotEmpty) {
-                          inventoryBloc.changeCurrentItemId(f.itemId);
-                          inventoryBloc.changeTypeReport('A');
-                          inventoryBloc.fetchItemStockAll(
+                          _itemDetailsBloc.changeItemId(f.itemId);
+                          _itemDetailsBloc.changeTypeReport('A');
+                          _itemDetailsBloc.fetchItemStockAll(
                               f.itemId, _loginBloc.local.value.id);
                         }
                       },
@@ -327,7 +337,7 @@ class _ItemStockCardState extends State<ItemStockCard> {
       return TextStyle(
           color: Colors.black, fontWeight: FontWeight.bold, fontSize: 11.0);
 
-    if (_itemStock.itemId == inventoryBloc.item.value.itemId)
+    if (_itemStock.itemId == _itemDetailsBloc.item.value.itemId)
       return TextStyle(
           color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11.0);
 

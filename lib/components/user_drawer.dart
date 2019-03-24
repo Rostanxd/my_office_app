@@ -4,6 +4,7 @@ import 'package:my_office_th_app/blocs/login_bloc.dart';
 import 'package:my_office_th_app/models/local.dart';
 import 'package:my_office_th_app/models/user.dart';
 
+import 'package:my_office_th_app/blocs/inventory_bloc.dart';
 import 'package:my_office_th_app/screens/home/index.dart';
 import 'package:my_office_th_app/screens/inventory/index.dart';
 import 'package:my_office_th_app/screens/login/index.dart';
@@ -28,7 +29,10 @@ class UserDrawer extends StatelessWidget {
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => InventoryHome()));
+                    MaterialPageRoute(builder: (context) => BlocProvider(
+                      bloc: InventoryBloc(),
+                      child: InventoryHome(),
+                    )));
               }),
           ListTile(
               title: new Text("CRM"),
