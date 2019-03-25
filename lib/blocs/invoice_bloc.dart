@@ -46,6 +46,10 @@ class InvoiceBloc extends Object implements BlocBase {
     });
   }
 
+  removeInvoiceFromList(int index){
+    _invoiceList.value.removeAt(index);
+  }
+
   @override
   void dispose() {
     _initDate.close();

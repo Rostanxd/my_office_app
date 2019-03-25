@@ -33,7 +33,7 @@ class ItemDetailsBloc extends Object implements BlocBase {
       _itemStockAllList.stream;
 
   ValueObservable<List<ItemStock>> get itemStockSaleList =>
-      _itemStockLocalList.stream;
+      _itemStockSaleList.stream;
 
   ValueObservable<bool> get loadingData => _loadingData.stream;
 

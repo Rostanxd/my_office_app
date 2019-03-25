@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/invoice_bloc.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
+import 'package:my_office_th_app/components/user_drawer.dart';
 import 'package:my_office_th_app/models/invoice.dart';
 
 class InvoiceHome extends StatefulWidget {
@@ -83,7 +84,7 @@ class _InvoiceHomeState extends State<InvoiceHome> {
           )
         ],
       ),
-      drawer: _drawer(),
+      drawer: UserDrawer(),
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
           onPressed: () {
@@ -93,24 +94,6 @@ class _InvoiceHomeState extends State<InvoiceHome> {
         children: <Widget>[
           _invoiceListStream(),
           _filterCard(),
-        ],
-      ),
-    );
-  }
-
-  Widget _drawer() {
-    return Drawer(
-      child: ListView(
-        children: <Widget>[
-          DrawerHeader(
-            child: Container(
-              child: Text(''),
-            ),
-          ),
-          Divider(),
-          ListTile(
-            title: Text(''),
-          ),
         ],
       ),
     );
@@ -216,10 +199,34 @@ class _InvoiceHomeState extends State<InvoiceHome> {
             elevation: 5.0,
             child: ListView.builder(
                 itemCount: _invoiceList.length,
-                itemBuilder: (context, index) => Container(
-                      decoration: BoxDecoration(
-                          border: BorderDirectional(
-                              bottom: BorderSide(color: Colors.grey))),
+                itemBuilder: (context, index) {
+                  Invoice _invoice = _invoiceList[index];
+                  return Container(
+                    decoration: BoxDecoration(
+                        border: BorderDirectional(
+                            bottom: BorderSide(color: Colors.grey))),
+                    child: Dismissible(
+                      key: ObjectKey(_invoice),
+                      direction: DismissDirection.endToStart,
+                      onDismissed: (direction) {
+                        /// Removing invoice in the stream
+                        _invoiceBloc.removeInvoiceFromList(index);
+
+                        Scaffold.of(context).showSnackBar(SnackBar(
+                            content: Text(
+                                'Factura #${_invoice.sequence} anulada.')));
+                      },
+                      background: Container(
+                        alignment: AlignmentDirectional.centerEnd,
+                        color: Colors.red,
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
+                          child: Icon(
+                            Icons.delete,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                       child: ListTile(
                         onTap: () {
                           /// Updating invoice stream
@@ -236,7 +243,9 @@ class _InvoiceHomeState extends State<InvoiceHome> {
                         subtitle: Text('Und. ${_invoiceList[index].quantity} '
                             'Val. \$ ${_invoiceList[index].amount}'),
                       ),
-                    )),
+                    ),
+                  );
+                }),
           )
         : Text('No hay datos.');
   }

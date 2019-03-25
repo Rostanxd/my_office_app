@@ -127,6 +127,7 @@ class _AssistanceCardState extends State<AssistanceCard> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       AssistanceCardHour('assets/img/entrance.jpg', 'Entrada',
                           snapshot.data.entryHour, snapshot.data.entryMsg),
@@ -138,6 +139,7 @@ class _AssistanceCardState extends State<AssistanceCard> {
                     ],
                   ),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       AssistanceCardHour('assets/img/lunch_in.jpg', 'Lunch-In',
                           snapshot.data.lunchInHour, snapshot.data.lunchInMsg),
