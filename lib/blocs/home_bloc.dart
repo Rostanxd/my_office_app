@@ -11,7 +11,7 @@ class HomeBloc extends Object with HomeValidator implements BlocBase {
   final HomeRepository _repository = HomeRepository();
 
   /// Retrieve data from the stream
-  Stream<String> get dateToFind => _dateToFind.stream.transform(validateDate);
+  ValueObservable<String> get dateToFind => _dateToFind.stream;
 
   /// To observe the stream
   Observable<Assistance> get allAssistance => _assistance.stream;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
+import 'package:my_office_th_app/blocs/home_bloc.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
 
 import 'package:my_office_th_app/models/holding.dart';
@@ -176,7 +177,10 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
         child: GestureDetector(
           onTap: () {
             Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => HomePage()),
+                MaterialPageRoute(builder: (context) => BlocProvider<HomeBloc>(
+                  bloc: HomeBloc(),
+                  child: HomePage(),
+                )),
                 (Route<dynamic> route) => false);
           },
           child: Center(

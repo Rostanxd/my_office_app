@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/home_bloc.dart';
 import 'package:my_office_th_app/models/assistance.dart';
 import 'package:my_office_th_app/screens/home/assistance_card_hour.dart';
@@ -12,7 +13,7 @@ class AssistanceCard extends StatefulWidget {
 }
 
 class _AssistanceCardState extends State<AssistanceCard> {
-  final _bloc = HomeBloc();
+  HomeBloc _homeBloc;
   DateTime _now = new DateTime.now();
   DateFormat formatter = new DateFormat('yyyy-MM-dd');
 
@@ -20,26 +21,39 @@ class _AssistanceCardState extends State<AssistanceCard> {
   Future _selectDate() async {
     DateTime picked = await showDatePicker(
         context: context,
-        initialDate: _now,
+        initialDate: DateTime.parse(_homeBloc.dateToFind.value),
         firstDate: new DateTime(2016),
         lastDate: new DateTime(2020));
 
     if (picked != null) {
-      _bloc.changeDateToFind(formatter.format(picked).toString());
-      _bloc.fetchAssistance('0915157473');
+      _homeBloc.changeDateToFind(formatter.format(picked).toString());
+      _homeBloc.fetchAssistance('0915157473');
     }
   }
 
   @override
   void initState() {
-    _bloc.changeDateToFind(formatter.format(_now).toString());
     super.initState();
+  }
+
+
+  @override
+  void dispose() {
+    _homeBloc.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    /// Getting the assistance
-    _bloc.fetchAssistance('0915157473');
+    /// Getting the home bloc from the top
+    _homeBloc = BlocProvider.of<HomeBloc>(context);
+
+    /// Setting the default date.
+    _homeBloc.changeDateToFind(formatter.format(_now).toString());
+
+    /// Getting the assistance.
+    /// Here we should have to change with the real user data.
+    _homeBloc.fetchAssistance('0915157473');
 
     return Container(
       margin: EdgeInsets.all(10.0),
@@ -69,7 +83,7 @@ class _AssistanceCardState extends State<AssistanceCard> {
                   color: Color(0xff011e41))),
         ),
         StreamBuilder(
-            stream: _bloc.dateToFind,
+            stream: _homeBloc.dateToFind,
             builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
               return snapshot.hasData
                   ? Container(
@@ -97,7 +111,7 @@ class _AssistanceCardState extends State<AssistanceCard> {
 
   Widget _cardBody() {
     return StreamBuilder(
-      stream: _bloc.allAssistance,
+      stream: _homeBloc.allAssistance,
       builder: (BuildContext context, AsyncSnapshot<Assistance> snapshot) {
         if (snapshot.hasError) {
           return Container(

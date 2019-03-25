@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
+import 'package:my_office_th_app/blocs/home_bloc.dart';
+import 'package:my_office_th_app/blocs/invoice_bloc.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
 import 'package:my_office_th_app/models/local.dart';
 import 'package:my_office_th_app/models/user.dart';
@@ -8,6 +10,7 @@ import 'package:my_office_th_app/blocs/inventory_bloc.dart';
 import 'package:my_office_th_app/screens/home/index.dart';
 import 'package:my_office_th_app/screens/inventory/index.dart';
 import 'package:my_office_th_app/screens/login/index.dart';
+import 'package:my_office_th_app/screens/sales/invoice_home.dart';
 
 // ignore: must_be_immutable
 class UserDrawer extends StatelessWidget {
@@ -19,7 +22,7 @@ class UserDrawer extends StatelessWidget {
     bloc = BlocProvider.of<LoginBloc>(context);
 
     return Drawer(
-      child: new ListView(
+      child: ListView(
         children: <Widget>[
           _header(),
           Divider(),
@@ -32,6 +35,17 @@ class UserDrawer extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => BlocProvider(
                       bloc: InventoryBloc(),
                       child: InventoryHome(),
+                    )));
+              }),
+          ListTile(
+              title: new Text("Sales"),
+              trailing: new Icon(Icons.attach_money),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => BlocProvider(
+                      bloc: InvoiceBloc(),
+                      child: InvoiceHome(),
                     )));
               }),
           ListTile(
@@ -55,7 +69,10 @@ class UserDrawer extends StatelessWidget {
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => HomePage()));
+                    MaterialPageRoute(builder: (context) => BlocProvider(
+                      bloc: HomeBloc(),
+                      child: HomePage(),
+                    )));
               }),
           ListTile(
               title: new Text("Cambiar Local"),
