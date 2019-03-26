@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/home_bloc.dart';
+import 'package:my_office_th_app/blocs/login_bloc.dart';
 import 'package:my_office_th_app/models/assistance.dart';
 import 'package:my_office_th_app/screens/home/assistance_card_hour.dart';
 
@@ -13,6 +14,7 @@ class AssistanceCard extends StatefulWidget {
 }
 
 class _AssistanceCardState extends State<AssistanceCard> {
+  LoginBloc _loginBloc;
   HomeBloc _homeBloc;
   DateTime _now = new DateTime.now();
   DateFormat formatter = new DateFormat('yyyy-MM-dd');
@@ -27,7 +29,7 @@ class _AssistanceCardState extends State<AssistanceCard> {
 
     if (picked != null) {
       _homeBloc.changeDateToFind(formatter.format(picked).toString());
-      _homeBloc.fetchAssistance('0915157473');
+      _homeBloc.fetchAssistance(_loginBloc.user.value.identification);
     }
   }
 
@@ -45,6 +47,9 @@ class _AssistanceCardState extends State<AssistanceCard> {
 
   @override
   Widget build(BuildContext context) {
+    /// Geting the login bloc
+    _loginBloc = BlocProvider.of<LoginBloc>(context);
+
     /// Getting the home bloc from the top
     _homeBloc = BlocProvider.of<HomeBloc>(context);
 
@@ -53,7 +58,7 @@ class _AssistanceCardState extends State<AssistanceCard> {
 
     /// Getting the assistance.
     /// Here we should have to change with the real user data.
-    _homeBloc.fetchAssistance('0915157473');
+    _homeBloc.fetchAssistance(_loginBloc.user.value.identification);
 
     return Container(
       margin: EdgeInsets.all(10.0),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
 import 'package:my_office_th_app/blocs/home_bloc.dart';
+import 'package:my_office_th_app/blocs/setting_bloc.dart';
 import 'package:my_office_th_app/models/user.dart';
 import 'package:my_office_th_app/screens/home/index.dart';
 
@@ -13,7 +14,8 @@ class LoginUserForm extends StatefulWidget {
 }
 
 class _LoginUserFormState extends State<LoginUserForm> {
-  LoginBloc bloc;
+  SettingsBloc _settingsBloc;
+  LoginBloc _loginBloc;
 
   @override
   void initState() {
@@ -27,16 +29,19 @@ class _LoginUserFormState extends State<LoginUserForm> {
 
   @override
   Widget build(BuildContext context) {
+    /// Getting the setting bloc
+    _settingsBloc = BlocProvider.of(context);
+
     /// Searching for the login bloc in the provider
-    bloc = BlocProvider.of<LoginBloc>(context);
+    _loginBloc = BlocProvider.of<LoginBloc>(context);
 
     /// Listener to the observable to catch the response.
-    bloc.user.listen((User user) {
+    _loginBloc.user.listen((User user) {
       if (user != null) {
         _moveNextPage(user);
       }
     }, onError: (error) {
-      _showSnackBarMsg(error, context);
+      _showSnackBarMsg(error);
     });
 
     return (Container(
@@ -64,10 +69,10 @@ class _LoginUserFormState extends State<LoginUserForm> {
   /// Field for the user's Id
   Widget _idField() {
     return StreamBuilder(
-      stream: bloc.id,
+      stream: _loginBloc.id,
       builder: (context, snapshot) {
         return TextField(
-          onChanged: bloc.changeId,
+          onChanged: _loginBloc.changeId,
           decoration: InputDecoration(
               labelText: 'USUARIO',
               labelStyle: TextStyle(
@@ -85,10 +90,10 @@ class _LoginUserFormState extends State<LoginUserForm> {
   /// Field for the user's password
   Widget _passwordField() {
     return StreamBuilder(
-      stream: bloc.password,
+      stream: _loginBloc.password,
       builder: (context, snapshot) {
         return TextField(
-          onChanged: bloc.changePassword,
+          onChanged: _loginBloc.changePassword,
           obscureText: true,
           decoration: InputDecoration(
               labelText: 'CLAVE',
@@ -129,7 +134,7 @@ class _LoginUserFormState extends State<LoginUserForm> {
   /// Submit button for the form
   Widget _submitButton(BuildContext context) {
     return StreamBuilder(
-        stream: bloc.submitValid,
+        stream: _loginBloc.submitValid,
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
           return Container(
             height: 40.0,
@@ -143,7 +148,7 @@ class _LoginUserFormState extends State<LoginUserForm> {
               child: GestureDetector(
                 onTap: () {
                   if (snapshot.data != null && snapshot.data) {
-                    bloc.logIn();
+                    _loginBloc.logIn(_settingsBloc.deviceId.value);
                   }
                 },
                 child: Center(
@@ -164,7 +169,7 @@ class _LoginUserFormState extends State<LoginUserForm> {
   /// Streamer to build button login or circular progress indicator
   Widget _streamButtonSubmit(BuildContext context) {
     return StreamBuilder(
-      stream: bloc.logging,
+      stream: _loginBloc.logging,
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
         return snapshot.hasData
             ? snapshot.data
@@ -184,8 +189,8 @@ class _LoginUserFormState extends State<LoginUserForm> {
   /// if he doesn't, sent to the login page with conditional interface (form).
   void _moveNextPage(User user) {
     if (user.local.name.isNotEmpty) {
-      bloc.changeCurrentHolding(user.holding);
-      bloc.changeCurrentLocal(user.local);
+      _loginBloc.changeCurrentHolding(user.holding);
+      _loginBloc.changeCurrentLocal(user.local);
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => BlocProvider<HomeBloc>(
             bloc: HomeBloc(),
@@ -196,7 +201,7 @@ class _LoginUserFormState extends State<LoginUserForm> {
   }
 
   /// Show a snack bar with a message
-  void _showSnackBarMsg(String message, BuildContext context) {
+  void _showSnackBarMsg(String message) {
     Scaffold.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 }

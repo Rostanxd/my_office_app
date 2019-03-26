@@ -10,13 +10,14 @@ class AssistanceApi {
   final _httpClient = http.Client();
 
   Future<Assistance> fetchDateAssistance(String date, String employeeId) async {
+    print('fetchDateAssistance >> $date $employeeId');
     Assistance assistance;
     var response = await _httpClient.post(
         Connection.host + '/rest/WsAssistance',
         headers: {"Content-Type": "application/json"},
         body: json.encode({"date": "$date", "employeeId": "$employeeId"}));
 
-    print('fetchDateAssistance >> ' + response.body);
+    print('fetchDateAssistance << ${response.body}');
 
     /// To get easily the gx response
     Map<String, dynamic> gxResponse = json.decode(response.body);

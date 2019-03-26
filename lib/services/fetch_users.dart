@@ -13,6 +13,7 @@ class UserApi {
 
   Future<User> fetchUser(String id, String password) async {
     User user;
+    List<UserDevice> deviceList = List<UserDevice>();
 
     print('fetchUser >> $id $password');
 
@@ -25,6 +26,10 @@ class UserApi {
     /// To get easily the gx response
     Map<String, dynamic> gxResponse = json.decode(response.body);
 
+    var responseDeviceList = gxResponse['SdtUsers'][0]['deviceList'] as List;
+    deviceList = responseDeviceList.map((d) => UserDevice.fromJson(d)).toList();
+
+
     user = User(
         gxResponse['SdtUsers'][0]['user'],
         gxResponse['SdtUsers'][0]['name'],
@@ -34,8 +39,9 @@ class UserApi {
         Holding(gxResponse['SdtUsers'][0]['holdingId'],
             gxResponse['SdtUsers'][0]['holdingName']),
         Local(gxResponse['SdtUsers'][0]['localId'],
-            gxResponse['SdtUsers'][0]['localName']));
-
+            gxResponse['SdtUsers'][0]['localName']),
+        gxResponse['SdtUsers'][0]['identification'],
+        deviceList);
     return user;
   }
 }

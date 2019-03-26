@@ -50,13 +50,28 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
   Function(Holding) get changeCurrentHolding => _holding.sink.add;
 
   /// To call the user api
-  fetchUser() async {
+  fetchUser(String deviceId) async {
+    List<UserDevice> _userDevice;
+    bool _deviceValid = false;
     _logging.sink.add(true);
 
     await _loginRepository
         .fetchUser(_id.value, _password.value)
         .then((response) {
-          _user.sink.add(response);
+          /// Finding for the device in the user's device list
+          _userDevice = response.deviceList;
+          for (var i=0; i < _userDevice.length; i++){
+            print('${_userDevice[i].deviceId} == $deviceId');
+            if(_userDevice[i].deviceId == deviceId && _userDevice[i].state == 'A'){
+              _deviceValid = true;
+            }
+          }
+
+          /// Returning user or error to the stream.
+          _deviceValid
+              ? _user.sink.add(response)
+              : _user.sink.addError('Dispositivo no vinculado');
+
           _logging.sink.add(false);
         }, onError: (error) {
           ///  If we got an error we add the error to the stream
@@ -128,12 +143,14 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
         .whenComplete(() => print('fetchLocal >> Complete!!'));
   }
 
-  logIn() {
-    fetchUser();
+  logIn(String deviceId) {
+    fetchUser(deviceId);
   }
 
   logOut() {
     _user.sink.add(null);
+    _local.sink.add(null);
+    _password.sink.add(null);
     changeCurrentLocal(null);
     changeCurrentHolding(null);
   }
