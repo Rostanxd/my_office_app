@@ -13,7 +13,7 @@ class AssistanceApi {
     print('fetchDateAssistance >> $date $employeeId');
     Assistance assistance;
     var response = await _httpClient.post(
-        Connection.host + '/rest/WsAssistance',
+        Connection.host + '/rest/WsNomAsistencias',
         headers: {"Content-Type": "application/json"},
         body: json.encode({"date": "$date", "employeeId": "$employeeId"}));
 

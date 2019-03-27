@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/item_details_bloc.dart';
 
-import 'package:my_office_th_app/blocs/login_bloc.dart';
 import 'package:my_office_th_app/components/card_dummy_loading.dart';
 import 'package:my_office_th_app/components/gradient_back.dart';
 import 'package:my_office_th_app/models/item.dart';
@@ -18,7 +17,6 @@ class ItemInfoCard extends StatefulWidget {
 }
 
 class ItemInfoCardState extends State<ItemInfoCard> {
-  LoginBloc _loginBloc;
   ItemDetailsBloc _itemDetailsBloc;
 
 
@@ -29,9 +27,6 @@ class ItemInfoCardState extends State<ItemInfoCard> {
 
   @override
   Widget build(BuildContext context) {
-    /// Getting the bloc of the login
-    _loginBloc = BlocProvider.of<LoginBloc>(context);
-
     /// Getting the bloc of the item details
     _itemDetailsBloc = BlocProvider.of<ItemDetailsBloc>(context);
 
@@ -83,8 +78,7 @@ class ItemInfoCardState extends State<ItemInfoCard> {
                 _itemImageList(),
                 Container(
                     margin: EdgeInsets.only(top: 350.0, left: 10.0),
-                    child: ItemImageFoot(_itemDetailsBloc.item.value,
-                        _loginBloc.local.value, _loginBloc.user.value)),
+                    child: ItemImageFoot()),
                 Container(
                     margin: EdgeInsets.only(top: 325.0, left: 200.0),
                     child: ItemPriceInkwell(_itemDetailsBloc.item.value)),

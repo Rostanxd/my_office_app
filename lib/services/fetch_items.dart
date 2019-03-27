@@ -12,7 +12,8 @@ class ItemApi {
 
   Future<List<Item>> fetchItems(String itemId, String styleId) async {
     List<Item> itemList = new List<Item>();
-    final response = await _httpClient.post(Connection.host + '/rest/WsItem',
+    final response = await _httpClient.post(
+        Connection.host + '/rest/WsImpItems',
         headers: {"Content-Type": "application/json"},
         body: json.encode({"itemId": "$itemId", "styleId": "$styleId"}));
 
@@ -33,11 +34,12 @@ class ItemApi {
   Future<List<Item>> fetchStyles(String styleId) async {
     print('fetchStyles >> ' + styleId);
     List<Item> itemList = new List<Item>();
-    final response = await _httpClient.post(Connection.host + '/rest/WsEstilo',
-        headers: {"Content-Type": "application/json"},
-        body: json.encode({
-          "styleId": "$styleId",
-        }));
+    final response =
+        await _httpClient.post(Connection.host + '/rest/WsImpEstilos',
+            headers: {"Content-Type": "application/json"},
+            body: json.encode({
+              "styleId": "$styleId",
+            }));
 
     print('fetchStyles << ' + response.body);
 
@@ -57,7 +59,8 @@ class ItemApi {
     print('fetchItem >> $itemId $styleId');
 
     Item item;
-    final response = await _httpClient.post(Connection.host + '/rest/WsItem',
+    final response = await _httpClient.post(
+        Connection.host + '/rest/WsImpItems',
         headers: {"Content-Type": "application/json"},
         body: json.encode({"itemId": "$itemId", "styleId": "$styleId"}));
 
@@ -87,7 +90,8 @@ class ItemApi {
     print('fetchItemStock >> $itemId $localId $type');
 
     List<ItemStock> itemStockList = new List<ItemStock>();
-    var response = await _httpClient.post(Connection.host + '/rest/WsItemStock',
+    var response = await _httpClient.post(
+        Connection.host + '/rest/WsImpItemStocks',
         headers: {"Content-Type": "application/json"},
         body: json.encode(
             {"itemId": "$itemId", "BodCodigo": "$localId", "type": "$type"}));
@@ -102,10 +106,32 @@ class ItemApi {
 
     /// Loading the list from the response
     responseList.map((l) {
-      itemStockList.add(ItemStock(l['Color'], l['Talla'], int.parse(l['StockLocal']),
-          int.parse(l['StockOtros']), l['ItmCodigo']));
+      itemStockList.add(ItemStock(
+          l['Color'],
+          l['Talla'],
+          int.parse(l['StockLocal']),
+          int.parse(l['StockOtros']),
+          l['ItmCodigo']));
     }).toList();
 
     return itemStockList;
+  }
+
+  Future postImageStyle(String styleId, String imageName, String extension, String user,
+      String imageBase64) async {
+
+    print('postImageStyle >> $styleId $imageName $extension $user $imageBase64');
+
+    var response = await _httpClient.post(Connection.host + '/rest/WsImpEstImgPost',
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({
+          "styleId": "$styleId",
+          "imgName": "$imageName",
+          "imgExtension": ".jpg",
+          "user": "$user",
+          "image64": "$imageBase64"
+        }));
+
+    print('postImageStyle << ${response.body}');
   }
 }

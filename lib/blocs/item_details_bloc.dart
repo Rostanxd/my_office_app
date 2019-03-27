@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:image/image.dart' as im;
 import 'package:my_office_th_app/blocs/bloc_base.dart';
 import 'package:my_office_th_app/models/item.dart';
 import 'package:my_office_th_app/models/item_stock.dart';
@@ -15,6 +18,9 @@ class ItemDetailsBloc extends Object implements BlocBase {
   final _itemStockAllList = BehaviorSubject<List<ItemStock>>();
   final _itemStockSaleList = BehaviorSubject<List<ItemStock>>();
   final _loadingData = BehaviorSubject<bool>();
+  final _photoFromCamera = BehaviorSubject<bool>();
+  final _imageFile = BehaviorSubject<File>();
+  final _loadingImage = BehaviorSubject<bool>();
   final InventoryRepository _inventoryRepository = InventoryRepository();
 
   /// Retrieve data from the stream.
@@ -37,6 +43,12 @@ class ItemDetailsBloc extends Object implements BlocBase {
 
   ValueObservable<bool> get loadingData => _loadingData.stream;
 
+  ValueObservable<bool> get photoFromCamera => _photoFromCamera.stream;
+
+  ValueObservable<File> get imageFile => _imageFile.stream;
+
+  ValueObservable<bool> get loadingImage => _loadingImage.stream;
+
   /// Add data to the streams.
   Function(Item) get changeItem => _item.sink.add;
 
@@ -47,6 +59,12 @@ class ItemDetailsBloc extends Object implements BlocBase {
   Function(String) get changeTypeReport => _typeReport.sink.add;
 
   Function(bool) get changeLoadingData => _loadingData.sink.add;
+
+  Function(bool) get changeOriginPhoto => _photoFromCamera.sink.add;
+
+  Function(File) get updateImageFile => _imageFile.sink.add;
+
+  Function(bool) get changeLoadingImage => _loadingImage.sink.add;
 
   /// Functions to call APIs.
   fetchItem(String itemId, String styleId) async {
@@ -125,6 +143,34 @@ class ItemDetailsBloc extends Object implements BlocBase {
     });
   }
 
+  uploadStyleImage(String user) async {
+    File _photoThumb;
+    if (_imageFile.value == null) {
+      _loadingImage.sink.add(false);
+      return;
+    }
+
+    print(_imageFile.value.existsSync());
+
+    im.Image _image = im.decodeImage(_imageFile.value.readAsBytesSync());
+    im.Image _thumbnail = im.copyResize(_image, 500);
+
+    _photoThumb = _imageFile.value
+      ..writeAsBytesSync(im.encodeJpg(_thumbnail, quality: 50));
+
+    await _inventoryRepository.postImageStyle(
+        _item.value.styleId,
+        _photoThumb.path.split("/").last,
+        '.jpg',
+        user, base64Encode(_photoThumb.readAsBytesSync())).then((data){
+          _loadingImage.sink.add(false);
+    }, onError: (error){
+      _loadingImage.sink.add(false);
+    }).catchError((error){
+      _loadingImage.sink.add(false);
+    });
+  }
+
   @override
   void dispose() {
     _item.close();
@@ -137,5 +183,8 @@ class ItemDetailsBloc extends Object implements BlocBase {
     _itemStockAllList.close();
     _itemStockSaleList.close();
     _loadingData.close();
+    _photoFromCamera.close();
+    _imageFile.close();
+    _loadingImage.close();
   }
 }

@@ -100,6 +100,12 @@ class _MyLoginPageState extends State<MyLoginPage> {
               ));
   }
 
+  @override
+  void dispose() {
+    print('login dispose!');
+    super.dispose();
+  }
+
   Widget _scaffoldError(String error) {
     return ListView(
       children: <Widget>[

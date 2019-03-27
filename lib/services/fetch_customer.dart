@@ -12,7 +12,7 @@ class CustomerApi {
 
     print('fetchCustomer >> $customerId');
     final response = await _httpClient.post(
-        Connection.host + '/rest/WsCustomer',
+        Connection.host + '/rest/WsCrmClientes',
         headers: {"Content-Type": "application/json"},
         body: json.encode({"localId": "$customerId"}));
 

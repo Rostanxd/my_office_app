@@ -13,7 +13,7 @@ class InvoiceApi {
 
     print('fetchInvoices >> $localId $sellerId $initDate $finalDate');
     final response =
-        await _httpClient.post(Connection.host + '/rest/WsInvoices',
+        await _httpClient.post(Connection.host + '/rest/WsPvtFacturas',
             headers: {"Content-Type": "application/json"},
             body: json.encode({
               "localId": "$localId",

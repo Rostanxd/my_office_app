@@ -101,7 +101,7 @@ class _InvoiceHomeState extends State<InvoiceHome> {
 
   Widget _filterCard() {
     return Container(
-      height: 100.0,
+      height: 120.0,
       margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
       child: Card(
         elevation: 5.0,
@@ -113,7 +113,7 @@ class _InvoiceHomeState extends State<InvoiceHome> {
                   margin: EdgeInsets.only(top: 20.0, left: 20.0, bottom: 10.0),
                   child: Text(
                     'Filtrar',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
                   ),
                 )
               ],

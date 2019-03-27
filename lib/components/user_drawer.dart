@@ -58,12 +58,6 @@ class UserDrawer extends StatelessWidget {
               }),
           Divider(),
           ListTile(
-              title: new Text("Dispositivo"),
-              trailing: new Icon(Icons.info),
-              onTap: () {
-                Navigator.pushNamed(context, '/device_info');
-              }),
-          ListTile(
               title: new Text("Inicio"),
               trailing: new Icon(Icons.home),
               onTap: () {
@@ -79,8 +73,8 @@ class UserDrawer extends StatelessWidget {
               trailing: new Icon(Icons.location_on),
               onTap: () {
                 Navigator.pop(context);
-                Scaffold.of(context).showSnackBar(
-                    SnackBar(content: Text('En desarrollo!')));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => MyLoginPage()));
               }),
           ListTile(
               title: new Text("Salir"),
@@ -94,12 +88,10 @@ class UserDrawer extends StatelessWidget {
               }),
           Divider(),
           ListTile(
-              title: new Text("Configuración"),
-              trailing: new Icon(Icons.settings),
+              title: new Text("Dispositivo"),
+              trailing: new Icon(Icons.info),
               onTap: () {
-                Navigator.pop(context);
-                Scaffold.of(context).showSnackBar(
-                    SnackBar(content: Text('En desarrollo!')));
+                Navigator.pushNamed(context, '/device_info');
               }),
         ],
       ),

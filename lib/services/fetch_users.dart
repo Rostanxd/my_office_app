@@ -17,7 +17,7 @@ class UserApi {
 
     print('fetchUser >> $id $password');
 
-    var response = await _httpClient.post(Connection.host + '/rest/WsLogin',
+    var response = await _httpClient.post(Connection.host + '/rest/WsManLogin',
         headers: {"Content-Type": "application/json"},
         body: json.encode({"user": "$id", "password": "$password"}));
 

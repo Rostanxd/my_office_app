@@ -38,7 +38,6 @@ class _AssistanceCardState extends State<AssistanceCard> {
     super.initState();
   }
 
-
   @override
   void dispose() {
     _homeBloc.dispose();
@@ -76,40 +75,34 @@ class _AssistanceCardState extends State<AssistanceCard> {
 
   Widget _cardHeader() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Container(
           margin:
               EdgeInsets.only(top: 20.0, left: 20.0, bottom: 10.0, right: 20.0),
           child: Text('Asistencia',
               style: TextStyle(
-                  fontSize: 18.0,
+                  fontSize: 16.0,
                   fontWeight: FontWeight.bold,
                   color: Color(0xff011e41))),
         ),
         StreamBuilder(
             stream: _homeBloc.dateToFind,
             builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-              return snapshot.hasData
-                  ? Container(
-                      margin: EdgeInsets.only(
-                          top: 20.0, left: 10.0, bottom: 10.0, right: 20.0),
-                      child: Text(snapshot.data,
-                          style: TextStyle(
-                              fontSize: 18.0, color: Color(0xff011e41))),
-                    )
-                  : Text('No hay datos');
+              return InkWell(
+                onTap: () {
+                  _selectDate();
+                },
+                child: snapshot.hasData
+                    ? Container(
+                        margin: EdgeInsets.only(
+                            top: 20.0, left: 10.0, bottom: 10.0, right: 20.0),
+                        child: Text(snapshot.data,
+                            style: TextStyle(
+                                fontSize: 16.0, color: Colors.blueAccent)),
+                      )
+                    : Text('Error fecha.'),
+              );
             }),
-        Container(
-          margin:
-              EdgeInsets.only(top: 20.0, left: 20.0, bottom: 10.0, right: 20.0),
-          child: InkWell(
-            child: Icon(Icons.search),
-            onTap: () {
-              _selectDate();
-            },
-          ),
-        )
       ],
     );
   }

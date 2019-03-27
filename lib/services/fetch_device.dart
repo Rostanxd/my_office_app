@@ -11,7 +11,7 @@ class DeviceApi {
   Future<Device> fetchDevice(String id) async{
     Device _device;
     print('fetchDevice >> $id');
-    var response = await _httpClient.post(Connection.host + '/rest/WsDevice',
+    var response = await _httpClient.post(Connection.host + '/rest/WsManDispositivos',
         headers: {"Content-Type": "application/json"},
         body: json.encode({"id": "$id"}));
 
