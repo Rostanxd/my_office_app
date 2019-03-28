@@ -124,12 +124,6 @@ class _ItemImageFootState extends State<ItemImageFoot> {
     /// Initialing variables in the bloc
     _itemDetailsBloc.changeOriginPhoto(false);
 
-    /// Listen the stream image file
-    _itemDetailsBloc.imageFile.listen((data) {
-      Scaffold.of(context).showSnackBar(
-          SnackBar(content: Text('Archivo ${data.path.split("/").last} cargado correctamente!')));
-    });
-
     _row = Row(
       children: <Widget>[
         StreamBuilder(

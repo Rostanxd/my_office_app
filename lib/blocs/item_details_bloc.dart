@@ -145,33 +145,49 @@ class ItemDetailsBloc extends Object implements BlocBase {
 
   uploadStyleImage(String user, File imageFile) async {
     File _photoThumb;
-    if (_imageFile.value == null) {
+
+    /// Control if we don't have any photo captured
+    if (imageFile == null) {
+      _imageFile.sink.addError('No ha seleccionado ninguna imagen!');
       _loadingImage.sink.add(false);
       return;
     }
 
-    print(_imageFile.value.existsSync());
+    /// Try catch to handle error with the read.
+    try {
+      im.Image _image = im.decodeImage(imageFile.readAsBytesSync());
+      im.Image _thumbnail = im.copyResize(_image, 500);
 
-    im.Image _image = im.decodeImage(_imageFile.value.readAsBytesSync());
-    im.Image _thumbnail = im.copyResize(_image, 500);
+      print(imageFile.path);
 
-    _photoThumb = _imageFile.value
-      ..writeAsBytesSync(im.encodeJpg(_thumbnail, quality: 50));
+      _photoThumb = imageFile
+        ..writeAsBytesSync(im.encodeJpg(_thumbnail, quality: 50));
 
-    await _inventoryRepository.postImageStyle(
-        _item.value.styleId,
-        _photoThumb.path.split("/").last,
-        '.jpg',
-        user, base64Encode(_photoThumb.readAsBytesSync())).then((data){
-          _imageFile.sink.add(imageFile);
-          _loadingImage.sink.add(false);
-    }, onError: (error){
+      /// Calling the API to post the image.
+      await _inventoryRepository
+          .postImageStyle(_item.value.styleId, _photoThumb.path.split("/").last,
+              '.jpg', user, base64Encode(_photoThumb.readAsBytesSync()))
+          .then((data) {
+        _imageFile.sink.add(imageFile);
+        _loadingImage.sink.add(false);
+
+        /// As we load a new image to the item, we need to get again
+        /// the item's image list and rebuild the info detail of the item.
+        fetchItem(_itemId.value, '');
+      }, onError: (error) {
+        _loadingImage.sink.add(false);
+        _imageFile.sink.addError('No se ha podido cargar la imagen.');
+        _imageFile.sink.addError(error.runtimeType.toString());
+      }).catchError((error) {
+        _loadingImage.sink.add(false);
+        _imageFile.sink.addError('No se ha podido cargar la imagen.');
+        _imageFile.sink.addError(error.runtimeType.toString());
+      });
+    } catch (error) {
+      print(error.toString());
+      _imageFile.sink.addError(error.runtimeType.toString());
       _loadingImage.sink.add(false);
-      _imageFile.sink.addError('No se ha podido cargar la imagen.');
-    }).catchError((error){
-      _loadingImage.sink.add(false);
-      _imageFile.sink.addError('No se ha podido cargar la imagen.');
-    });
+    }
   }
 
   @override

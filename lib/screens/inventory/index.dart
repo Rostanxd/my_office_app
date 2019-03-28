@@ -27,8 +27,13 @@ class _InventoryHomeState extends State<InventoryHome> {
   Future _barcodeScanning() async {
     try {
       var _barcodeRead = await BarcodeScanner.scan();
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => ItemDetails(_barcodeRead)));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => BlocProvider(
+                    bloc: ItemDetailsBloc(),
+                    child: ItemDetails(_barcodeRead),
+                  )));
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.CameraAccessDenied) {
       } else {
@@ -36,8 +41,8 @@ class _InventoryHomeState extends State<InventoryHome> {
             SnackBar(content: Text('Error acceso a cámara denegado.')));
       }
     } on FormatException {} catch (e) {
-      Scaffold.of(context).showSnackBar(
-          SnackBar(content: Text('Error ${e.toString()}')));
+      Scaffold.of(context)
+          .showSnackBar(SnackBar(content: Text('Error ${e.toString()}')));
     }
   }
 
@@ -102,7 +107,7 @@ class _InventoryHomeState extends State<InventoryHome> {
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.refresh),
           onPressed: () {
-            _controller.clearCache();
+            //  _controller.clearCache();
             _controller.reload();
           }),
     );
@@ -220,7 +225,7 @@ class DataSearch extends SearchDelegate<String> {
                       style: TextStyle(color: Colors.grey))
                 ])),
             subtitle: Text(
-              items[index].styleName + ' / ' + items[index].lineName,
+              '${items[index].styleName} / ${items[index].lineName} / ${items[index].productName}',
               style: TextStyle(fontSize: 10.0),
             ),
           ),
@@ -229,37 +234,36 @@ class DataSearch extends SearchDelegate<String> {
   }
 
   /// List view with the style's items.
-  Widget _itemsOfStyleList(){
+  Widget _itemsOfStyleList() {
     return StreamBuilder(
       stream: _inventoryBloc.itemList,
       builder: (BuildContext context, AsyncSnapshot<List<Item>> snapshot) {
         return snapshot.hasData
             ? ListView.builder(
-          itemBuilder: (context, index) => ListTile(
-            onTap: () {
-              /// Navigation to the item's detail
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => BlocProvider(
-                        bloc: ItemDetailsBloc(),
-                        child: ItemDetails(snapshot.data[index].itemId),
-                      )));
-            },
-            leading: Icon(Icons.open_in_new),
-            title: Text(snapshot.data[index].itemId),
-            subtitle: Text(
-              snapshot.data[index].styleName +
-                  ' / ' +
-                  snapshot.data[index].lineName,
-              style: TextStyle(fontSize: 10.00),
-            ),
-          ),
-          itemCount: snapshot.data.length,
-        )
+                itemBuilder: (context, index) => ListTile(
+                      onTap: () {
+                        /// Navigation to the item's detail
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => BlocProvider(
+                                      bloc: ItemDetailsBloc(),
+                                      child: ItemDetails(
+                                          snapshot.data[index].itemId),
+                                    )));
+                      },
+                      leading: Icon(Icons.open_in_new),
+                      title: Text(snapshot.data[index].itemId),
+                      subtitle: Text(
+                        '${snapshot.data[index].styleName} / ${snapshot.data[index].lineName} / ${snapshot.data[index].productName}',
+                        style: TextStyle(fontSize: 10.00),
+                      ),
+                    ),
+                itemCount: snapshot.data.length,
+              )
             : Center(
-          child: CircularProgressIndicator(),
-        );
+                child: CircularProgressIndicator(),
+              );
       },
     );
   }

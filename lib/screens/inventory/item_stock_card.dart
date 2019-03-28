@@ -52,23 +52,8 @@ class _ItemStockCardState extends State<ItemStockCard> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  _tableType == 'A'
-                      ? Container(
-                          margin: EdgeInsets.only(
-                            top: 20.0,
-                            left: 20.0,
-                            bottom: 5.0,
-                          ),
-                          child: InkWell(
-                            child: Icon(Icons.arrow_back),
-                            onTap: () {
-                              _itemDetailsBloc.changeTypeReport('L');
-                            },
-                          ),
-                        )
-                      : Container(),
                   Container(
                     margin: EdgeInsets.only(top: 20.0, left: 20.0, bottom: 5.0),
                     child: Text(
@@ -80,6 +65,22 @@ class _ItemStockCardState extends State<ItemStockCard> {
                           fontSize: 16.0, fontWeight: FontWeight.bold),
                     ),
                   ),
+                  _tableType == 'A'
+                      ? Container(
+                    margin: EdgeInsets.only(
+                      top: 20.0,
+                      right: 20.0,
+                      left: 20.0,
+                      bottom: 5.0,
+                    ),
+                    child: InkWell(
+                      child: Icon(Icons.arrow_back, color: Colors.blueAccent,),
+                      onTap: () {
+                        _itemDetailsBloc.changeTypeReport('L');
+                      },
+                    ),
+                  )
+                      : Container(),
                 ],
               ),
               Divider(),

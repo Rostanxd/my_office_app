@@ -1,7 +1,7 @@
 import 'dart:io';
-
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
+import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/setting_bloc.dart';
 
 class DeviceInfo extends StatefulWidget {
@@ -10,11 +10,11 @@ class DeviceInfo extends StatefulWidget {
 }
 
 class _DeviceInfoState extends State<DeviceInfo> {
+  SettingsBloc _settingsBloc;
+
   @override
   Widget build(BuildContext context) {
-    /// Getting the android device info.
-    Platform.isAndroid ? settingsBloc.fetchAndroidInfo() : settingsBloc
-        .fetchIosInfo();
+    _settingsBloc = BlocProvider.of<SettingsBloc>(context);
 
     return Scaffold(
       resizeToAvoidBottomPadding: true,
@@ -25,7 +25,7 @@ class _DeviceInfoState extends State<DeviceInfo> {
       body: Container(
         margin: EdgeInsets.all(10.0),
         child: Platform.isAndroid ? StreamBuilder<AndroidDeviceInfo>(
-          stream: settingsBloc.androidDeviceInfo,
+          stream: _settingsBloc.androidDeviceInfo,
           builder: (BuildContext context,
               AsyncSnapshot<AndroidDeviceInfo> snapshot) {
             return snapshot.hasData
@@ -33,7 +33,7 @@ class _DeviceInfoState extends State<DeviceInfo> {
                 : CircularProgressIndicator();
           },
         ) : StreamBuilder<IosDeviceInfo>(
-          stream: settingsBloc.iosDeviceInfo,
+          stream: _settingsBloc.iosDeviceInfo,
           builder: (BuildContext context,
               AsyncSnapshot<IosDeviceInfo> snapshot) {
             return snapshot.hasData

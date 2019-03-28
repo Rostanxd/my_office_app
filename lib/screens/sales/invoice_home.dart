@@ -179,7 +179,7 @@ class _InvoiceHomeState extends State<InvoiceHome> {
 
   Widget _invoiceListStream() {
     return Container(
-        margin: EdgeInsets.only(top: 120.0),
+        margin: EdgeInsets.only(top: 130.0),
         child: Center(
           child: StreamBuilder<List<Invoice>>(
               stream: _invoiceBloc.invoiceList,

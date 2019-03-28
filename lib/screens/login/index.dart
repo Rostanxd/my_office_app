@@ -31,9 +31,6 @@ class _MyLoginPageState extends State<MyLoginPage> {
     /// Calling the setting bloc on the provider.
     _settingsBloc = BlocProvider.of<SettingsBloc>(context);
 
-    /// Calling the setting bloc on the provider.
-    _settingsBloc = BlocProvider.of<SettingsBloc>(context);
-
     /// Calling function to verify device
     Platform.isAndroid
         ? _settingsBloc.fetchAndroidInfo()
@@ -41,6 +38,9 @@ class _MyLoginPageState extends State<MyLoginPage> {
 
     /// Calling the login bloc on the provider
     _loginBloc = BlocProvider.of<LoginBloc>(context);
+
+    /// Add data to stream to control circular progress bar.
+    _settingsBloc.changeLoadingData(false);
 
     return Scaffold(
         resizeToAvoidBottomPadding: true,
@@ -114,14 +114,61 @@ class _MyLoginPageState extends State<MyLoginPage> {
           children: <Widget>[
             _header(),
             SizedBox(height: 15.0),
-            Center(
-              child: Container(
-                margin: EdgeInsets.only(top: 100.0),
-                child: Text(
-                  error,
-                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-                ),
-              ),
+            StreamBuilder<bool>(
+              stream: _settingsBloc.loadingData,
+              builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                return snapshot.hasData && snapshot.data
+                    ? Column(
+                        children: <Widget>[
+                          Container(
+                            margin: EdgeInsets.only(top: 80.0),
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          )
+                        ],
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Center(
+                            child: Container(
+                              margin: EdgeInsets.only(top: 100.0),
+                              child: Text(
+                                error,
+                                style: TextStyle(
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            height: 40.0,
+                            width: 300.0,
+                            margin: EdgeInsets.only(top: 40.0),
+                            child: Material(
+                              borderRadius: BorderRadius.circular(20.0),
+                              shadowColor: Color(0xff212121),
+                              color: Color(0xFFeb2227),
+                              elevation: 7.0,
+                              child: GestureDetector(
+                                onTap: () {
+                                  if (Platform.isAndroid)
+                                    _settingsBloc.fetchInfoDevice(
+                                        _settingsBloc.deviceId.value);
+                                },
+                                child: Center(
+                                  child: Icon(
+                                    Icons.refresh,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+              },
             ),
           ],
         ),

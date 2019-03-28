@@ -19,7 +19,6 @@ class ItemInfoCard extends StatefulWidget {
 class ItemInfoCardState extends State<ItemInfoCard> {
   ItemDetailsBloc _itemDetailsBloc;
 
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -29,6 +28,19 @@ class ItemInfoCardState extends State<ItemInfoCard> {
   Widget build(BuildContext context) {
     /// Getting the bloc of the item details
     _itemDetailsBloc = BlocProvider.of<ItemDetailsBloc>(context);
+
+    /// Listen the stream image file. Once we load a new image to the item
+    /// We show a snack bar with a message and set null the stream
+    _itemDetailsBloc.imageFile.listen((data) {
+      if (data != null){
+        Scaffold.of(context).showSnackBar(
+            SnackBar(content: Text('Imagen cargada correctamente!')));
+        _itemDetailsBloc.updateImageFile(null);
+      }
+    }).onError((error){
+      Scaffold.of(context).showSnackBar(
+          SnackBar(content: Text(error)));
+    });
 
     return Container(
         margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
@@ -42,7 +54,7 @@ class ItemInfoCardState extends State<ItemInfoCard> {
 
   Widget _itemImageList() {
     return Container(
-      height: 350.0,
+      height: 450.0,
       child: ListView(
         padding: EdgeInsets.only(top: 10, left: 25.0, bottom: 40.0),
         scrollDirection: Axis.horizontal,
@@ -64,7 +76,7 @@ class ItemInfoCardState extends State<ItemInfoCard> {
             Stack(
               children: <Widget>[
                 Container(
-                  height: 400.0,
+                  height: 450.0,
                   child: Align(
                     alignment: Alignment.topCenter,
                     child: GradientBack(
@@ -77,10 +89,10 @@ class ItemInfoCardState extends State<ItemInfoCard> {
                 ),
                 _itemImageList(),
                 Container(
-                    margin: EdgeInsets.only(top: 350.0, left: 10.0),
+                    margin: EdgeInsets.only(top: 450.0, left: 10.0),
                     child: ItemImageFoot()),
                 Container(
-                    margin: EdgeInsets.only(top: 325.0, left: 200.0),
+                    margin: EdgeInsets.only(top: 425.0, left: 200.0),
                     child: ItemPriceInkwell(_itemDetailsBloc.item.value)),
               ],
             ),
