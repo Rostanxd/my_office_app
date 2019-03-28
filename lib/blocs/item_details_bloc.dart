@@ -143,7 +143,7 @@ class ItemDetailsBloc extends Object implements BlocBase {
     });
   }
 
-  uploadStyleImage(String user) async {
+  uploadStyleImage(String user, File imageFile) async {
     File _photoThumb;
     if (_imageFile.value == null) {
       _loadingImage.sink.add(false);
@@ -163,11 +163,14 @@ class ItemDetailsBloc extends Object implements BlocBase {
         _photoThumb.path.split("/").last,
         '.jpg',
         user, base64Encode(_photoThumb.readAsBytesSync())).then((data){
+          _imageFile.sink.add(imageFile);
           _loadingImage.sink.add(false);
     }, onError: (error){
       _loadingImage.sink.add(false);
+      _imageFile.sink.addError('No se ha podido cargar la imagen.');
     }).catchError((error){
       _loadingImage.sink.add(false);
+      _imageFile.sink.addError('No se ha podido cargar la imagen.');
     });
   }
 
