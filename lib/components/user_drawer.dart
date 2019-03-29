@@ -37,17 +37,17 @@ class UserDrawer extends StatelessWidget {
                       child: InventoryHome(),
                     )));
               }),
-          ListTile(
-              title: new Text("Sales"),
-              trailing: new Icon(Icons.attach_money),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => BlocProvider(
-                      bloc: InvoiceBloc(),
-                      child: InvoiceHome(),
-                    )));
-              }),
+//          ListTile(
+//              title: new Text("Sales"),
+//              trailing: new Icon(Icons.attach_money),
+//              onTap: () {
+//                Navigator.pop(context);
+//                Navigator.push(context,
+//                    MaterialPageRoute(builder: (context) => BlocProvider(
+//                      bloc: InvoiceBloc(),
+//                      child: InvoiceHome(),
+//                    )));
+//              }),
           ListTile(
               title: new Text("CRM"),
               trailing: new Icon(Icons.people),

@@ -13,7 +13,7 @@ class ItemPagePhotos extends StatelessWidget {
           children: (this.listImagePath)
               .map((f) => Image.network(
                     f,
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
                     height: double.infinity,
                     width: double.infinity,
                     alignment: Alignment.center,
