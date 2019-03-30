@@ -9,7 +9,7 @@ class CardInfo extends Object {
       this.image, this.title1, this.title2, this.subtitle1, this.subtitle2);
 
   CardInfo.fromJson(Map<String, dynamic> json){
-    this.image = json['iamge'];
+    this.image = json['image'];
     this.title1 = json['title1'];
     this.title2 = json['title2'];
     this.subtitle1 = json['subtitle1'];

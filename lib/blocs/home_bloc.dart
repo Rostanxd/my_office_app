@@ -32,6 +32,14 @@ class HomeBloc extends Object with HomeValidator implements BlocBase {
 
   Observable<CardInfo> get cardSalesAnalysis => _cardSalesAnalysis.stream;
 
+  Stream<bool> get refreshHome => Observable.combineLatest5(
+      cardMonthlySales,
+      cardWeeklySales,
+      cardDailySales,
+      cardCustomersWeek,
+      cardSalesAnalysis,
+      (a, b, c, d, e) => true);
+
   /// Add data to stream
   Function(String) get changeDateToFind => _dateToFind.sink.add;
 
@@ -56,33 +64,91 @@ class HomeBloc extends Object with HomeValidator implements BlocBase {
     });
   }
 
-  fetchMonthlySales(String localId, String sellerId) async{
-    await _repository.fetchCardInfo(localId, sellerId, 'M').timeout(Duration(seconds: Connection.timeOutSec)).then((response){
+  fetchAllCardInfo(String localId, String sellerId) {
+    fetchMonthlySales(localId, sellerId);
+    fetchWeeklySales(localId, sellerId);
+    fetchDailySales(localId, sellerId);
+    fetchCustomersWeek(localId, sellerId);
+    fetchSalesAnalysis(localId, sellerId);
+  }
+
+  fetchMonthlySales(String localId, String sellerId) async {
+    _cardMonthlySales.sink.add(null);
+    await _repository
+        .fetchCardInfo(localId, sellerId, 'M')
+        .timeout(Duration(seconds: Connection.timeOutSec))
+        .then((response) {
       _cardMonthlySales.sink.add(response);
+    }, onError: (error) {
+      print(error);
+      _cardMonthlySales.addError(error.runtimeType.toString());
+    }).catchError((error) {
+      print(error);
+      _cardMonthlySales.addError(error.runtimeType.toString());
     });
   }
 
-  fetchWeeklySales(String localId, String sellerId) async{
-    await _repository.fetchCardInfo(localId, sellerId, 'W').timeout(Duration(seconds: Connection.timeOutSec)).then((response){
-      _cardMonthlySales.sink.add(response);
+  fetchWeeklySales(String localId, String sellerId) async {
+    _cardWeeklySales.sink.add(null);
+    await _repository
+        .fetchCardInfo(localId, sellerId, 'W')
+        .timeout(Duration(seconds: Connection.timeOutSec))
+        .then((response) {
+      _cardWeeklySales.sink.add(response);
+    }, onError: (error) {
+      print(error.toString());
+      _cardWeeklySales.sink.addError(error.runtimeType.toString());
+    }).catchError((error) {
+      print(error.toString());
+      _cardWeeklySales.sink.addError(error.runtimeType.toString());
     });
   }
 
-  fetchDailySales(String localId, String sellerId) async{
-    await _repository.fetchCardInfo(localId, sellerId, 'D').timeout(Duration(seconds: Connection.timeOutSec)).then((response){
-      _cardMonthlySales.sink.add(response);
+  fetchDailySales(String localId, String sellerId) async {
+    _cardDailySales.sink.add(null);
+    await _repository
+        .fetchCardInfo(localId, sellerId, 'D')
+        .timeout(Duration(seconds: Connection.timeOutSec))
+        .then((response) {
+      _cardDailySales.sink.add(response);
+    }, onError: (error) {
+      print(error.toString());
+      _cardDailySales.sink.addError(error.runtimeType.toString());
+    }).catchError((error) {
+      print(error.toString());
+      _cardDailySales.sink.addError(error.runtimeType.toString());
     });
   }
 
-  fetchCustomersWeek(String localId, String sellerId) async{
-    await _repository.fetchCardInfo(localId, sellerId, 'C').timeout(Duration(seconds: Connection.timeOutSec)).then((response){
-      _cardMonthlySales.sink.add(response);
+  fetchCustomersWeek(String localId, String sellerId) async {
+    _cardCustomersWeek.sink.add(null);
+    await _repository
+        .fetchCardInfo(localId, sellerId, 'C')
+        .timeout(Duration(seconds: Connection.timeOutSec))
+        .then((response) {
+      _cardCustomersWeek.sink.add(response);
+    }, onError: (error) {
+      print(error.toString());
+      _cardCustomersWeek.sink.addError(error.runtimeType.toString());
+    }).catchError((error) {
+      print(error.toString());
+      _cardCustomersWeek.sink.addError(error.runtimeType.toString());
     });
   }
 
-  fetchSalesAnalysis(String localId, String sellerId) async{
-    await _repository.fetchCardInfo(localId, sellerId, 'S').timeout(Duration(seconds: Connection.timeOutSec)).then((response){
-      _cardMonthlySales.sink.add(response);
+  fetchSalesAnalysis(String localId, String sellerId) async {
+    _cardSalesAnalysis.sink.add(null);
+    await _repository
+        .fetchCardInfo(localId, sellerId, 'S')
+        .timeout(Duration(seconds: Connection.timeOutSec))
+        .then((response) {
+      _cardSalesAnalysis.sink.add(response);
+    }, onError: (error) {
+      print(error.toString());
+      _cardSalesAnalysis.sink.addError(error.runtimeType.toString());
+    }).catchError((error) {
+      print(error.toString());
+      _cardSalesAnalysis.sink.addError(error.runtimeType.toString());
     });
   }
 
