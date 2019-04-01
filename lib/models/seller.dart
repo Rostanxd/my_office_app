@@ -9,6 +9,12 @@ class Seller implements Person{
   @override
   String lastName;
 
+  @override
+  String id;
+
+  @override
+  String gender;
+
   Seller(this.sellerId, this.firstName, this.lastName);
 
   Seller.fromJson(Map<String, dynamic> json){

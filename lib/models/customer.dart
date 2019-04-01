@@ -1,8 +1,10 @@
 import 'package:my_office_th_app/models/person.dart';
 
-class Customer implements Person{
-  String customerId;
+class Customer implements Person {
+  @override
+  String id;
 
+  @override
   String gender;
 
   @override
@@ -11,10 +13,10 @@ class Customer implements Person{
   @override
   String lastName;
 
-  Customer(this.customerId, this.gender, this.firstName, this.lastName);
+  Customer(this.gender, this.id, this.firstName, this.lastName);
 
-  Customer.fromJson(Map<String, dynamic> json){
-    this.customerId = json['customerId'];
+  Customer.fromJson(Map<String, dynamic> json) {
+    this.id = json['customerId'];
     this.firstName = json['firstName'];
     this.lastName = json['lastName'];
     this.gender = json['gender'];

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
+import 'package:my_office_th_app/blocs/crm_bloc.dart';
 import 'package:my_office_th_app/blocs/home_bloc.dart';
 import 'package:my_office_th_app/blocs/invoice_bloc.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
+import 'package:my_office_th_app/models/holding.dart';
 import 'package:my_office_th_app/models/local.dart';
 import 'package:my_office_th_app/models/user.dart';
 
 import 'package:my_office_th_app/blocs/inventory_bloc.dart';
+import 'package:my_office_th_app/screens/crm/index.dart';
 import 'package:my_office_th_app/screens/home/index.dart';
 import 'package:my_office_th_app/screens/inventory/index.dart';
 import 'package:my_office_th_app/screens/login/index.dart';
@@ -53,8 +56,11 @@ class UserDrawer extends StatelessWidget {
               trailing: new Icon(Icons.people),
               onTap: () {
                 Navigator.pop(context);
-                Scaffold.of(context).showSnackBar(
-                    new SnackBar(content: Text('En desarrollo!')));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => BlocProvider(
+                      bloc: CrmBloc(),
+                      child: CrmHome(),
+                    )));
               }),
           Divider(),
           ListTile(
@@ -124,6 +130,26 @@ class UserDrawer extends StatelessWidget {
                     stream: bloc.user,
                     builder:
                         (BuildContext context, AsyncSnapshot<User> snapshot) {
+                      return snapshot.hasData
+                          ? Text(
+                        snapshot.data.name,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14.0),
+                      )
+                          : CircularProgressIndicator();
+                    }),
+              ),
+              Container(
+                margin: EdgeInsets.only(
+                  top: 10.0,
+                  left: 20.0,
+                ),
+                child: StreamBuilder(
+                    stream: bloc.holding,
+                    builder:
+                        (BuildContext context, AsyncSnapshot<Holding> snapshot) {
                       return snapshot.hasData
                           ? Text(
                         snapshot.data.name,
