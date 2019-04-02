@@ -47,12 +47,52 @@ class _CrmHomeState extends State<CrmHome> {
         drawer: UserDrawer(),
         body: ListView(
           children: <Widget>[
+            _telemarketingAnniversaries(),
             _telemarketingEffectivenessCard(),
           ],
         ),
         floatingActionButton: FloatingActionButton(
-            child: Icon(Icons.add),
-            onPressed: () {}));
+            child: Icon(Icons.refresh),
+            onPressed: () {
+              _crmBloc.fetchAllCardInfo(
+                  _loginBloc.local.value.id, _loginBloc.user.value.sellerId);
+            }));
+  }
+
+  Widget _telemarketingAnniversaries() {
+    return Container(
+      margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
+      child: Card(
+        elevation: 5.0,
+        child: Column(
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
+              child: Text(
+                'Cumpleaños y Aniversarios',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(bottom: 10.0),
+              child: Text(
+                'Próximos 4 días',
+              ),
+            ),
+            Divider(),
+            StreamBuilder(
+                stream: _crmBloc.customersAnniversaries,
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<CustomerAnniversary>> snapshot) {
+                  if (snapshot.hasError) return _errorData(snapshot.error);
+                  return snapshot.hasData && snapshot.data != null
+                      ? _customersAnniversariesList(snapshot.data)
+                      : _loadingData();
+                })
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _telemarketingEffectivenessCard() {
@@ -118,30 +158,30 @@ class _CrmHomeState extends State<CrmHome> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Container(
-                width: 75.0,
+                width: 60.0,
                 margin: EdgeInsets.only(left: 20.0, top: 10.0),
                 child: Text(
                   'Llamadas',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.0),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10.0),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 75.0,
+                width: 60.0,
                 margin: EdgeInsets.only(top: 10.0),
                 child: Text(
                   _telemarketingEffectiveness.managementCalls,
-                  style: TextStyle(fontSize: 12.0),
+                  style: TextStyle(fontSize: 10.0),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 75.0,
+                width: 60.0,
                 margin: EdgeInsets.only(top: 10.0),
                 child: InkWell(
                   child: Text(
                     '${_telemarketingEffectiveness.managementCallsVsCustomers} LC.',
-                    style: TextStyle(fontSize: 12.0, color: Colors.blueAccent),
+                    style: TextStyle(fontSize: 10.0, color: Colors.blueAccent),
                   ),
                   onTap: () {
                     /// Message to the scaffold.
@@ -151,11 +191,11 @@ class _CrmHomeState extends State<CrmHome> {
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 75.0,
+                width: 60.0,
                 margin: EdgeInsets.only(right: 20.0, top: 10.0),
                 child: Text(
                   '',
-                  style: TextStyle(fontSize: 12.0),
+                  style: TextStyle(fontSize: 10.0),
                 ),
               )
             ],
@@ -164,38 +204,38 @@ class _CrmHomeState extends State<CrmHome> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Container(
-                width: 75.0,
+                width: 60.0,
                 margin: EdgeInsets.only(left: 20.0, top: 10.0),
                 child: Text(
                   'Clientes',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.0),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10.0),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 75.0,
+                width: 60.0,
                 margin: EdgeInsets.only(top: 10.0),
                 child: Text(
                   _telemarketingEffectiveness.managementCustomers,
-                  style: TextStyle(fontSize: 12.0),
+                  style: TextStyle(fontSize: 10.0),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 75.0,
+                width: 60.0,
                 margin: EdgeInsets.only(top: 10.0),
                 child: Text(
                   '',
-                  style: TextStyle(fontSize: 12.0),
+                  style: TextStyle(fontSize: 10.0),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 75.0,
+                width: 60.0,
                 margin: EdgeInsets.only(right: 20.0, top: 10.0),
                 child: Text(
                   '',
-                  style: TextStyle(fontSize: 12.0),
+                  style: TextStyle(fontSize: 10.0),
                 ),
               )
             ],
@@ -223,30 +263,30 @@ class _CrmHomeState extends State<CrmHome> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Container(
-                width: 75.0,
+                width: 60.0,
                 margin: EdgeInsets.only(left: 20.0, top: 10.0),
                 child: Text(
                   'Clientes',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.0),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10.0),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 75.0,
+                width: 60.0,
                 margin: EdgeInsets.only(top: 10.0),
                 child: Text(
                   _telemarketingEffectiveness.returnCustomers,
-                  style: TextStyle(fontSize: 12.0),
+                  style: TextStyle(fontSize: 10.0),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 75.0,
+                width: 60.0,
                 margin: EdgeInsets.only(top: 10.0),
                 child: InkWell(
                   child: Text(
                     '${_telemarketingEffectiveness.returnCustomersVsSalesCustomers}% RVC.',
-                    style: TextStyle(fontSize: 12.0, color: Colors.blueAccent),
+                    style: TextStyle(fontSize: 10.0, color: Colors.blueAccent),
                   ),
                   onTap: () {
                     /// Message to the scaffold.
@@ -256,12 +296,12 @@ class _CrmHomeState extends State<CrmHome> {
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 75.0,
+                width: 60.0,
                 margin: EdgeInsets.only(right: 20.0, top: 10.0),
                 child: InkWell(
                   child: Text(
                     '${_telemarketingEffectiveness.returnCustomersVsManagementCustomers}% RGC.',
-                    style: TextStyle(fontSize: 12.0, color: Colors.blueAccent),
+                    style: TextStyle(fontSize: 10.0, color: Colors.blueAccent),
                   ),
                   onTap: () {
                     /// Message to the scaffold.
@@ -275,30 +315,30 @@ class _CrmHomeState extends State<CrmHome> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Container(
-                width: 75.0,
+                width: 60.0,
                 margin: EdgeInsets.only(left: 20.0, top: 10.0),
                 child: Text(
                   'Valor',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.0),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10.0),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 75.0,
+                width: 60.0,
                 margin: EdgeInsets.only(top: 10.0),
                 child: Text(
                   '\$ ${_telemarketingEffectiveness.returnAmount}',
-                  style: TextStyle(fontSize: 12.0),
+                  style: TextStyle(fontSize: 10.0),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 75.0,
+                width: 60.0,
                 margin: EdgeInsets.only(top: 10.0),
                 child: InkWell(
                   child: Text(
                     '${_telemarketingEffectiveness.returnAmountVsSalesAmount}% RVV.',
-                    style: TextStyle(fontSize: 12.0, color: Colors.blueAccent),
+                    style: TextStyle(fontSize: 10.0, color: Colors.blueAccent),
                   ),
                   onTap: () {
                     /// Message to the scaffold.
@@ -308,7 +348,7 @@ class _CrmHomeState extends State<CrmHome> {
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 75.0,
+                width: 60.0,
                 margin: EdgeInsets.only(right: 20.0, top: 10.0),
                 child: Text(
                   '',
@@ -340,25 +380,25 @@ class _CrmHomeState extends State<CrmHome> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Container(
-                width: 75.0,
+                width: 60.0,
                 margin: EdgeInsets.only(left: 20.0, top: 10.0),
                 child: Text(
                   'Clientes',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.0),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10.0),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 75.0,
+                width: 60.0,
                 margin: EdgeInsets.only(top: 10.0),
                 child: Text(
                   _telemarketingEffectiveness.salesCustomers,
-                  style: TextStyle(fontSize: 12.0),
+                  style: TextStyle(fontSize: 10.0),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 75.0,
+                width: 60.0,
                 margin: EdgeInsets.only(top: 10.0),
                 child: Text(
                   '',
@@ -366,11 +406,11 @@ class _CrmHomeState extends State<CrmHome> {
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 75.0,
+                width: 60.0,
                 margin: EdgeInsets.only(right: 20.0, top: 10.0),
                 child: Text(
                   '',
-                  style: TextStyle(fontSize: 12.0),
+                  style: TextStyle(fontSize: 10.0),
                 ),
               )
             ],
@@ -379,38 +419,38 @@ class _CrmHomeState extends State<CrmHome> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Container(
-                width: 75.0,
+                width: 60.0,
                 margin: EdgeInsets.only(left: 20.0, top: 10.0),
                 child: Text(
                   'Valor',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.0),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10.0),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 75.0,
+                width: 60.0,
                 margin: EdgeInsets.only(top: 10.0),
                 child: Text(
                   '\$ ${_telemarketingEffectiveness.salesAmount}',
-                  style: TextStyle(fontSize: 12.0),
+                  style: TextStyle(fontSize: 10.0),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 75.0,
+                width: 60.0,
                 margin: EdgeInsets.only(top: 10.0),
                 child: Text(
                   '',
-                  style: TextStyle(fontSize: 12.0),
+                  style: TextStyle(fontSize: 10.0),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 75.0,
+                width: 60.0,
                 margin: EdgeInsets.only(right: 20.0, top: 10.0),
                 child: Text(
                   '',
-                  style: TextStyle(fontSize: 12.0),
+                  style: TextStyle(fontSize: 10.0),
                 ),
               )
             ],
@@ -433,5 +473,44 @@ class _CrmHomeState extends State<CrmHome> {
       child: Container(
           margin: EdgeInsets.only(top: 20.0, bottom: 20.0), child: Text(error)),
     );
+  }
+
+  Widget _customersAnniversariesList(List<CustomerAnniversary> data) {
+    return data.length != 0
+        ? Container(
+            height: 300.0,
+            child: ListView.builder(
+                itemCount: data.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return CheckboxListTile(
+                    title: Text(
+                      data[index].customerNames,
+                      style: TextStyle(fontSize: 12.0),
+                    ),
+                    subtitle: Text(
+                      '${data[index].message}',
+                      style: TextStyle(fontSize: 12.0),
+                    ),
+                    value: true,
+                    onChanged: (bool value) {},
+                    secondary: Container(
+                      width: 40.0,
+                      height: 40.0,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                              fit: BoxFit.fill,
+                              image: AssetImage(
+                                  'assets/img/${data[index].image}'))),
+                    ),
+                  );
+                }),
+          )
+        : Container(
+            height: 100.0,
+            child: Center(
+              child: Text('No hay datos.'),
+            ),
+          );
   }
 }

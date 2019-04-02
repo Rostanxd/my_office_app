@@ -7,4 +7,8 @@ class CrmRepository {
   Future<TelemarketingEffectiveness> fetchTelemarketingEffectiveness(
           String localId, String sellerId) =>
       _telemarketingApi.fetchTelemarketingEffectiveness(localId, sellerId);
+
+  Future<List<CustomerAnniversary>> fetchCustomerAnniversaries(
+          String localId, String sellerId) =>
+      _telemarketingApi.fetchCustomerAnniversaries(localId, sellerId);
 }

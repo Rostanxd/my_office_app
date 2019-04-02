@@ -62,3 +62,29 @@ class TelemarketingEffectiveness extends Object {
     this.salesAmount = json['salesAmount'];
   }
 }
+
+class CustomerAnniversary {
+  String customerId;
+  String customerNames;
+  String date;
+  String type;
+  String years;
+  String image;
+  String management;
+  String message;
+
+  CustomerAnniversary(this.customerId, this.customerNames, this.date, this.type,
+      this.years, this.image, this.management, this.message);
+
+  CustomerAnniversary.fromJson(Map<String, dynamic> json){
+    this.customerId = json['customerId'];
+    this.customerNames = json['customerNames'];
+    this.date = json['date'];
+    this.type = json['type'];
+    this.years = json['years'];
+    this.image = json['image'];
+    this.management = json['management'];
+    this.message = json['message'];
+  }
+
+}

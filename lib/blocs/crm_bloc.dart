@@ -8,11 +8,15 @@ import 'bloc_base.dart';
 class CrmBloc extends BlocBase {
   final _telemarketingEffectiveness =
       BehaviorSubject<TelemarketingEffectiveness>();
+  final _customerAnniversaryList = BehaviorSubject<List<CustomerAnniversary>>();
   final _message = BehaviorSubject<String>();
   CrmRepository _crmRepository = CrmRepository();
 
   Observable<TelemarketingEffectiveness> get telemarketingEffectiveness =>
       _telemarketingEffectiveness.stream;
+
+  Observable<List<CustomerAnniversary>> get customersAnniversaries =>
+      _customerAnniversaryList.stream;
 
   Observable<String> get message => _message.stream;
 
@@ -22,7 +26,7 @@ class CrmBloc extends BlocBase {
     _telemarketingEffectiveness.sink.add(null);
     await _crmRepository
         .fetchTelemarketingEffectiveness(localId, sellerId)
-        .timeout(Duration(seconds: Connection.timeOutSec))
+        .timeout(Duration(seconds: 90))
         .then((response) {
       _telemarketingEffectiveness.sink.add(response);
     }, onError: (error) {
@@ -34,13 +38,32 @@ class CrmBloc extends BlocBase {
     });
   }
 
-  fetchAllCardInfo(String localId, String sellerId){
+  fetchCustomersAnniversaries(String holdingId, String sellerId) async {
+    _customerAnniversaryList.sink.add(null);
+
+    await _crmRepository
+        .fetchCustomerAnniversaries(holdingId, sellerId)
+        .timeout(Duration(seconds: 90))
+        .then((response) {
+      _customerAnniversaryList.sink.add(response);
+    }, onError: (error) {
+      print(error.toString());
+      _customerAnniversaryList.sink.addError(error.runtimeType.toString());
+    }).catchError((error) {
+      print(error.toString());
+      _customerAnniversaryList.sink.addError(error.runtimeType.toString());
+    });
+  }
+
+  fetchAllCardInfo(String localId, String sellerId) {
     fetchTelemarketingEffectiveness(localId, sellerId);
+    fetchCustomersAnniversaries(localId, sellerId);
   }
 
   @override
   void dispose() {
     _telemarketingEffectiveness.close();
+    _customerAnniversaryList.close();
     _message.close();
   }
 }
