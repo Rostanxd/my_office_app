@@ -13,7 +13,7 @@ class TelemarketingApi {
 
     print('fetchTelemarketingEffectiveness >> $localId $sellerId');
     final response = await _httpClient.post(
-        Connection.host + '/rest/WsPvtCartaInformacion',
+        Connection.host + '/rest/WsCrmEfectividadTelemarketing',
         headers: {"Content-Type": "application/json"},
         body: json.encode({"localId": "$localId", "sellerId": "$sellerId"}));
 
@@ -23,7 +23,7 @@ class TelemarketingApi {
     Map<String, dynamic> gxResponse = json.decode(response.body);
 
     /// Genexus response structure
-    var responseList = gxResponse['SdtCrmEfectividadTelemarketing'] as List;
+    var responseList = gxResponse['SdtWsEfectividadTelemarketing'] as List;
 
     /// Loading the list from the response
     _telemarketingEffectiveness = responseList

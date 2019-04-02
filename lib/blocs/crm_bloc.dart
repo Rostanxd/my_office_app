@@ -8,12 +8,18 @@ import 'bloc_base.dart';
 class CrmBloc extends BlocBase {
   final _telemarketingEffectiveness =
       BehaviorSubject<TelemarketingEffectiveness>();
+  final _message = BehaviorSubject<String>();
   CrmRepository _crmRepository = CrmRepository();
 
   Observable<TelemarketingEffectiveness> get telemarketingEffectiveness =>
       _telemarketingEffectiveness.stream;
 
+  Observable<String> get message => _message.stream;
+
+  Function(String message) get addMessage => _message.sink.add;
+
   fetchTelemarketingEffectiveness(String localId, String sellerId) async {
+    _telemarketingEffectiveness.sink.add(null);
     await _crmRepository
         .fetchTelemarketingEffectiveness(localId, sellerId)
         .timeout(Duration(seconds: Connection.timeOutSec))
@@ -28,8 +34,13 @@ class CrmBloc extends BlocBase {
     });
   }
 
+  fetchAllCardInfo(String localId, String sellerId){
+    fetchTelemarketingEffectiveness(localId, sellerId);
+  }
+
   @override
   void dispose() {
     _telemarketingEffectiveness.close();
+    _message.close();
   }
 }

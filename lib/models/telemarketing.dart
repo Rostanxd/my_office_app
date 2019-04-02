@@ -26,7 +26,7 @@ class Telemarketing extends Object{
 class TelemarketingEffectiveness extends Object {
   String managementCalls;
   String managementCustomers;
-  String managementCallsVsCustomer;
+  String managementCallsVsCustomers;
   String returnCustomers;
   String returnAmount;
   String returnCustomersVsSalesCustomers;
@@ -38,7 +38,7 @@ class TelemarketingEffectiveness extends Object {
   TelemarketingEffectiveness(
       this.managementCalls,
       this.managementCustomers,
-      this.managementCallsVsCustomer,
+      this.managementCallsVsCustomers,
       this.returnCustomers,
       this.returnAmount,
       this.returnCustomersVsSalesCustomers,
@@ -50,14 +50,14 @@ class TelemarketingEffectiveness extends Object {
   TelemarketingEffectiveness.fromJson(Map<String, dynamic> json) {
     this.managementCalls = json['managementCalls'];
     this.managementCustomers = json['managementCustomers'];
-    this.managementCallsVsCustomer = json['managementCallsVsCustomer'];
-    this.returnCustomers = json['returnCustomer'];
+    this.managementCallsVsCustomers = json['managementCallsVsCustomers'];
+    this.returnCustomers = json['returnCustomers'];
     this.returnAmount = json['returnAmount'];
     this.returnCustomersVsSalesCustomers =
-        json['returnCustomerVsSalesCustomers'];
+        json['returnCustomersVsSalesCustomers'];
     this.returnAmountVsSalesAmount = json['returnAmountVsSalesAmount'];
     this.returnCustomersVsManagementCustomers =
-        json['returnCustomerVsManagementCustomer'];
+        json['returnCustomersVsManagementCustomers'];
     this.salesCustomers = json['salesCustomers'];
     this.salesAmount = json['salesAmount'];
   }

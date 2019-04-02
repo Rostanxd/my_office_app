@@ -33,12 +33,11 @@ class HomeBloc extends Object with HomeValidator implements BlocBase {
   Observable<CardInfo> get cardSalesAnalysis => _cardSalesAnalysis.stream;
 
   Stream<bool> get refreshHome => Observable.combineLatest5(
-      cardMonthlySales,
-      cardWeeklySales,
-      cardDailySales,
-      cardCustomersWeek,
-      cardSalesAnalysis,
-      (a, b, c, d, e) => true);
+          cardMonthlySales,
+          cardWeeklySales,
+          cardDailySales,
+          cardCustomersWeek,
+          cardSalesAnalysis, (a, b, c, d, e) => true);
 
   /// Add data to stream
   Function(String) get changeDateToFind => _dateToFind.sink.add;

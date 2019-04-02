@@ -52,7 +52,6 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: StreamBuilder<bool>(
         stream: _homeBloc.refreshHome,
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-          if (snapshot.hasData ) print(snapshot.data);
           return snapshot.hasData && snapshot.data
               ? FloatingActionButton(
                   child: Icon(Icons.refresh),

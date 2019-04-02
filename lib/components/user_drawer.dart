@@ -28,7 +28,6 @@ class UserDrawer extends StatelessWidget {
       child: ListView(
         children: <Widget>[
           _header(),
-          Divider(),
           ListTile(
               title: new Text("Inventario"),
               trailing: new Icon(Icons.apps),
@@ -106,84 +105,86 @@ class UserDrawer extends StatelessWidget {
 
   Widget _header() {
     return DrawerHeader(
-      child: Row(
-        children: <Widget>[
-          Container(
-            height: 60.0,
-            width: 60.0,
-            margin: EdgeInsets.only(left: 0.0),
-            decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: AssetImage('assets/img/people.jpg'))),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.only(
-                  top: 40.0,
-                  left: 20.0,
+      child: Container(
+        child: Row(
+          children: <Widget>[
+            Container(
+              height: 60.0,
+              width: 60.0,
+              margin: EdgeInsets.only(left: 0.0),
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                      fit: BoxFit.cover,
+                      image: AssetImage('assets/img/people.jpg'))),
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.only(
+                    left: 20.0,
+                  ),
+                  child: StreamBuilder(
+                      stream: bloc.user,
+                      builder:
+                          (BuildContext context, AsyncSnapshot<User> snapshot) {
+                        return snapshot.hasData
+                            ? Text(
+                          snapshot.data.name,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14.0),
+                        )
+                            : CircularProgressIndicator();
+                      }),
                 ),
-                child: StreamBuilder(
-                    stream: bloc.user,
-                    builder:
-                        (BuildContext context, AsyncSnapshot<User> snapshot) {
-                      return snapshot.hasData
-                          ? Text(
-                        snapshot.data.name,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14.0),
-                      )
-                          : CircularProgressIndicator();
-                    }),
-              ),
-              Container(
-                margin: EdgeInsets.only(
-                  top: 10.0,
-                  left: 20.0,
+                Container(
+                  margin: EdgeInsets.only(
+                    top: 5.0,
+                    left: 20.0,
+                  ),
+                  child: StreamBuilder(
+                      stream: bloc.holding,
+                      builder:
+                          (BuildContext context, AsyncSnapshot<Holding> snapshot) {
+                        return snapshot.hasData
+                            ? Text(
+                          snapshot.data.name,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14.0),
+                        )
+                            : CircularProgressIndicator();
+                      }),
                 ),
-                child: StreamBuilder(
-                    stream: bloc.holding,
-                    builder:
-                        (BuildContext context, AsyncSnapshot<Holding> snapshot) {
-                      return snapshot.hasData
-                          ? Text(
-                        snapshot.data.name,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14.0),
-                      )
-                          : CircularProgressIndicator();
-                    }),
-              ),
-              Container(
-                margin: EdgeInsets.only(
-                  top: 10.0,
-                  left: 20.0,
+                Container(
+                  margin: EdgeInsets.only(
+                    top: 5.0,
+                    left: 20.0,
+                  ),
+                  child: StreamBuilder(
+                      stream: bloc.local,
+                      builder:
+                          (BuildContext context, AsyncSnapshot<Local> snapshot) {
+                        return snapshot.hasData
+                            ? Text(
+                          snapshot.data.name,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14.0),
+                        )
+                            : CircularProgressIndicator();
+                      }),
                 ),
-                child: StreamBuilder(
-                    stream: bloc.local,
-                    builder:
-                        (BuildContext context, AsyncSnapshot<Local> snapshot) {
-                      return snapshot.hasData
-                          ? Text(
-                        snapshot.data.name,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14.0),
-                      )
-                          : CircularProgressIndicator();
-                    }),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
       decoration: BoxDecoration(
           shape: BoxShape.rectangle,
