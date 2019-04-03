@@ -7,14 +7,16 @@ import 'package:my_office_th_app/utils/connection.dart';
 class CustomerApi {
   final _httpClient = http.Client();
 
-  Future<List<Customer>> fetchCustomer(String customerId) async {
+  Future<List<Customer>> fetchCustomerList(
+      String id, String lastName, String firstName) async {
     List<Customer> _customerList;
 
-    print('fetchCustomer >> $customerId');
+    print('fetchCustomer >> $id $lastName $firstName');
     final response = await _httpClient.post(
         Connection.host + '/rest/WsCrmClientes',
         headers: {"Content-Type": "application/json"},
-        body: json.encode({"localId": "$customerId"}));
+        body: json.encode(
+            {"id": "$id", "lastName": "$lastName", "firstName": "$firstName"}));
 
     print('fetchCustomer << ${response.body}');
 
@@ -22,7 +24,7 @@ class CustomerApi {
     Map<String, dynamic> gxResponse = json.decode(response.body);
 
     /// Genexus response structure
-    var responseList = gxResponse['SdtCustomer'] as List;
+    var responseList = gxResponse['SdtWsClientes'] as List;
 
     /// Loading the list from the response
     _customerList = responseList.map((f) => Customer.fromJson((f))).toList();

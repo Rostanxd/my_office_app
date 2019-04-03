@@ -1,8 +1,14 @@
+import 'package:my_office_th_app/models/customer.dart';
 import 'package:my_office_th_app/models/telemarketing.dart';
+import 'package:my_office_th_app/services/fetch_customer.dart';
 import 'package:my_office_th_app/services/fetch_telemarketing.dart';
 
 class CrmRepository {
   TelemarketingApi _telemarketingApi = TelemarketingApi();
+  CustomerApi _customerApi = CustomerApi();
+
+  Future<List<Customer>> fetchCustomerList(String id, String lastName, String firstName) =>
+      _customerApi.fetchCustomerList(id, lastName, firstName);
 
   Future<TelemarketingEffectiveness> fetchTelemarketingEffectiveness(
           String localId, String sellerId) =>

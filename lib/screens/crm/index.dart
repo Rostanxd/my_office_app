@@ -3,6 +3,7 @@ import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/crm_bloc.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
 import 'package:my_office_th_app/components/user_drawer.dart';
+import 'package:my_office_th_app/models/customer.dart';
 import 'package:my_office_th_app/models/telemarketing.dart';
 
 class CrmHome extends StatefulWidget {
@@ -42,7 +43,14 @@ class _CrmHomeState extends State<CrmHome> {
         appBar: AppBar(
           title: Text(''),
           backgroundColor: Color(0xff011e41),
-          actions: <Widget>[],
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () {
+                showSearch(context: context, delegate: DataSearch(_crmBloc));
+              },
+            ),
+          ],
         ),
         drawer: UserDrawer(),
         body: ListView(
@@ -512,5 +520,126 @@ class _CrmHomeState extends State<CrmHome> {
               child: Text('No hay datos.'),
             ),
           );
+  }
+}
+
+class DataSearch extends SearchDelegate<String> {
+  final CrmBloc _crmBloc;
+
+  DataSearch(this._crmBloc);
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+          close(context, null);
+        },
+      )
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: AnimatedIcon(
+          icon: AnimatedIcons.menu_arrow, progress: transitionAnimation),
+      onPressed: () {
+        close(context, null);
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return Container(
+      child: Text('Hola!'),
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    if (query.isEmpty) {
+      return Container(
+          margin: EdgeInsets.all(20.0),
+          child: RichText(
+              text: TextSpan(
+                  text:
+                      'Ingrese los apellidos y nombres del cliente separados por el símbolo ',
+                  style: TextStyle(color: Colors.black),
+                  children: [
+                TextSpan(
+                    text: '"+"',
+                    style: TextStyle(
+                        color: Color(0xff011e41), fontWeight: FontWeight.bold)),
+                TextSpan(
+                  text: ' de la siguiente forma:\n\n'
+                      'Sarmiento Arias',
+                ),
+                TextSpan(
+                    text: '+',
+                    style: TextStyle(
+                        color: Color(0xff011e41), fontWeight: FontWeight.bold)),
+                TextSpan(
+                  text: 'Andrés Javier\n\nDe conocer la cédula, solo digítela.',
+                )
+              ])));
+    } else {
+      /// Update the stream
+      _crmBloc.changeCustomerSearch(query);
+
+      /// Fetching customer by query
+      _crmBloc.fetchCustomerList();
+
+      /// Returning the stream builder
+      return StreamBuilder<List<Customer>>(
+        stream: _crmBloc.customerList,
+        builder:
+            (BuildContext context, AsyncSnapshot<List<Customer>> snapshot) {
+          if (snapshot.hasError) {
+            return Container(
+                margin: EdgeInsets.all(20.0),
+                child: Text(
+                  'Se ha encontrado un Error. ' +
+                      'Comunicar al Dpto. de Sistemas.\n\n'
+                      'Tipo: ${snapshot.error.runtimeType}',
+                  style: TextStyle(fontSize: 16.0),
+                ));
+          }
+
+          if (snapshot.hasData) {
+            if (snapshot.data.length == 0)
+              return Container(
+                  margin: EdgeInsets.all(20.0),
+                  child: Text(
+                    'No se han encontrado coincidencias.',
+                    style: TextStyle(fontSize: 16.0),
+                  ));
+
+            /// Passing the list of style from the stream to the function to
+            /// build the list view
+            return _buildSuggestionItems(snapshot.data);
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
+        },
+      );
+    }
+  }
+
+  Widget _buildSuggestionItems(List<Customer> data) {
+    return ListView.builder(
+      itemBuilder: (context, index) => ListTile(
+            onTap: () {
+              showResults(context);
+            },
+            leading: Icon(Icons.person),
+            title: Text('${data[index].lastName} ${data[index].firstName}'),
+            subtitle: Text(''),
+          ),
+      itemCount: data.length,
+    );
   }
 }
