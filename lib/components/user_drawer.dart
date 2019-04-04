@@ -17,12 +17,12 @@ import 'package:my_office_th_app/screens/sales/invoice_home.dart';
 
 // ignore: must_be_immutable
 class UserDrawer extends StatelessWidget {
-  LoginBloc bloc;
+  LoginBloc _loginBloc;
 
   @override
   Widget build(BuildContext context) {
     /// Searching for the login bloc in the provider
-    bloc = BlocProvider.of<LoginBloc>(context);
+    _loginBloc = BlocProvider.of<LoginBloc>(context);
 
     return Drawer(
       child: ListView(
@@ -33,11 +33,13 @@ class UserDrawer extends StatelessWidget {
               trailing: new Icon(Icons.apps),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => BlocProvider(
-                      bloc: InventoryBloc(),
-                      child: InventoryHome(),
-                    )));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => BlocProvider(
+                              bloc: InventoryBloc(),
+                              child: InventoryHome(),
+                            )));
               }),
 //          ListTile(
 //              title: new Text("Sales"),
@@ -55,11 +57,13 @@ class UserDrawer extends StatelessWidget {
               trailing: new Icon(Icons.people),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => BlocProvider(
-                      bloc: CrmBloc(),
-                      child: CrmHome(),
-                    )));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => BlocProvider(
+                              bloc: CrmBloc(),
+                              child: CrmHome(),
+                            )));
               }),
           Divider(),
           ListTile(
@@ -67,29 +71,40 @@ class UserDrawer extends StatelessWidget {
               trailing: new Icon(Icons.home),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => BlocProvider(
-                      bloc: HomeBloc(),
-                      child: HomePage(),
-                    )));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => BlocProvider(
+                              bloc: HomeBloc(),
+                              child: HomePage(),
+                            )));
               }),
-          ListTile(
-              title: new Text("Cambiar Local"),
-              trailing: new Icon(Icons.location_on),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => MyLoginPage()));
-              }),
+          _loginBloc.user.value.local.name.isNotEmpty &&
+                      (_loginBloc.user.value.accessId == '08' &&
+                          _loginBloc.user.value.level != '4') ||
+                  _loginBloc.user.value.accessId == '05'
+              ? Container(
+                  margin: EdgeInsets.all(0.0),
+                  padding: EdgeInsets.all(0.0),
+                  child: null,
+                )
+              : ListTile(
+                  title: new Text("Cambiar Local"),
+                  trailing: new Icon(Icons.location_on),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => MyLoginPage()));
+                  }),
           ListTile(
               title: new Text("Salir"),
               trailing: new Icon(Icons.exit_to_app),
               onTap: () {
                 /// Function to set null user and local
-                bloc.logOut();
+                _loginBloc.logOut();
                 Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => MyLoginPage()),
-                        (Route<dynamic> route) => false);
+                    (Route<dynamic> route) => false);
               }),
           Divider(),
           ListTile(
@@ -127,17 +142,17 @@ class UserDrawer extends StatelessWidget {
                     left: 20.0,
                   ),
                   child: StreamBuilder(
-                      stream: bloc.user,
+                      stream: _loginBloc.user,
                       builder:
                           (BuildContext context, AsyncSnapshot<User> snapshot) {
                         return snapshot.hasData
                             ? Text(
-                          snapshot.data.name,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14.0),
-                        )
+                                snapshot.data.name,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14.0),
+                              )
                             : CircularProgressIndicator();
                       }),
                 ),
@@ -147,17 +162,17 @@ class UserDrawer extends StatelessWidget {
                     left: 20.0,
                   ),
                   child: StreamBuilder(
-                      stream: bloc.holding,
-                      builder:
-                          (BuildContext context, AsyncSnapshot<Holding> snapshot) {
+                      stream: _loginBloc.holding,
+                      builder: (BuildContext context,
+                          AsyncSnapshot<Holding> snapshot) {
                         return snapshot.hasData
                             ? Text(
-                          snapshot.data.name,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14.0),
-                        )
+                                snapshot.data.name,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14.0),
+                              )
                             : CircularProgressIndicator();
                       }),
                 ),
@@ -167,17 +182,17 @@ class UserDrawer extends StatelessWidget {
                     left: 20.0,
                   ),
                   child: StreamBuilder(
-                      stream: bloc.local,
-                      builder:
-                          (BuildContext context, AsyncSnapshot<Local> snapshot) {
+                      stream: _loginBloc.local,
+                      builder: (BuildContext context,
+                          AsyncSnapshot<Local> snapshot) {
                         return snapshot.hasData
                             ? Text(
-                          snapshot.data.name,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14.0),
-                        )
+                                snapshot.data.name,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14.0),
+                              )
                             : CircularProgressIndicator();
                       }),
                 ),

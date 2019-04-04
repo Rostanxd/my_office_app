@@ -29,7 +29,6 @@ class UserApi {
     var responseDeviceList = gxResponse['SdtUsers'][0]['deviceList'] as List;
     deviceList = responseDeviceList.map((d) => UserDevice.fromJson(d)).toList();
 
-
     user = User(
         gxResponse['SdtUsers'][0]['user'],
         gxResponse['SdtUsers'][0]['name'],
@@ -41,7 +40,8 @@ class UserApi {
         Local(gxResponse['SdtUsers'][0]['localId'],
             gxResponse['SdtUsers'][0]['localName']),
         gxResponse['SdtUsers'][0]['identification'],
-        deviceList);
+        deviceList,
+        gxResponse['SdtUsers'][0]['ipPrefix']);
     return user;
   }
 }

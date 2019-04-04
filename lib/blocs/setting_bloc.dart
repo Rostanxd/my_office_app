@@ -1,4 +1,5 @@
 import 'package:device_info/device_info.dart';
+import 'package:get_ip/get_ip.dart';
 import 'package:my_office_th_app/blocs/bloc_base.dart';
 import 'package:my_office_th_app/models/device.dart';
 import 'package:my_office_th_app/resources/settings_repository.dart';
@@ -11,6 +12,7 @@ class SettingsBloc extends Object implements BlocBase {
   final _device = BehaviorSubject<Device>();
   final _deviceId = BehaviorSubject<String>();
   final _loadingData = BehaviorSubject<bool>();
+  final _ip = BehaviorSubject<String>();
   final SettingsRepository _settingRepository = SettingsRepository();
 
   /// Retrieve data from the stream
@@ -24,6 +26,8 @@ class SettingsBloc extends Object implements BlocBase {
   ValueObservable<String> get deviceId => _deviceId.stream;
 
   Observable<bool> get loadingData => _loadingData.stream;
+
+  ValueObservable<String> get myIp => _ip.stream;
 
   /// Add data to the stream
   Function(bool) get changeLoadingData => _loadingData.sink.add;
@@ -62,6 +66,16 @@ class SettingsBloc extends Object implements BlocBase {
     });
   }
 
+  fetchIp() async {
+    try {
+      await GetIp.ipAddress.then((response){
+        _ip.sink.add(response);
+      });
+    } catch (error) {
+      _ip.sink.addError(error.runtimeType.toString());
+    }
+  }
+
   @override
   void dispose() {
     _androidDeviceInfo.close();
@@ -69,6 +83,7 @@ class SettingsBloc extends Object implements BlocBase {
     _device.close();
     _deviceId.close();
     _loadingData.close();
+    _ip.close();
   }
 }
 

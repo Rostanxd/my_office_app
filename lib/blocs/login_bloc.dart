@@ -50,7 +50,7 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
   Function(Holding) get changeCurrentHolding => _holding.sink.add;
 
   /// To call the user api
-  fetchUser(String deviceId) async {
+  fetchUser(String deviceId, String myIp) async {
     List<UserDevice> _userDevice;
     bool _deviceValid = false;
     _logging.sink.add(true);
@@ -58,11 +58,21 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
     await _loginRepository
         .fetchUser(_id.value, _password.value)
         .then((response) {
+          /// Validation by the ip prefix if is a seller or a sub-admin
+          if (((response.accessId == '08' && response.level != '4') ||
+                  response.accessId == '05') &&
+              !(myIp.contains(response.ipPrefix))) {
+            _user.sink.addError('Acceso denegado.');
+            _logging.sink.add(false);
+            return;
+          }
+
           /// Finding for the device in the user's device list
           _userDevice = response.deviceList;
-          for (var i=0; i < _userDevice.length; i++){
+          for (var i = 0; i < _userDevice.length; i++) {
             print('${_userDevice[i].deviceId} == $deviceId');
-            if(_userDevice[i].deviceId == deviceId && _userDevice[i].state == 'A'){
+            if (_userDevice[i].deviceId == deviceId &&
+                _userDevice[i].state == 'A') {
               _deviceValid = true;
             }
           }
@@ -143,8 +153,8 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
         .whenComplete(() => print('fetchLocal >> Complete!!'));
   }
 
-  logIn(String deviceId) {
-    fetchUser(deviceId);
+  logIn(String deviceId, String myIp) {
+    fetchUser(deviceId, myIp);
   }
 
   logOut() {

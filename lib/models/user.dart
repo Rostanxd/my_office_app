@@ -11,20 +11,31 @@ class User extends Object {
   Local local;
   String identification;
   List<UserDevice> deviceList;
+  String ipPrefix;
 
-  User(this.user, this.name, this.level, this.accessId, this.sellerId,
-      this.holding, this.local, this.identification, this.deviceList);
+  User(
+      this.user,
+      this.name,
+      this.level,
+      this.accessId,
+      this.sellerId,
+      this.holding,
+      this.local,
+      this.identification,
+      this.deviceList,
+      this.ipPrefix);
 
-  User.fromJson(Map<String, dynamic> json){
-   this.user = json['user'];
-   this.name = json['name'];
-   this.level = json['level'];
-   this.accessId = json['accessId'];
-   this.sellerId = json['sellerId'];
-   this.holding = new Holding(json['holdingId'], json['holdingName']);
-   this.local = new Local(json['localId'], json['localName']);
-   this.identification = json['identification'];
-   this.deviceList = json['deviceList'].cast<UserDevice>();
+  User.fromJson(Map<String, dynamic> json) {
+    this.user = json['user'];
+    this.name = json['name'];
+    this.level = json['level'];
+    this.accessId = json['accessId'];
+    this.sellerId = json['sellerId'];
+    this.holding = new Holding(json['holdingId'], json['holdingName']);
+    this.local = new Local(json['localId'], json['localName']);
+    this.identification = json['identification'];
+    this.deviceList = json['deviceList'].cast<UserDevice>();
+    this.ipPrefix = json['ipPrefix'];
   }
 }
 
@@ -40,7 +51,7 @@ class UserDevice extends Object {
   UserDevice(this.user, this.deviceId, this.state, this.userCreated,
       this.dateCreated, this.userUpdated, this.dateUpdated);
 
-  UserDevice.fromJson(Map<String, dynamic> json){
+  UserDevice.fromJson(Map<String, dynamic> json) {
     this.user = json['user'];
     this.deviceId = json['deviceId'];
     this.state = json['state'];

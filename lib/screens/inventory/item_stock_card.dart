@@ -58,7 +58,7 @@ class _ItemStockCardState extends State<ItemStockCard> {
                     margin: EdgeInsets.only(top: 20.0, left: 20.0, bottom: 5.0),
                     child: Text(
                       _tableType == 'L'
-                          ? 'Saldos en el local'
+                          ? 'Saldos en el local ${_loginBloc.local.value.name}'
                               ''
                           : 'Saldos de ' + _itemDetailsBloc.itemId.value,
                       style: TextStyle(
@@ -209,6 +209,7 @@ class _ItemStockCardState extends State<ItemStockCard> {
                 ),
               ),
               Container(
+                alignment: Alignment.centerLeft,
                   child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
@@ -307,7 +308,7 @@ class _ItemStockCardState extends State<ItemStockCard> {
                   padding: const EdgeInsets.all(8.0),
                   child: Text(f.color,
                       style: TextStyle(
-                          fontSize: 10.0, fontWeight: FontWeight.bold)),
+                          fontSize: 12.0, fontWeight: FontWeight.bold)),
                 ),
               ),
               Container(
@@ -317,8 +318,8 @@ class _ItemStockCardState extends State<ItemStockCard> {
                   child: Text(
                     f.local.toString(),
                     style: f.color == 'Total General'
-                        ? TextStyle(fontSize: 10.0, fontWeight: FontWeight.bold)
-                        : TextStyle(fontSize: 10.0),
+                        ? TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold)
+                        : TextStyle(fontSize: 12.0),
                   ),
                 ),
               ))
@@ -332,23 +333,23 @@ class _ItemStockCardState extends State<ItemStockCard> {
   TextStyle _textStyleStock(ItemStock _itemStock, String _column) {
     if (_itemStock.color == 'Total General')
       return TextStyle(
-          color: Colors.black, fontWeight: FontWeight.bold, fontSize: 11.0);
+          color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0);
 
     if (_itemStock.size == 'Total')
       return TextStyle(
-          color: Colors.black, fontWeight: FontWeight.bold, fontSize: 11.0);
+          color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12.0);
 
     if (_itemStock.itemId == _itemDetailsBloc.item.value.itemId)
       return TextStyle(
-          color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11.0);
+          color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12.0);
 
     if (_itemStock.color != 'Total' && _column == 'O')
       return TextStyle(
           color: Colors.blueAccent,
           fontWeight: FontWeight.bold,
-          fontSize: 11.0);
+          fontSize: 12.0);
 
-    return TextStyle(color: Colors.black, fontSize: 10.0);
+    return TextStyle(color: Colors.black, fontSize: 12.0);
   }
 
   Widget _myCircularProgress() {

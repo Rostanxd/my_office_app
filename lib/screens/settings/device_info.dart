@@ -131,6 +131,11 @@ class _DeviceInfoState extends State<DeviceInfo> {
           title: Text('Version'),
           subtitle: Text(data.version.sdkInt.toString()),
         ),
+        Divider(),
+        ListTile(
+          title: Text('Ip'),
+          subtitle: Text(_settingsBloc.myIp.value),
+        ),
       ],
     );
   }

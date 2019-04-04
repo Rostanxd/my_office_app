@@ -57,7 +57,16 @@ class _CrmHomeState extends State<CrmHome> {
         drawer: UserDrawer(),
         body: ListView(
           children: <Widget>[
-            _telemarketingAnniversaries(),
+            _loginBloc.user.value.local.name.isNotEmpty &&
+                        (_loginBloc.user.value.accessId == '08' &&
+                            _loginBloc.user.value.level != '4') ||
+                    _loginBloc.user.value.accessId == '05'
+                ? _telemarketingAnniversaries()
+                : Container(
+                    margin: EdgeInsets.all(0.0),
+                    padding: EdgeInsets.all(0.0),
+                    child: null,
+                  ),
             _telemarketingEffectivenessCard(),
           ],
         ),

@@ -94,16 +94,25 @@ class _InventoryHomeState extends State<InventoryHome> {
         ],
       ),
       drawer: UserDrawer(),
-      body: WebView(
-        javascriptMode: JavascriptMode.unrestricted,
-        initialUrl:
-            'http://info.thgye.com.ec/InvLineasProveedor.html?hldCodigo='
-            '${_loginBloc.holding.value.id}&bodCodigo='
-            '${_loginBloc.local.value.id}',
-        onWebViewCreated: (WebViewController webViewController) {
-          _controller = webViewController;
-        },
-      ),
+      body: _loginBloc.user.value.local.name.isNotEmpty &&
+                  (_loginBloc.user.value.accessId == '08' &&
+                      _loginBloc.user.value.level != '4') ||
+              _loginBloc.user.value.accessId == '05'
+          ? Container(
+              margin: EdgeInsets.all(0.0),
+              padding: EdgeInsets.all(0.0),
+              child: null,
+            )
+          : WebView(
+              javascriptMode: JavascriptMode.unrestricted,
+              initialUrl:
+                  'http://info.thgye.com.ec/InvLineasProveedor.html?hldCodigo='
+                  '${_loginBloc.holding.value.id}&bodCodigo='
+                  '${_loginBloc.local.value.id}',
+              onWebViewCreated: (WebViewController webViewController) {
+                _controller = webViewController;
+              },
+            ),
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.refresh),
           onPressed: () {

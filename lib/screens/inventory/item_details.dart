@@ -43,6 +43,7 @@ class _ItemDetailsState extends State<ItemDetails> {
   @override
   Widget build(BuildContext context) {
     print('Item Details >> build');
+
     /// Getting the bloc of the item details
     _itemDetailsBloc = BlocProvider.of<ItemDetailsBloc>(context);
 
@@ -69,17 +70,31 @@ class _ItemDetailsState extends State<ItemDetails> {
     /// Default index for the bottom navigation bar.
     _itemDetailsBloc.changeIndex(0);
 
+    /// Adding the 2 first page for all user access
     var _widgetOptions = [
       ListView(
         children: <Widget>[ItemInfoCard()],
       ),
       ListView(
         children: <Widget>[ItemStockCard()],
-      ),
-      ListView(
-        children: <Widget>[ItemSalesStockCard()],
-      ),
+      )
     ];
+
+    var _buttonOptions = [
+      BottomNavigationBarItem(icon: Icon(Icons.info), title: Text('Info')),
+      BottomNavigationBarItem(
+          icon: Icon(Icons.format_list_numbered), title: Text('Saldos')),
+    ];
+
+    /// Only if the user is not a access '05' (seller).
+    if (_loginBloc.user.value.accessId != '05') {
+      _widgetOptions.add(ListView(
+        children: <Widget>[ItemSalesStockCard()],
+      ));
+
+      _buttonOptions.add(BottomNavigationBarItem(
+          icon: Icon(Icons.monetization_on), title: Text('Ventas')));
+    }
 
     return Scaffold(
       appBar: new AppBar(
@@ -98,7 +113,8 @@ class _ItemDetailsState extends State<ItemDetails> {
                         (BuildContext context, AsyncSnapshot<int> snapshot) {
                       if (snapshot.hasError) print(snapshot.error);
                       return snapshot.hasData
-                          ? _widgetOptions.elementAt(_itemDetailsBloc.index.value)
+                          ? _widgetOptions
+                              .elementAt(_itemDetailsBloc.index.value)
                           : CardDummyLoading();
                     })
                 : CircularProgressIndicator();
@@ -111,16 +127,7 @@ class _ItemDetailsState extends State<ItemDetails> {
           if (snapshot.hasError) print(snapshot.error.toString());
           return snapshot.hasData
               ? BottomNavigationBar(
-                  items: <BottomNavigationBarItem>[
-                    BottomNavigationBarItem(
-                        icon: Icon(Icons.info), title: Text('Info')),
-                    BottomNavigationBarItem(
-                        icon: Icon(Icons.format_list_numbered),
-                        title: Text('Saldos')),
-                    BottomNavigationBarItem(
-                        icon: Icon(Icons.monetization_on),
-                        title: Text('Ventas')),
-                  ],
+                  items: _buttonOptions,
                   currentIndex: snapshot.data,
                   fixedColor: Colors.deepPurple,
                   onTap: (index) {

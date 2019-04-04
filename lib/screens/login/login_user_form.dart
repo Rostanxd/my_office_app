@@ -40,8 +40,12 @@ class _LoginUserFormState extends State<LoginUserForm> {
       if (user != null) {
         _moveNextPage(user);
       }
-    }, onError: (error) {
-      _showSnackBarMsg(error);
+    });
+
+    /// To call the dialog if we have an error in the
+    /// user stream.
+    _loginBloc.user.first.catchError((error) {
+      _showDialog(error);
     });
 
     return (Container(
@@ -148,7 +152,8 @@ class _LoginUserFormState extends State<LoginUserForm> {
               child: GestureDetector(
                 onTap: () {
                   if (snapshot.data != null && snapshot.data) {
-                    _loginBloc.logIn(_settingsBloc.deviceId.value);
+                    _loginBloc.logIn(
+                        _settingsBloc.deviceId.value, _settingsBloc.myIp.value);
                   }
                 },
                 child: Center(
@@ -188,20 +193,37 @@ class _LoginUserFormState extends State<LoginUserForm> {
   /// he will be sent to the home page and updating holding and local streams,
   /// if he doesn't, sent to the login page with conditional interface (form).
   void _moveNextPage(User user) {
-    if (user.local.name.isNotEmpty) {
+    if (user.local.name.isNotEmpty &&
+            (user.accessId == '08' && user.level != '4') ||
+        user.accessId == '05') {
       _loginBloc.changeCurrentHolding(user.holding);
       _loginBloc.changeCurrentLocal(user.local);
       Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => BlocProvider<HomeBloc>(
-            bloc: HomeBloc(),
-            child: HomePage(),
-          )),
+          MaterialPageRoute(
+              builder: (context) => BlocProvider<HomeBloc>(
+                    bloc: HomeBloc(),
+                    child: HomePage(),
+                  )),
           (Route<dynamic> route) => false);
     }
   }
 
-  /// Show a snack bar with a message
-  void _showSnackBarMsg(String message) {
-    Scaffold.of(context).showSnackBar(SnackBar(content: Text(message)));
+  void _showDialog(String message) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Smart Sales Force'),
+            content: Text(message),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Aceptar'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
   }
 }

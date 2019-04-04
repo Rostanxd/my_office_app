@@ -42,6 +42,9 @@ class _MyLoginPageState extends State<MyLoginPage> {
     /// Add data to stream to control circular progress bar.
     _settingsBloc.changeLoadingData(false);
 
+    /// To get ip
+    _settingsBloc.fetchIp();
+
     return Scaffold(
         resizeToAvoidBottomPadding: true,
         appBar: AppBar(

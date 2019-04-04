@@ -42,6 +42,9 @@ dependencies:
   # To define the app icon
   flutter_launcher_icons: ^0.7.0
 
+  # To get ip address
+  get_ip: ^0.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
