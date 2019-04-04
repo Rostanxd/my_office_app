@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/crm_bloc.dart';
+import 'package:my_office_th_app/blocs/customer_detail_bloc.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
 import 'package:my_office_th_app/components/user_drawer.dart';
 import 'package:my_office_th_app/models/customer.dart';
 import 'package:my_office_th_app/models/telemarketing.dart';
+import 'package:my_office_th_app/screens/crm/customer_details.dart';
 
 class CrmHome extends StatefulWidget {
   @override
@@ -554,9 +556,9 @@ class DataSearch extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
-    return Container(
-      child: Text('Hola!'),
-    );
+    /// We don't call the showResult() method from the suggestion list,
+    /// instead we call the customer detail page
+    return null;
   }
 
   @override
@@ -633,11 +635,17 @@ class DataSearch extends SearchDelegate<String> {
     return ListView.builder(
       itemBuilder: (context, index) => ListTile(
             onTap: () {
-              showResults(context);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => BlocProvider<CustomerDetailBloc>(
+                            bloc: CustomerDetailBloc(),
+                            child: CustomerDetail(data[index]),
+                          )));
             },
             leading: Icon(Icons.person),
             title: Text('${data[index].lastName} ${data[index].firstName}'),
-            subtitle: Text(''),
+            subtitle: Text('${data[index].id}'),
           ),
       itemCount: data.length,
     );

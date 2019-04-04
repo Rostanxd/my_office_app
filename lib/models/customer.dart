@@ -47,7 +47,7 @@ class Customer implements Person {
       this.telephoneTwo);
 
   Customer.fromJson(Map<String, dynamic> json) {
-    this.id = json['customerId'];
+    this.id = json['id'];
     this.firstName = json['firstName'];
     this.lastName = json['lastName'];
     this.gender = json['gender'];
