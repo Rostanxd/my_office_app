@@ -289,7 +289,7 @@ class _MyLoginPageState extends State<MyLoginPage> {
         child: new ListView(children: <Widget>[
       DrawerHeader(
           child: Text(
-            'Configuración',
+            'Bienvenido',
             style: TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,

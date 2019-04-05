@@ -89,13 +89,14 @@ class _CrmHomeState extends State<CrmHome> {
               margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
               child: Text(
                 'Cumpleaños y Aniversarios',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
               ),
             ),
             Container(
               margin: EdgeInsets.only(bottom: 10.0),
               child: Text(
-                'Próximos 4 días',
+                'Próximos 3 días',
+                style: TextStyle(fontSize: 14.0),
               ),
             ),
             Divider(),
@@ -126,12 +127,15 @@ class _CrmHomeState extends State<CrmHome> {
               margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
               child: Text(
                 'Telemarketing Efectividad',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
               ),
             ),
             Container(
               margin: EdgeInsets.only(bottom: 10.0),
-              child: Text('Semana anterior (últimos 30 días)'),
+              child: Text(
+                'Semana anterior (últimos 30 días)',
+                style: TextStyle(fontSize: 14.0),
+              ),
             ),
             Divider(),
             StreamBuilder<TelemarketingEffectiveness>(
@@ -654,7 +658,7 @@ class DataSearch extends SearchDelegate<String> {
             },
             leading: Icon(Icons.person),
             title: Text('${data[index].lastName} ${data[index].firstName}'),
-            subtitle: Text('${data[index].id}'),
+            subtitle: Text(''),
           ),
       itemCount: data.length,
     );
