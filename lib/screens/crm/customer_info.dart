@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/customer_detail_bloc.dart';
+import 'package:my_office_th_app/blocs/login_bloc.dart';
 import 'package:my_office_th_app/models/customer.dart';
 
 class CustomerInfo extends StatefulWidget {
@@ -15,6 +16,7 @@ class CustomerInfo extends StatefulWidget {
 
 class _CustomerInfoState extends State<CustomerInfo> {
   CustomerDetailBloc _customerDetailBloc;
+  LoginBloc _loginBloc;
   TextEditingController _idCtrl = TextEditingController();
   TextEditingController _lastNameCtrl = TextEditingController();
   TextEditingController _firstNameCtrl = TextEditingController();
@@ -55,7 +57,10 @@ class _CustomerInfoState extends State<CustomerInfo> {
 
   @override
   Widget build(BuildContext context) {
+    _loginBloc = BlocProvider.of<LoginBloc>(context);
     _customerDetailBloc = BlocProvider.of<CustomerDetailBloc>(context);
+
+    _customerDetailBloc.changeCustomer(widget.customer);
 
     return Container(
       margin: EdgeInsets.all(10.0),
@@ -112,6 +117,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
             margin: EdgeInsets.only(left: 20.0, right: 20.0),
             child: TextField(
                 controller: _lastNameCtrl,
+                onChanged: _customerDetailBloc.updateLastName,
                 enabled: _editing,
                 decoration: InputDecoration(
                   labelText: 'Apellidos',
@@ -341,6 +347,8 @@ class _CustomerInfoState extends State<CustomerInfo> {
                 ),
                 color: Colors.lightBlue,
                 onPressed: () {
+                  _customerDetailBloc
+                      .updateCustomer(_loginBloc.user.value.user);
                   Navigator.of(context).pop();
                   _customerDetailBloc.changeEditing(false);
                 },

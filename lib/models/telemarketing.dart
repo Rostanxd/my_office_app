@@ -1,21 +1,31 @@
-class Telemarketing extends Object{
+class Telemarketing extends Object {
   String sellerId;
   String date;
   String result;
   String customerId;
+  String motivate;
   String note;
   int attempts;
   String dateCreated;
   String dateUpdated;
 
-  Telemarketing(this.sellerId, this.date, this.result, this.customerId,
-      this.note, this.attempts, this.dateCreated, this.dateUpdated);
+  Telemarketing(
+      this.sellerId,
+      this.date,
+      this.result,
+      this.customerId,
+      this.motivate,
+      this.note,
+      this.attempts,
+      this.dateCreated,
+      this.dateUpdated);
 
   Telemarketing.fromJson(Map<String, dynamic> json) {
     this.sellerId = json['sellerId'];
     this.date = json['date'];
     this.result = json['result'];
     this.customerId = json['customerId'];
+    this.motivate = json['motivate'];
     this.note = json['note'];
     this.attempts = json['attempts'];
     this.dateCreated = json['dateCreated'];
@@ -76,7 +86,7 @@ class CustomerAnniversary {
   CustomerAnniversary(this.customerId, this.customerNames, this.date, this.type,
       this.years, this.image, this.management, this.message);
 
-  CustomerAnniversary.fromJson(Map<String, dynamic> json){
+  CustomerAnniversary.fromJson(Map<String, dynamic> json) {
     this.customerId = json['customerId'];
     this.customerNames = json['customerNames'];
     this.date = json['date'];
@@ -86,5 +96,4 @@ class CustomerAnniversary {
     this.management = json['management'];
     this.message = json['message'];
   }
-
 }

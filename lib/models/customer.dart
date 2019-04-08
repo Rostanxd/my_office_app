@@ -40,11 +40,30 @@ class Customer implements Person {
   @override
   String telephoneTwo;
 
-
-  Customer(this.id, this.gender, this.firstName, this.lastName,
-      this.anniversaryDate, this.bornDate, this.cellphoneOne, this.cellphoneTwo,
-      this.civilState, this.email, this.passport, this.telephoneOne,
+  Customer(
+      this.id,
+      this.gender,
+      this.firstName,
+      this.lastName,
+      this.anniversaryDate,
+      this.bornDate,
+      this.cellphoneOne,
+      this.cellphoneTwo,
+      this.civilState,
+      this.email,
+      this.passport,
+      this.telephoneOne,
       this.telephoneTwo);
+
+  @override
+  String toString() {
+    return 'Customer{id: $id, gender: $gender, '
+        'firstName: $firstName, lastName: $lastName, '
+        'anniversaryDate: $anniversaryDate, bornDate: $bornDate, '
+        'cellphoneOne: $cellphoneOne, cellphoneTwo: $cellphoneTwo, '
+        'civilState: $civilState, email: $email, passport: $passport, '
+        'telephoneOne: $telephoneOne, telephoneTwo: $telephoneTwo}';
+  }
 
   Customer.fromJson(Map<String, dynamic> json) {
     this.id = json['id'];
@@ -61,4 +80,20 @@ class Customer implements Person {
     this.telephoneOne = json['telephoneOne'];
     this.telephoneTwo = json['telephoneTwo'];
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': this.id,
+        'firstName': this.firstName,
+        'lastName': this.lastName,
+        'gender': this.gender,
+        'anniversaryDate': this.anniversaryDate,
+        'bornDate': this.bornDate,
+        'cellphoneOne': this.cellphoneOne,
+        'cellphoneTwo': this.cellphoneTwo,
+        'civilState': this.civilState,
+        'email': this.email,
+        'passport': this.passport,
+        'telephoneOne': this.telephoneOne,
+        'telephoneTwo': this.telephoneTwo
+      };
 }

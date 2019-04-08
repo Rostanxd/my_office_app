@@ -2,13 +2,14 @@ class Binnacle extends Object{
   String userId;
   String dateTime;
   String programId;
+  String equipment;
   String action;
   String programName;
   String programDescription;
   String programType;
   String observation;
 
-  Binnacle(this.userId, this.dateTime, this.programId, this.action,
+  Binnacle(this.userId, this.dateTime, this.programId, this.equipment, this.action,
       this.programName, this.programDescription, this.programType,
       this.observation);
 
@@ -16,6 +17,7 @@ class Binnacle extends Object{
    this.userId = json['userId'];
    this.dateTime = json['dateTime'];
    this.programId = json['programId'];
+   this.equipment = json['equipment'];
    this.action = json['action'];
    this.programName = json['programName'];
    this.programDescription = json['programDescription'];

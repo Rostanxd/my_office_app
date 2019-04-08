@@ -31,4 +31,29 @@ class CustomerApi {
 
     return _customerList;
   }
+
+  Future<String> updateCustomers(Customer _customer, String userId) async {
+    List _customerList = new List();
+
+    _customerList.add(_customer);
+
+    /// Printing the json data
+    print("updateCustomers >> ${json.encode({
+      "SdtWsClientes": _customerList,
+      "userId": "$userId"
+    })}");
+
+    final response = await _httpClient.post(
+        Connection.host + '/rest/WsCrmClientePost',
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({
+          "SdtWsClientes": _customerList,
+          "userId": "$userId"
+        }));
+
+    /// Printing response from the rest
+    print("customerPost << ${response.body}");
+
+    return response.body;
+  }
 }
