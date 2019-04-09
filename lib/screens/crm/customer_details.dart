@@ -17,25 +17,30 @@ class CustomerDetail extends StatefulWidget {
 class _CustomerDetailState extends State<CustomerDetail> {
   CustomerDetailBloc _customerDetailBloc;
 
-
   @override
   void didChangeDependencies() {
+    print('CustomerDetails >> didChangeDependencies');
     super.didChangeDependencies();
   }
 
   @override
-  Widget build(BuildContext context) {
-    _customerDetailBloc = BlocProvider.of<CustomerDetailBloc>(context);
+  void dispose() {
+    print('CustomerDetails >> dispose');
+    _customerDetailBloc.dispose();
+    super.dispose();
+  }
 
-    /// Update customer stream
-    _customerDetailBloc.changeCustomer(widget.customer);
+  @override
+  Widget build(BuildContext context) {
+    print('CustomerDetails >> build');
+    _customerDetailBloc = BlocProvider.of<CustomerDetailBloc>(context);
 
     /// Default index for the bottom navigation bar.
     _customerDetailBloc.changeIndex(0);
 
     var _widgetOptions = [
       ListView(
-        children: <Widget>[CustomerInfo()],
+        children: <Widget>[CustomerInfo(widget.customer)],
       ),
       ListView(
         children: <Widget>[Container(child: Text(''),)],
@@ -87,12 +92,4 @@ class _CustomerDetailState extends State<CustomerDetail> {
       ),
     );
   }
-
-  @override
-  void dispose() {
-    _customerDetailBloc.dispose();
-    super.dispose();
-  }
-
-
 }

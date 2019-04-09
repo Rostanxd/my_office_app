@@ -25,7 +25,7 @@ class _CrmHomeState extends State<CrmHome> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
     _loginBloc = BlocProvider.of<LoginBloc>(context);
     _crmBloc = BlocProvider.of<CrmBloc>(context);
 
@@ -40,6 +40,11 @@ class _CrmHomeState extends State<CrmHome> {
             .showSnackBar(new SnackBar(content: new Text('$message')));
     });
 
+    super.didChangeDependencies();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(

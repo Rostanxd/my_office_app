@@ -28,13 +28,15 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
 
   Observable<bool> get updating => _updating.stream;
 
-  ValueObservable<Customer> get customer => _customer.stream;
+  Observable<Customer> get customer => _customer.stream;
 
   Observable<String> get id => _id.stream;
 
-  Observable<String> get lastName => _lastName.stream.transform(validateLastName);
+  Observable<String> get lastName =>
+      _lastName.stream.transform(validateLastName);
 
-  Observable<String> get firstName => _firstName.stream.transform(validateFirstName);
+  Observable<String> get firstName =>
+      _firstName.stream.transform(validateFirstName);
 
   Observable<String> get email => _email.stream.transform(validateEmail);
 
@@ -42,7 +44,7 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
 
   Observable<String> get telephone => _telephone.stream;
 
-  Observable<String> get bornDate => _bornDate.stream;
+  ValueObservable<String> get bornDate => _bornDate.stream;
 
   Stream<Customer> get updatedCustomer => Observable.combineLatest6(
       firstName,
@@ -88,41 +90,106 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
 
   Function(String) get changeId => _id.sink.add;
 
-  Function(String) get changeLastName => _lastName.sink.add;
+  changeLastName(String _lastName){
+//    if(_customer.value.lastName.isNotEmpty && _lastName.isEmpty){
+//      this._lastName.sink.addError('No puede eliminar información');
+//      return;
+//    }
+    this._lastName.sink.add(_lastName);
+  }
 
-  Function(String) get changeFirstName => _firstName.sink.add;
+  changeFirstName(String _firstName){
+    if(_customer.value.firstName.isNotEmpty && _firstName.isEmpty){
+      this._firstName.sink.addError('No puede eliminar información');
+      return;
+    }
+    this._firstName.sink.add(_firstName);
+  }
 
-  Function(String) get changeEmail => _email.sink.add;
+  changeEmail(String _email){
+    if (_customer.value.email.isNotEmpty && _email.isEmpty){
+      this._email.sink.addError('No puede eliminar información');
+      return;
+    }
 
-  Function(String) get changeCellphone => _cellphone.sink.add;
+    this._email.sink.add(_email);
+  }
 
-  Function(String) get changeTelephone => _telephone.sink.add;
+  changeCellphone(String _cellphone){
+    if (_customer.value.cellphoneOne.isEmpty &&
+        _customer.value.cellphoneTwo.isNotEmpty && _cellphone.isEmpty) {
+      this._cellphone.sink.addError('No puede eliminar información.');
+      return;
+    } else {
+      if (_customer.value.cellphoneOne.isNotEmpty && _cellphone.isEmpty){
+        this._cellphone.sink.addError('No puede eliminar información.');
+        return;
+      }
+    }
 
-  loadCustomerStreams() {
-    changeId(_customer.value.id);
-    changeLastName(_customer.value.lastName);
-    changeFirstName(_customer.value.firstName);
-    changeEmail(_customer.value.email);
-    changeCellphone(_customer.value.cellphoneOne);
-    changeTelephone(_customer.value.telephoneOne);
-    changeBornDate(_customer.value.bornDate);
+    if (_cellphone.length < 10){
+      this._cellphone.sink.addError('Número inválido.');
+      return;
+    }
+
+    this._cellphone.sink.add(_cellphone);
+  }
+
+  changeTelephone(String _telephone) {
+    if (_customer.value.telephoneOne.isEmpty &&
+        _customer.value.telephoneTwo.isNotEmpty && _telephone.isEmpty) {
+      this._telephone.sink.addError('No puede eliminar información.');
+      return;
+    } else {
+      if (_customer.value.telephoneOne.isNotEmpty && _telephone.isEmpty){
+        this._telephone.sink.addError('No puede eliminar información.');
+        return;
+      }
+    }
+
+    if (_telephone.length < 10){
+      this._telephone.sink.addError('Número inválido.');
+      return;
+    }
+
+    this._telephone.sink.add(_telephone);
+  }
+
+  fetchCustomer(String id) async {
+    _id.sink.add(id);
+    _customer.sink.add(null);
+
+    await _crmRepository.fetchCustomer(id).then((response) {
+      _customer.sink.add(response);
+      _lastName.sink.add(response.lastName);
+      _firstName.sink.add(response.firstName);
+      _email.sink.add(response.email);
+
+      /// Business logic
+      if (response.cellphoneOne.isEmpty && response.cellphoneTwo.isNotEmpty) {
+        _cellphone.sink.add(response.cellphoneTwo);
+      } else {
+        _cellphone.sink.add(response.cellphoneOne);
+      }
+
+      /// Business logic
+      if (response.telephoneOne.isEmpty && response.telephoneTwo.isNotEmpty) {
+        _telephone.sink.add(response.telephoneTwo);
+      } else {
+        _telephone.sink.add(response.telephoneOne);
+      }
+      _bornDate.sink.add(response.bornDate);
+    });
   }
 
   updateCustomer(String userId) {
     changeUpdating(true);
     updatedCustomer.first.then((data) async {
-      changeCustomer(data);
       await _crmRepository
           .updateCustomerData(data, userId)
           .timeout(Duration(seconds: Connection.timeOutSec))
           .then((response) {
-        print(response);
-        changeUpdating(false);
-      }, onError: (error) {
-        print(error.toString());
-        changeUpdating(false);
-      }).catchError((error) {
-        print(error.toString());
+        print(data.toString());
         changeUpdating(false);
       });
     });

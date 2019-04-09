@@ -3,8 +3,13 @@ import 'package:intl/intl.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/customer_detail_bloc.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
+import 'package:my_office_th_app/models/customer.dart';
 
 class CustomerInfo extends StatefulWidget {
+  final Customer customer;
+
+  CustomerInfo(this.customer);
+
   @override
   State<StatefulWidget> createState() => _CustomerInfoState();
 }
@@ -15,15 +20,15 @@ class _CustomerInfoState extends State<CustomerInfo> {
   TextEditingController _idCtrl = TextEditingController();
   TextEditingController _lastNameCtrl = TextEditingController();
   TextEditingController _firstNameCtrl = TextEditingController();
-  TextEditingController _email = TextEditingController();
-  TextEditingController _cellphone = TextEditingController();
-  TextEditingController _telephone = TextEditingController();
-  String _bornDate = '';
+  TextEditingController _emailCtrl = TextEditingController();
+  TextEditingController _cellphoneCtrl = TextEditingController();
+  TextEditingController _telephoneCtrl = TextEditingController();
   DateTime _now = new DateTime.now();
   DateFormat formatter = new DateFormat('dd/MM/yyyy');
 
   @override
   void initState() {
+    print('CustomerInfo >> initState');
     super.initState();
   }
 
@@ -31,44 +36,53 @@ class _CustomerInfoState extends State<CustomerInfo> {
   Future _selectDate() async {
     DateTime picked = await showDatePicker(
         context: context,
-        initialDate: _bornDate != '' ? formatter.parse(_bornDate) : _now,
+        initialDate: _customerDetailBloc.bornDate.value != ''
+            ? formatter.parse(_customerDetailBloc.bornDate.value)
+            : _now,
         firstDate: DateTime(1900),
         lastDate: DateTime(_now.year + 1));
 
     if (picked != null) {
-      _bornDate = formatter.format(picked).toString();
-      _customerDetailBloc.changeBornDate(_bornDate);
+      _customerDetailBloc.changeBornDate(formatter.format(picked).toString());
     }
   }
 
   @override
   void didChangeDependencies() {
+    print('CustomerInfo >> didChangeDependencies');
     _loginBloc = BlocProvider.of<LoginBloc>(context);
     _customerDetailBloc = BlocProvider.of<CustomerDetailBloc>(context);
 
-    /// Loading the text fields controls
-    _customerDetailBloc.customer.listen((data){
-      _idCtrl.text = data.id;
-      _lastNameCtrl.text = data.lastName;
-      _firstNameCtrl.text = data.firstName;
-      _email.text = data.email;
-      _cellphone.text = data.cellphoneOne;
-      _telephone.text = data.telephoneOne;
-      if (data.bornDate != null) _bornDate = data.bornDate;
-    });
+    /// Looking for the customer data.
+    _customerDetailBloc.fetchCustomer(widget.customer.id);
 
-    /// Loading the streams
-    _customerDetailBloc.loadCustomerStreams();
+    /// Loading the text controllers.
+    _customerDetailBloc.customer.listen((data) {
+      if (data != null){
+        _idCtrl.text = data.id;
+        _lastNameCtrl.text = data.lastName;
+        _firstNameCtrl.text = data.firstName;
+        _emailCtrl.text = data.email;
+        _cellphoneCtrl.text = data.cellphoneOne;
+        _telephoneCtrl.text = data.telephoneOne;
+      }
+    });
 
     /// To call the customer update dialog
     _customerDetailBloc.updating.listen((data) {
-      data ? _showUpdatingDialog() : Navigator.pop(context);
+      if (data) {
+        _showUpdatingDialog();
+      } else {
+        Navigator.pop(context);
+      }
     });
+
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
+    print('CustomerInfo >> build');
     return Container(
       margin: EdgeInsets.all(10.0),
       child: Card(
@@ -78,21 +92,34 @@ class _CustomerInfoState extends State<CustomerInfo> {
               Container(
                 margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
                 child: Text(
-                  'Datos Generales',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+                  'Datos Generales del Cliente',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
                 ),
               ),
               Divider(),
               StreamBuilder(
-                  stream: _customerDetailBloc.editing,
-                  builder:
-                      (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                    if (snapshot.hasError)
-                      return Text(snapshot.error.runtimeType.toString());
-                    return snapshot.hasData
-                        ? _customerForm(snapshot.data)
-                        : _customerForm(false);
-                  }),
+                stream: _customerDetailBloc.customer,
+                builder:
+                    (BuildContext context, AsyncSnapshot<Customer> snapshot) {
+                  return snapshot.hasData
+                      ? StreamBuilder(
+                          stream: _customerDetailBloc.editing,
+                          builder: (BuildContext context,
+                              AsyncSnapshot<bool> snapshot) {
+                            if (snapshot.hasError)
+                              return Text(
+                                  snapshot.error.runtimeType.toString());
+                            return snapshot.hasData
+                                ? _customerForm(snapshot.data)
+                                : _customerForm(false);
+                          })
+                      : Center(
+                          child: Container(
+                              margin: EdgeInsets.all(20.0),
+                              child: CircularProgressIndicator()),
+                        );
+                },
+              ),
             ],
           )),
     );
@@ -168,7 +195,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
               return Container(
                 margin: EdgeInsets.only(left: 20.0, right: 20.0),
                 child: TextField(
-                    controller: _email,
+                    controller: _emailCtrl,
                     onChanged: _customerDetailBloc.changeEmail,
                     enabled: _editing,
                     decoration: InputDecoration(
@@ -189,7 +216,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
               return Container(
                 margin: EdgeInsets.only(left: 20.0, right: 20.0),
                 child: TextField(
-                    controller: _cellphone,
+                    controller: _cellphoneCtrl,
                     onChanged: _customerDetailBloc.changeCellphone,
                     enabled: _editing,
                     decoration: InputDecoration(
@@ -210,7 +237,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
                 return Container(
                   margin: EdgeInsets.only(left: 20.0, right: 20.0),
                   child: TextField(
-                      controller: _telephone,
+                      controller: _telephoneCtrl,
                       onChanged: _customerDetailBloc.changeTelephone,
                       enabled: _editing,
                       decoration: InputDecoration(
@@ -291,7 +318,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
                               color: Colors.blueAccent, fontSize: 18.0),
                         )
                       : Text(
-                          _bornDate.isEmpty ? 'dd/MM/yyyy' : _bornDate,
+                          snapshot.data.isEmpty ? 'dd/MM/yyyy' : snapshot.data,
                           style: TextStyle(
                               color: Colors.blueAccent, fontSize: 18.0),
                         );
@@ -310,10 +337,24 @@ class _CustomerInfoState extends State<CustomerInfo> {
                 border:
                     BorderDirectional(bottom: BorderSide(color: Colors.grey))),
             child: InkWell(
-                child: Text(
-              _bornDate.isEmpty ? 'dd/MM/yyyy' : _bornDate,
-              style: TextStyle(color: Colors.black, fontSize: 18.0),
-            )),
+                child: StreamBuilder(
+                    stream: _customerDetailBloc.bornDate,
+                    builder:
+                        (BuildContext context, AsyncSnapshot<String> snapshot) {
+                      return snapshot.hasData
+                          ? Text(
+                              snapshot.data.isEmpty
+                                  ? 'dd/MM/yyyy'
+                                  : snapshot.data,
+                              style: TextStyle(
+                                  color: Colors.black, fontSize: 18.0),
+                            )
+                          : Text(
+                              'dd/MM/yyyy',
+                              style: TextStyle(
+                                  color: Colors.black, fontSize: 18.0),
+                            );
+                    })),
           );
   }
 
@@ -334,6 +375,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
                   margin: EdgeInsets.only(top: 20.0, right: 20.0, bottom: 20.0),
                   child: RaisedButton(
                     onPressed: () {
+                      _customerDetailBloc.fetchCustomer(widget.customer.id);
                       _customerDetailBloc.changeEditing(false);
                     },
                     child: Icon(

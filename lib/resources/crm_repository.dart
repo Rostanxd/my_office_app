@@ -7,16 +7,18 @@ class CrmRepository {
   TelemarketingApi _telemarketingApi = TelemarketingApi();
   CustomerApi _customerApi = CustomerApi();
 
-  Future<List<Customer>> fetchCustomerList(String id, String lastName,
-      String firstName) =>
+  Future<List<Customer>> fetchCustomerList(
+          String id, String lastName, String firstName) =>
       _customerApi.fetchCustomerList(id, lastName, firstName);
 
+  Future<Customer> fetchCustomer(String id) => _customerApi.fetchCustomer(id);
+
   Future<TelemarketingEffectiveness> fetchTelemarketingEffectiveness(
-      String localId, String sellerId) =>
+          String localId, String sellerId) =>
       _telemarketingApi.fetchTelemarketingEffectiveness(localId, sellerId);
 
-  Future<List<CustomerAnniversary>> fetchCustomerAnniversaries(String localId,
-      String sellerId) =>
+  Future<List<CustomerAnniversary>> fetchCustomerAnniversaries(
+          String localId, String sellerId) =>
       _telemarketingApi.fetchCustomerAnniversaries(localId, sellerId);
 
   Future<String> updateCustomerData(Customer customer, String userId) =>

@@ -55,6 +55,10 @@ class _InventoryHomeState extends State<InventoryHome> {
   @override
   void didChangeDependencies() {
     print('Inventory Home >> didChangeDependecies');
+    /// Getting login bloc from provider
+    _loginBloc = BlocProvider.of<LoginBloc>(context);
+
+    /// Getting inventory bloc from provider
     _inventoryBloc = BlocProvider.of<InventoryBloc>(context);
     super.didChangeDependencies();
   }
@@ -69,10 +73,6 @@ class _InventoryHomeState extends State<InventoryHome> {
   @override
   Widget build(BuildContext context) {
     print('Inventory Home >> build');
-
-    /// Getting login bloc from provider
-    _loginBloc = BlocProvider.of<LoginBloc>(context);
-
     return Scaffold(
       appBar: AppBar(
         title: Text(''),

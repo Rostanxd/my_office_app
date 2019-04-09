@@ -29,7 +29,7 @@ class CustomerValidator {
     handleData: (email, sink){
       if (regex.hasMatch(email)){
         sink.add(email);
-      } else {
+      } else if (email.isNotEmpty){
         sink.addError('Email inválido');
       }
     }

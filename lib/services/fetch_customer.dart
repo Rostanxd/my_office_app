@@ -11,14 +11,14 @@ class CustomerApi {
       String id, String lastName, String firstName) async {
     List<Customer> _customerList;
 
-    print('fetchCustomer >> $id $lastName $firstName');
+    print('fetchCustomerList >> $id $lastName $firstName');
     final response = await _httpClient.post(
         Connection.host + '/rest/WsCrmClientes',
         headers: {"Content-Type": "application/json"},
         body: json.encode(
             {"id": "$id", "lastName": "$lastName", "firstName": "$firstName"}));
 
-    print('fetchCustomer << ${response.body}');
+    print('fetchCustomerList << ${response.body}');
 
     /// To get easily the gx response
     Map<String, dynamic> gxResponse = json.decode(response.body);
@@ -30,6 +30,26 @@ class CustomerApi {
     _customerList = responseList.map((f) => Customer.fromJson((f))).toList();
 
     return _customerList;
+  }
+
+  Future<Customer> fetchCustomer(String id) async {
+    print('fetchCustomer >> $id');
+    final response = await _httpClient.post(
+        Connection.host + '/rest/WsCrmClientes',
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(
+            {"id": "$id", "lastName": "", "firstName": ""}));
+
+    print('fetchCustomer << ${response.body}');
+
+    /// To get easily the gx response
+    Map<String, dynamic> gxResponse = json.decode(response.body);
+
+    /// Genexus response structure
+    var responseList = gxResponse['SdtWsClientes'] as List;
+
+    /// Loading the list from the response
+    return responseList.map((f) => Customer.fromJson((f))).toList()[0];
   }
 
   Future<String> updateCustomers(Customer _customer, String userId) async {

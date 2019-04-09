@@ -18,12 +18,18 @@ class _HomePageState extends State<HomePage> {
   HomeBloc _homeBloc;
 
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
+    print('Home >> didChangeDependencies');
     _loginBloc = BlocProvider.of<LoginBloc>(context);
     _homeBloc = BlocProvider.of<HomeBloc>(context);
-
     _homeBloc.fetchAllCardInfo(
         _loginBloc.local.value.id, _loginBloc.user.value.sellerId);
+    super.didChangeDependencies();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    print('Home >> build');
 
     return Scaffold(
       appBar: AppBar(
