@@ -17,6 +17,12 @@ class CustomerDetail extends StatefulWidget {
 class _CustomerDetailState extends State<CustomerDetail> {
   CustomerDetailBloc _customerDetailBloc;
 
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     _customerDetailBloc = BlocProvider.of<CustomerDetailBloc>(context);
@@ -29,7 +35,7 @@ class _CustomerDetailState extends State<CustomerDetail> {
 
     var _widgetOptions = [
       ListView(
-        children: <Widget>[CustomerInfo(widget.customer)],
+        children: <Widget>[CustomerInfo()],
       ),
       ListView(
         children: <Widget>[Container(child: Text(''),)],
@@ -79,22 +85,14 @@ class _CustomerDetailState extends State<CustomerDetail> {
               : CardDummyLoading();
         },
       ),
-//        floatingActionButton: StreamBuilder(
-//            stream: _customerDetailBloc.editing,
-//            builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-//              return snapshot.hasData && snapshot.data
-//                  ? FloatingActionButton(
-//                      child: Icon(Icons.edit),
-//                      backgroundColor: Colors.grey,
-//                      onPressed: () {
-//                        _customerDetailBloc.changeEditing(false);
-//                      })
-//                  : FloatingActionButton(
-//                      child: Icon(Icons.edit),
-//                      onPressed: () {
-//                        _customerDetailBloc.changeEditing(true);
-//                      });
-//            })
     );
   }
+
+  @override
+  void dispose() {
+    _customerDetailBloc.dispose();
+    super.dispose();
+  }
+
+
 }

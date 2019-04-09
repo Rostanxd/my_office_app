@@ -3,13 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/customer_detail_bloc.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
-import 'package:my_office_th_app/models/customer.dart';
 
 class CustomerInfo extends StatefulWidget {
-  final Customer customer;
-
-  CustomerInfo(this.customer);
-
   @override
   State<StatefulWidget> createState() => _CustomerInfoState();
 }
@@ -29,15 +24,6 @@ class _CustomerInfoState extends State<CustomerInfo> {
 
   @override
   void initState() {
-    print(widget.customer.bornDate);
-    _idCtrl.text = widget.customer.id;
-    _lastNameCtrl.text = widget.customer.lastName;
-    _firstNameCtrl.text = widget.customer.firstName;
-    _email.text = widget.customer.email;
-    _cellphone.text = widget.customer.cellphoneOne;
-    _telephone.text = widget.customer.telephoneOne;
-    if (widget.customer.bornDate != null) _bornDate = widget.customer.bornDate;
-
     super.initState();
   }
 
@@ -56,12 +42,33 @@ class _CustomerInfoState extends State<CustomerInfo> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
     _loginBloc = BlocProvider.of<LoginBloc>(context);
     _customerDetailBloc = BlocProvider.of<CustomerDetailBloc>(context);
 
-    _customerDetailBloc.changeCustomer(widget.customer);
+    /// Loading the text fields controls
+    _customerDetailBloc.customer.listen((data){
+      _idCtrl.text = data.id;
+      _lastNameCtrl.text = data.lastName;
+      _firstNameCtrl.text = data.firstName;
+      _email.text = data.email;
+      _cellphone.text = data.cellphoneOne;
+      _telephone.text = data.telephoneOne;
+      if (data.bornDate != null) _bornDate = data.bornDate;
+    });
 
+    /// Loading the streams
+    _customerDetailBloc.loadCustomerStreams();
+
+    /// To call the customer update dialog
+    _customerDetailBloc.updating.listen((data) {
+      data ? _showUpdatingDialog() : Navigator.pop(context);
+    });
+    super.didChangeDependencies();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.all(10.0),
       child: Card(
@@ -113,82 +120,110 @@ class _CustomerInfoState extends State<CustomerInfo> {
                       borderSide: BorderSide(color: Color(0xff011e41))),
                 )),
           ),
-          Container(
-            margin: EdgeInsets.only(left: 20.0, right: 20.0),
-            child: TextField(
-                controller: _lastNameCtrl,
-                onChanged: _customerDetailBloc.updateLastName,
-                enabled: _editing,
-                decoration: InputDecoration(
-                  labelText: 'Apellidos',
-                  labelStyle: TextStyle(
-                      fontFamily: 'Montserrat',
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey),
-                  focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Color(0xff011e41))),
-                )),
+          StreamBuilder(
+            stream: _customerDetailBloc.lastName,
+            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+              return Container(
+                margin: EdgeInsets.only(left: 20.0, right: 20.0),
+                child: TextField(
+                    controller: _lastNameCtrl,
+                    onChanged: _customerDetailBloc.changeLastName,
+                    enabled: _editing,
+                    decoration: InputDecoration(
+                        labelText: 'Apellidos',
+                        labelStyle: TextStyle(
+                            fontFamily: 'Montserrat',
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey),
+                        focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Color(0xff011e41))),
+                        errorText: snapshot.error)),
+              );
+            },
           ),
-          Container(
-            margin: EdgeInsets.only(left: 20.0, right: 20.0),
-            child: TextField(
-                controller: _firstNameCtrl,
-                enabled: _editing,
-                decoration: InputDecoration(
-                  labelText: 'Nombes',
-                  labelStyle: TextStyle(
-                      fontFamily: 'Montserrat',
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey),
-                  focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Color(0xff011e41))),
-                )),
+          StreamBuilder(
+            stream: _customerDetailBloc.firstName,
+            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+              return Container(
+                margin: EdgeInsets.only(left: 20.0, right: 20.0),
+                child: TextField(
+                    controller: _firstNameCtrl,
+                    onChanged: _customerDetailBloc.changeFirstName,
+                    enabled: _editing,
+                    decoration: InputDecoration(
+                        labelText: 'Nombes',
+                        labelStyle: TextStyle(
+                            fontFamily: 'Montserrat',
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey),
+                        focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Color(0xff011e41))),
+                        errorText: snapshot.error)),
+              );
+            },
           ),
-          Container(
-            margin: EdgeInsets.only(left: 20.0, right: 20.0),
-            child: TextField(
-                controller: _email,
-                enabled: _editing,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  labelStyle: TextStyle(
-                      fontFamily: 'Montserrat',
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey),
-                  focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Color(0xff011e41))),
-                )),
+          StreamBuilder(
+            stream: _customerDetailBloc.email,
+            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+              return Container(
+                margin: EdgeInsets.only(left: 20.0, right: 20.0),
+                child: TextField(
+                    controller: _email,
+                    onChanged: _customerDetailBloc.changeEmail,
+                    enabled: _editing,
+                    decoration: InputDecoration(
+                        labelText: 'Email',
+                        labelStyle: TextStyle(
+                            fontFamily: 'Montserrat',
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey),
+                        focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Color(0xff011e41))),
+                        errorText: snapshot.error)),
+              );
+            },
           ),
-          Container(
-            margin: EdgeInsets.only(left: 20.0, right: 20.0),
-            child: TextField(
-                controller: _cellphone,
-                enabled: _editing,
-                decoration: InputDecoration(
-                  labelText: 'Celular',
-                  labelStyle: TextStyle(
-                      fontFamily: 'Montserrat',
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey),
-                  focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Color(0xff011e41))),
-                )),
+          StreamBuilder(
+            stream: _customerDetailBloc.cellphone,
+            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+              return Container(
+                margin: EdgeInsets.only(left: 20.0, right: 20.0),
+                child: TextField(
+                    controller: _cellphone,
+                    onChanged: _customerDetailBloc.changeCellphone,
+                    enabled: _editing,
+                    decoration: InputDecoration(
+                        labelText: 'Celular',
+                        labelStyle: TextStyle(
+                            fontFamily: 'Montserrat',
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey),
+                        focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Color(0xff011e41))),
+                        errorText: snapshot.error)),
+              );
+            },
           ),
-          Container(
-            margin: EdgeInsets.only(left: 20.0, right: 20.0),
-            child: TextField(
-                controller: _telephone,
-                enabled: _editing,
-                decoration: InputDecoration(
-                  labelText: 'Teléfono',
-                  labelStyle: TextStyle(
-                      fontFamily: 'Montserrat',
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey),
-                  focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Color(0xff011e41))),
-                )),
-          ),
+          StreamBuilder(
+              stream: _customerDetailBloc.telephone,
+              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                return Container(
+                  margin: EdgeInsets.only(left: 20.0, right: 20.0),
+                  child: TextField(
+                      controller: _telephone,
+                      onChanged: _customerDetailBloc.changeTelephone,
+                      enabled: _editing,
+                      decoration: InputDecoration(
+                          labelText: 'Teléfono',
+                          labelStyle: TextStyle(
+                              fontFamily: 'Montserrat',
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey),
+                          focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Color(0xff011e41))),
+                          errorText: snapshot.error)),
+                );
+              }),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -287,18 +322,14 @@ class _CustomerInfoState extends State<CustomerInfo> {
         ? Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
-              Container(
-                  margin: EdgeInsets.only(top: 20.0, right: 5.0, bottom: 20.0),
-                  child: RaisedButton(
-                    onPressed: () {
-                      _confirmDialog();
-                    },
-                    child: Icon(
-                      Icons.save,
-                      color: Colors.white,
-                    ),
-                    color: Colors.lightBlue,
-                  )),
+              StreamBuilder(
+                stream: _customerDetailBloc.submitCustomer,
+                builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                  return snapshot.hasData
+                      ? _confirmButton(snapshot.data)
+                      : _confirmButton(false);
+                },
+              ),
               Container(
                   margin: EdgeInsets.only(top: 20.0, right: 20.0, bottom: 20.0),
                   child: RaisedButton(
@@ -330,6 +361,21 @@ class _CustomerInfoState extends State<CustomerInfo> {
                   ))
             ],
           );
+  }
+
+  Widget _confirmButton(bool _submit) {
+    return Container(
+        margin: EdgeInsets.only(top: 20.0, right: 5.0, bottom: 20.0),
+        child: RaisedButton(
+          onPressed: () {
+            if (_submit) _confirmDialog();
+          },
+          child: Icon(
+            Icons.save,
+            color: Colors.white,
+          ),
+          color: _submit ? Colors.lightBlue : Colors.grey,
+        ));
   }
 
   void _confirmDialog() {
@@ -364,6 +410,20 @@ class _CustomerInfoState extends State<CustomerInfo> {
                 },
               )
             ],
+          );
+        });
+  }
+
+  void _showUpdatingDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Actualizando cliente'),
+            content: Container(
+                height: 40.0,
+                width: 40.0,
+                child: Center(child: CircularProgressIndicator())),
           );
         });
   }
