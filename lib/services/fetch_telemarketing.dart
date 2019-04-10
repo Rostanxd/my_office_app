@@ -7,6 +7,48 @@ import 'package:my_office_th_app/utils/connection.dart';
 class TelemarketingApi {
   final _httpClient = http.Client();
 
+  Future<List<Telemarketing>> fetchCustomerTelemarketing(
+      String sellerId, String customerId) async {
+    List<Telemarketing> _telemarketingList = List<Telemarketing>();
+
+    print('fetchCustomerTelemarketing >> $sellerId $customerId');
+    final response = await _httpClient.post(
+        Connection.host + '/rest/WsCrmCustomerTelemarketing',
+        headers: {"Content-Type": "application/json"},
+        body: json
+            .encode({"sellerId": "$sellerId", "customerId": "$customerId"}));
+
+    print('fetchCustomerTelemarketing << ${response.body}');
+
+    /// To get easily the gx response
+    Map<String, dynamic> gxResponse = json.decode(response.body);
+
+    /// Genexus response structure
+    var responseList = gxResponse['SdtWsTelemarketing'] as List;
+
+    /// Loading the list from the response
+    _telemarketingList =
+        responseList.map((f) => Telemarketing.fromJson(f)).toList();
+
+    return _telemarketingList;
+  }
+
+  Future<String> postCustomerTelemarketing(
+      Telemarketing _telemarketing) async {
+    List<Telemarketing> _telemarketingList = List();
+    _telemarketingList.add(_telemarketing);
+
+    print('postCustomerTelemarketing >> ${_telemarketing.toString()}');
+    final response = await _httpClient.post(
+      Connection.host + '/rest/WsCrmTelemarketingPost',
+      headers: {"Content-Type":"application/json"},
+      body: json.encode({"SdtWsTelemarketing": _telemarketingList}));
+
+    print('postCustomerTelemarketing << ${response.body}');
+
+    return response.body;
+  }
+
   Future<TelemarketingEffectiveness> fetchTelemarketingEffectiveness(
       String localId, String sellerId) async {
     TelemarketingEffectiveness _telemarketingEffectiveness;
@@ -52,9 +94,8 @@ class TelemarketingApi {
     var responseList = gxResponse['SdtWsClientesAniversarios'] as List;
 
     /// Loading the list from the response
-    _customerAnniversaryList = responseList
-        .map((f) => CustomerAnniversary.fromJson((f)))
-        .toList();
+    _customerAnniversaryList =
+        responseList.map((f) => CustomerAnniversary.fromJson((f))).toList();
 
     return _customerAnniversaryList;
   }

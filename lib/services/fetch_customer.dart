@@ -72,7 +72,7 @@ class CustomerApi {
         }));
 
     /// Printing response from the rest
-    print("customerPost << ${response.body}");
+    print("updateCustomers << ${response.body}");
 
     return response.body;
   }

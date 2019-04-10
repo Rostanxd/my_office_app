@@ -1,6 +1,7 @@
 import 'package:my_office_th_app/blocs/bloc_base.dart';
 import 'package:my_office_th_app/blocs/customer_validator.dart';
 import 'package:my_office_th_app/models/customer.dart';
+import 'package:my_office_th_app/models/telemarketing.dart';
 import 'package:my_office_th_app/resources/crm_repository.dart';
 import 'package:my_office_th_app/utils/connection.dart';
 import 'package:rxdart/rxdart.dart';
@@ -20,6 +21,9 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
   final _telephone = BehaviorSubject<String>();
   final _bornDate = BehaviorSubject<String>();
   CrmRepository _crmRepository = CrmRepository();
+
+  /// Telemarketing
+  final _telemarketingList = BehaviorSubject<List<Telemarketing>>();
 
   /// Observables
   ValueObservable<int> get index => _index.stream;
@@ -77,6 +81,9 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
       telephone,
       (a, b, c, d, e, f) => true);
 
+  Observable<List<Telemarketing>> get telemarketingList =>
+      _telemarketingList.stream;
+
   /// Functions
   Function(int) get changeIndex => _index.sink.add;
 
@@ -90,7 +97,7 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
 
   Function(String) get changeId => _id.sink.add;
 
-  changeLastName(String _lastName){
+  changeLastName(String _lastName) {
 //    if(_customer.value.lastName.isNotEmpty && _lastName.isEmpty){
 //      this._lastName.sink.addError('No puede eliminar información');
 //      return;
@@ -98,16 +105,16 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
     this._lastName.sink.add(_lastName);
   }
 
-  changeFirstName(String _firstName){
-    if(_customer.value.firstName.isNotEmpty && _firstName.isEmpty){
+  changeFirstName(String _firstName) {
+    if (_customer.value.firstName.isNotEmpty && _firstName.isEmpty) {
       this._firstName.sink.addError('No puede eliminar información');
       return;
     }
     this._firstName.sink.add(_firstName);
   }
 
-  changeEmail(String _email){
-    if (_customer.value.email.isNotEmpty && _email.isEmpty){
+  changeEmail(String _email) {
+    if (_customer.value.email.isNotEmpty && _email.isEmpty) {
       this._email.sink.addError('No puede eliminar información');
       return;
     }
@@ -115,19 +122,20 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
     this._email.sink.add(_email);
   }
 
-  changeCellphone(String _cellphone){
+  changeCellphone(String _cellphone) {
     if (_customer.value.cellphoneOne.isEmpty &&
-        _customer.value.cellphoneTwo.isNotEmpty && _cellphone.isEmpty) {
+        _customer.value.cellphoneTwo.isNotEmpty &&
+        _cellphone.isEmpty) {
       this._cellphone.sink.addError('No puede eliminar información.');
       return;
     } else {
-      if (_customer.value.cellphoneOne.isNotEmpty && _cellphone.isEmpty){
+      if (_customer.value.cellphoneOne.isNotEmpty && _cellphone.isEmpty) {
         this._cellphone.sink.addError('No puede eliminar información.');
         return;
       }
     }
 
-    if (_cellphone.length < 10){
+    if (_cellphone.length < 10) {
       this._cellphone.sink.addError('Número inválido.');
       return;
     }
@@ -137,17 +145,18 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
 
   changeTelephone(String _telephone) {
     if (_customer.value.telephoneOne.isEmpty &&
-        _customer.value.telephoneTwo.isNotEmpty && _telephone.isEmpty) {
+        _customer.value.telephoneTwo.isNotEmpty &&
+        _telephone.isEmpty) {
       this._telephone.sink.addError('No puede eliminar información.');
       return;
     } else {
-      if (_customer.value.telephoneOne.isNotEmpty && _telephone.isEmpty){
+      if (_customer.value.telephoneOne.isNotEmpty && _telephone.isEmpty) {
         this._telephone.sink.addError('No puede eliminar información.');
         return;
       }
     }
 
-    if (_telephone.length < 10){
+    if (_telephone.length < 10) {
       this._telephone.sink.addError('Número inválido.');
       return;
     }
@@ -195,6 +204,22 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
     });
   }
 
+  fetchCustomerTelemarketing(String sellerId, String customerId) async {
+    await _crmRepository
+        .fetchCustomerTelemarketing(sellerId, customerId)
+        .then((data) {
+          _telemarketingList.sink.add(data);
+    }, onError: (error){
+          if(error.runtimeType == RangeError){
+            _telemarketingList.sink.addError('No hay datos.');
+          } else {
+            _telemarketingList.sink.addError(error.runtimeType.toString());
+          }
+    }).catchError((error){
+      _telemarketingList.sink.addError(error.runtimeType.toString());
+    });
+  }
+
   @override
   void dispose() {
     _index.close();
@@ -208,5 +233,6 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
     _cellphone.close();
     _telephone.close();
     _bornDate.close();
+    _telemarketingList.close();
   }
 }
