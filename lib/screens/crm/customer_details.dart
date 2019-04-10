@@ -4,6 +4,7 @@ import 'package:my_office_th_app/blocs/customer_detail_bloc.dart';
 import 'package:my_office_th_app/components/card_dummy_loading.dart';
 import 'package:my_office_th_app/models/customer.dart';
 import 'package:my_office_th_app/screens/crm/customer_info.dart';
+import 'package:my_office_th_app/screens/crm/customer_telemarketing.dart';
 
 class CustomerDetail extends StatefulWidget {
   final Customer customer;
@@ -43,10 +44,7 @@ class _CustomerDetailState extends State<CustomerDetail> {
         children: <Widget>[CustomerInfo(widget.customer)],
       ),
       ListView(
-        children: <Widget>[Container(child: Text(''),)],
-      ),
-      ListView(
-        children: <Widget>[Container(child: Text(''),)],
+        children: <Widget>[CustomerTelemarketing(widget.customer),],
       ),
     ];
 
@@ -74,9 +72,6 @@ class _CustomerDetailState extends State<CustomerDetail> {
                   items: <BottomNavigationBarItem>[
                     BottomNavigationBarItem(
                         icon: Icon(Icons.info), title: Text('Info')),
-                    BottomNavigationBarItem(
-                        icon: Icon(Icons.format_list_numbered),
-                        title: Text('Compras')),
                     BottomNavigationBarItem(
                         icon: Icon(Icons.monetization_on),
                         title: Text('Telemarketing')),

@@ -1,5 +1,6 @@
 import 'package:my_office_th_app/blocs/bloc_base.dart';
 import 'package:my_office_th_app/blocs/login_validator.dart';
+import 'package:my_office_th_app/models/binnacle.dart';
 import 'package:my_office_th_app/models/holding.dart';
 import 'package:my_office_th_app/models/local.dart';
 import 'package:my_office_th_app/models/user.dart';
@@ -78,9 +79,16 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
           }
 
           /// Returning user or error to the stream.
-          _deviceValid
-              ? _user.sink.add(response)
-              : _user.sink.addError('Dispositivo no vinculado');
+          if (_deviceValid) {
+            _user.sink.add(response);
+
+            /// Binnacle
+            postBinnacle(Binnacle(_user.value.user, '', 'A01', deviceId, '01',
+                'login_user_form', 'Login Page', 'A', 'Logueando desde ip: $myIp'));
+
+          } else {
+            _user.sink.addError('Dispositivo no vinculado');
+          }
 
           _logging.sink.add(false);
         }, onError: (error) {
@@ -163,6 +171,10 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
     _password.sink.add(null);
     changeCurrentLocal(null);
     changeCurrentHolding(null);
+  }
+
+  postBinnacle(Binnacle _binnacle) {
+    _loginRepository.postBinnacle(_binnacle);
   }
 
   /// Overriding the class dispose from the BaseBloc

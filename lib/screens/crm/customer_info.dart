@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/customer_detail_bloc.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
+import 'package:my_office_th_app/blocs/setting_bloc.dart';
 import 'package:my_office_th_app/models/customer.dart';
 
 class CustomerInfo extends StatefulWidget {
@@ -16,6 +17,7 @@ class CustomerInfo extends StatefulWidget {
 
 class _CustomerInfoState extends State<CustomerInfo> {
   CustomerDetailBloc _customerDetailBloc;
+  SettingsBloc _settingsBloc;
   LoginBloc _loginBloc;
   TextEditingController _idCtrl = TextEditingController();
   TextEditingController _lastNameCtrl = TextEditingController();
@@ -50,6 +52,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
   @override
   void didChangeDependencies() {
     print('CustomerInfo >> didChangeDependencies');
+    _settingsBloc = BlocProvider.of<SettingsBloc>(context);
     _loginBloc = BlocProvider.of<LoginBloc>(context);
     _customerDetailBloc = BlocProvider.of<CustomerDetailBloc>(context);
 
@@ -58,7 +61,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
 
     /// Loading the text controllers.
     _customerDetailBloc.customer.listen((data) {
-      if (data != null){
+      if (data != null) {
         _idCtrl.text = data.id;
         _lastNameCtrl.text = data.lastName;
         _firstNameCtrl.text = data.firstName;
@@ -435,8 +438,8 @@ class _CustomerInfoState extends State<CustomerInfo> {
                 ),
                 color: Colors.lightBlue,
                 onPressed: () {
-                  _customerDetailBloc
-                      .updateCustomer(_loginBloc.user.value.user);
+                  _customerDetailBloc.updateCustomer(
+                      _loginBloc.user.value.user, _settingsBloc.deviceId.value);
                   Navigator.of(context).pop();
                   _customerDetailBloc.changeEditing(false);
                 },

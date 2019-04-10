@@ -13,7 +13,7 @@ class TelemarketingApi {
 
     print('fetchCustomerTelemarketing >> $sellerId $customerId');
     final response = await _httpClient.post(
-        Connection.host + '/rest/WsCrmCustomerTelemarketing',
+        Connection.host + '/rest/WsCrmClienteTelemarketing',
         headers: {"Content-Type": "application/json"},
         body: json
             .encode({"sellerId": "$sellerId", "customerId": "$customerId"}));
@@ -28,7 +28,7 @@ class TelemarketingApi {
 
     /// Loading the list from the response
     _telemarketingList =
-        responseList.map((f) => Telemarketing.fromJson(f)).toList();
+        responseList.map((f) => Telemarketing.fromJson((f))).toList();
 
     return _telemarketingList;
   }

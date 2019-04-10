@@ -54,18 +54,23 @@ class _CustomerTelemarketingState extends State<CustomerTelemarketing> {
                 ),
               ),
               Divider(),
-              StreamBuilder<List<Telemarketing>>(
-                stream: _customerDetailBloc.telemarketingList,
-                builder: (BuildContext context,
-                    AsyncSnapshot<List<Telemarketing>> snapshot) {
-                  return snapshot.hasData
-                      ? _telemarketingList(snapshot.data)
-                      : Center(
-                          child: Container(
-                              margin: EdgeInsets.all(20.0),
-                              child: CircularProgressIndicator()),
-                        );
-                },
+              Container(
+                height: 300.0,
+                child: StreamBuilder<List<Telemarketing>>(
+                  stream: _customerDetailBloc.telemarketingList,
+                  builder: (BuildContext context,
+                      AsyncSnapshot<List<Telemarketing>> snapshot) {
+                    if (snapshot.hasError)
+                      return Center(
+                        child: Text(snapshot.error),
+                      );
+                    return snapshot.hasData
+                        ? _telemarketingList(snapshot.data)
+                        : Center(
+                            child: CircularProgressIndicator(),
+                          );
+                  },
+                ),
               ),
             ],
           )),
@@ -73,11 +78,17 @@ class _CustomerTelemarketingState extends State<CustomerTelemarketing> {
   }
 
   Widget _telemarketingList(List<Telemarketing> data) {
+    if (data.length == 0)
+      return Container(
+        child: Center(
+          child: Text('No hay datos'),
+        ),
+      );
     return ListView.builder(
       itemBuilder: (BuildContext context, int index) => ListTile(
-            title: Text('${data[index].date} ${data[index].motivate}'),
+            title: Text('${data[index].motivate}'),
             subtitle: Text(
-                'Resultado: ${data[index].result}; Intentos: ${data[index].attempts}'),
+                'Fecha: ${data[index].date} - Intentos: ${data[index].attempts}'),
             leading: Icon(Icons.person),
           ),
       itemCount: data.length,

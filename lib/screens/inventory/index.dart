@@ -6,6 +6,8 @@ import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/inventory_bloc.dart';
 import 'package:my_office_th_app/blocs/item_details_bloc.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
+import 'package:my_office_th_app/blocs/setting_bloc.dart';
+import 'package:my_office_th_app/models/binnacle.dart';
 import 'package:my_office_th_app/models/item.dart';
 import 'package:my_office_th_app/components/user_drawer.dart';
 import 'package:my_office_th_app/screens/inventory/item_details.dart';
@@ -20,6 +22,7 @@ class InventoryHome extends StatefulWidget {
 }
 
 class _InventoryHomeState extends State<InventoryHome> {
+  SettingsBloc _settingsBloc;
   LoginBloc _loginBloc;
   InventoryBloc _inventoryBloc;
   WebViewController _controller;
@@ -55,6 +58,10 @@ class _InventoryHomeState extends State<InventoryHome> {
   @override
   void didChangeDependencies() {
     print('Inventory Home >> didChangeDependecies');
+
+    /// Getting settings bloc from provider
+    _settingsBloc = BlocProvider.of<SettingsBloc>(context);
+
     /// Getting login bloc from provider
     _loginBloc = BlocProvider.of<LoginBloc>(context);
 
@@ -82,7 +89,9 @@ class _InventoryHomeState extends State<InventoryHome> {
             icon: Icon(Icons.search),
             onPressed: () {
               showSearch(
-                  context: context, delegate: DataSearch(_inventoryBloc));
+                  context: context,
+                  delegate:
+                      DataSearch(_settingsBloc, _loginBloc, _inventoryBloc));
             },
           ),
           IconButton(
@@ -125,9 +134,11 @@ class _InventoryHomeState extends State<InventoryHome> {
 
 ///  Implementation of search bar.
 class DataSearch extends SearchDelegate<String> {
+  final SettingsBloc _settingsBloc;
+  final LoginBloc _loginBloc;
   final InventoryBloc _inventoryBloc;
 
-  DataSearch(this._inventoryBloc);
+  DataSearch(this._settingsBloc, this._loginBloc, this._inventoryBloc);
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -251,6 +262,18 @@ class DataSearch extends SearchDelegate<String> {
             ? ListView.builder(
                 itemBuilder: (context, index) => ListTile(
                       onTap: () {
+                        /// Binnacle
+                        _loginBloc.postBinnacle(Binnacle(
+                            _loginBloc.user.value.user,
+                            '',
+                            'A11',
+                            _settingsBloc.deviceId.value,
+                            '01',
+                            'item_details',
+                            'Detalle del item',
+                            'A',
+                            'Buscando información del item ${snapshot.data[index].itemId}'));
+
                         /// Navigation to the item's detail
                         Navigator.push(
                             context,

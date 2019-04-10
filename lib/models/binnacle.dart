@@ -25,4 +25,15 @@ class Binnacle extends Object{
    this.observation = json['observation'];
   }
 
+  Map<String, dynamic> toJson() => {
+    'userId': this.userId,
+    'dateTime': this.dateTime,
+    'programId': this.programId,
+    'equipment': this.equipment,
+    'action': this.action,
+    'programName': this.programName,
+    'programDescription': this.programDescription,
+    'programType': this.programType,
+    'observation': this.observation
+  };
 }

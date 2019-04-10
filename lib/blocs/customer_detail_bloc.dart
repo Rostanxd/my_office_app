@@ -1,8 +1,10 @@
 import 'package:my_office_th_app/blocs/bloc_base.dart';
 import 'package:my_office_th_app/blocs/customer_validator.dart';
+import 'package:my_office_th_app/models/binnacle.dart';
 import 'package:my_office_th_app/models/customer.dart';
 import 'package:my_office_th_app/models/telemarketing.dart';
 import 'package:my_office_th_app/resources/crm_repository.dart';
+import 'package:my_office_th_app/resources/login_repository.dart';
 import 'package:my_office_th_app/utils/connection.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -20,7 +22,9 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
   final _cellphone = BehaviorSubject<String>();
   final _telephone = BehaviorSubject<String>();
   final _bornDate = BehaviorSubject<String>();
+
   CrmRepository _crmRepository = CrmRepository();
+  LoginRepository _loginRepository = LoginRepository();
 
   /// Telemarketing
   final _telemarketingList = BehaviorSubject<List<Telemarketing>>();
@@ -191,31 +195,43 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
     });
   }
 
-  updateCustomer(String userId) {
+  updateCustomer(String userId, String deviceId) {
     changeUpdating(true);
     updatedCustomer.first.then((data) async {
       await _crmRepository
           .updateCustomerData(data, userId)
           .timeout(Duration(seconds: Connection.timeOutSec))
           .then((response) {
-        print(data.toString());
         changeUpdating(false);
+
+        /// Binnacle
+        _loginRepository.postBinnacle(Binnacle(
+            userId,
+            '',
+            'A21',
+            deviceId,
+            '02',
+            'customer_info',
+            'Información del Cliente',
+            'A',
+            'Actualizando información.'));
       });
     });
   }
 
   fetchCustomerTelemarketing(String sellerId, String customerId) async {
-    await _crmRepository
-        .fetchCustomerTelemarketing(sellerId, customerId)
-        .then((data) {
-          _telemarketingList.sink.add(data);
-    }, onError: (error){
-          if(error.runtimeType == RangeError){
-            _telemarketingList.sink.addError('No hay datos.');
-          } else {
-            _telemarketingList.sink.addError(error.runtimeType.toString());
-          }
-    }).catchError((error){
+    await _crmRepository.fetchCustomerTelemarketing(sellerId, customerId).then(
+        (data) {
+      _telemarketingList.sink.add(data);
+    }, onError: (error) {
+      print(error.runtimeType.toString());
+      if (error.runtimeType == RangeError) {
+        _telemarketingList.sink.addError('No hay datos.');
+      } else {
+        _telemarketingList.sink.addError(error.runtimeType.toString());
+      }
+    }).catchError((error) {
+      print(error.runtimeType.toString());
       _telemarketingList.sink.addError(error.runtimeType.toString());
     });
   }

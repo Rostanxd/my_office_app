@@ -5,7 +5,7 @@ class Telemarketing extends Object {
   String customerId;
   String motivate;
   String note;
-  int attempts;
+  String attempts;
   String dateCreated;
   String dateUpdated;
 

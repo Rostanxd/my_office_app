@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
@@ -6,7 +5,6 @@ import 'package:my_office_th_app/blocs/home_bloc.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
 import 'package:my_office_th_app/components/user_drawer.dart';
 import 'package:my_office_th_app/models/card_info.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -43,17 +41,6 @@ class _HomePageState extends State<HomePage> {
         _cardInfoDailySales(),
         _cardInfoCustomersWeek(),
         _cardInfoSalesAnalysis(),
-
-//          Container(
-//            height: 300.0,
-//            margin: EdgeInsets.all(10.0),
-//            child: WebView(
-//              initialUrl: 'https://flutter.dev/',
-//              gestureRecognizers: Set()
-//                ..add(Factory<VerticalDragGestureRecognizer>(
-//                    () => VerticalDragGestureRecognizer())),
-//            ),
-//          ),
       ]),
       floatingActionButton: StreamBuilder<bool>(
         stream: _homeBloc.refreshHome,
