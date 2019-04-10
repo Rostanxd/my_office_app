@@ -102,10 +102,10 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
   Function(String) get changeId => _id.sink.add;
 
   changeLastName(String _lastName) {
-//    if(_customer.value.lastName.isNotEmpty && _lastName.isEmpty){
-//      this._lastName.sink.addError('No puede eliminar información');
-//      return;
-//    }
+    if(_customer.value.lastName.isNotEmpty && _lastName.isEmpty){
+      this._lastName.sink.addError('No puede eliminar información');
+      return;
+    }
     this._lastName.sink.add(_lastName);
   }
 
@@ -144,6 +144,11 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
       return;
     }
 
+    if (!isNumeric(_cellphone)){
+      this._cellphone.sink.addError('Número inválido');
+      return;
+    }
+
     this._cellphone.sink.add(_cellphone);
   }
 
@@ -160,8 +165,13 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
       }
     }
 
-    if (_telephone.length < 10) {
+    if (_telephone.length < 7) {
       this._telephone.sink.addError('Número inválido.');
+      return;
+    }
+
+    if (!isNumeric(_telephone)){
+      this._telephone.sink.addError('Número inválido');
       return;
     }
 
@@ -212,7 +222,7 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
             deviceId,
             '02',
             'customer_info',
-            'Información del Cliente',
+            'Información del Cliente ${data.id}',
             'A',
             'Actualizando información.'));
       });
@@ -234,6 +244,13 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
       print(error.runtimeType.toString());
       _telemarketingList.sink.addError(error.runtimeType.toString());
     });
+  }
+
+  bool isNumeric(String s) {
+    if (s == null) {
+      return false;
+    }
+    return double.parse(s, (e) => null) != null;
   }
 
   @override

@@ -62,10 +62,7 @@ class _CrmHomeState extends State<CrmHome> {
         drawer: UserDrawer(),
         body: ListView(
           children: <Widget>[
-            _loginBloc.user.value.local.name.isNotEmpty &&
-                        (_loginBloc.user.value.accessId == '08' &&
-                            _loginBloc.user.value.level != '4') ||
-                    _loginBloc.user.value.accessId == '05'
+            _loginBloc.user.value.accessId == '05'
                 ? _telemarketingAnniversaries()
                 : Container(
                     margin: EdgeInsets.all(0.0),
@@ -576,7 +573,38 @@ class DataSearch extends SearchDelegate<String> {
   Widget buildResults(BuildContext context) {
     /// We don't call the showResult() method from the suggestion list,
     /// instead we call the customer detail page
-    return null;
+    return StreamBuilder<List<Customer>>(
+      stream: _crmBloc.customerList,
+      builder:
+          (BuildContext context, AsyncSnapshot<List<Customer>> snapshot) {
+        if (snapshot.hasError) {
+          return Container(
+              margin: EdgeInsets.all(20.0),
+              child: Text(
+                'Se ha encontrado un Error. ' +
+                    'Comunicar al Dpto. de Sistemas.\n\n'
+                        'Tipo: ${snapshot.error.runtimeType}',
+                style: TextStyle(fontSize: 16.0),
+              ));
+        }
+
+        if (snapshot.hasData) {
+          if (snapshot.data.length == 0)
+            return Container(
+                margin: EdgeInsets.all(20.0),
+                child: Text(
+                  'No se han encontrado coincidencias.',
+                  style: TextStyle(fontSize: 16.0),
+                ));
+
+          /// Passing the list of style from the stream to the function to
+          /// build the list view
+          return _buildSuggestionItems(snapshot.data);
+        } else {
+          return Center(child: CircularProgressIndicator());
+        }
+      },
+    );
   }
 
   @override
@@ -663,7 +691,7 @@ class DataSearch extends SearchDelegate<String> {
             },
             leading: Icon(Icons.person),
             title: Text('${data[index].lastName} ${data[index].firstName}'),
-            subtitle: Text(''),
+            subtitle: Text('C.I. ${data[index].id}'),
           ),
       itemCount: data.length,
     );

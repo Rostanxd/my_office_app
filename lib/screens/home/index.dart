@@ -20,8 +20,12 @@ class _HomePageState extends State<HomePage> {
     print('Home >> didChangeDependencies');
     _loginBloc = BlocProvider.of<LoginBloc>(context);
     _homeBloc = BlocProvider.of<HomeBloc>(context);
+    /// Managers set seller id to empty to watch all the sales
     _homeBloc.fetchAllCardInfo(
-        _loginBloc.local.value.id, _loginBloc.user.value.sellerId);
+        _loginBloc.local.value.id,
+        _loginBloc.user.value.accessId != '08'
+            ? _loginBloc.user.value.sellerId
+            : '');
     super.didChangeDependencies();
   }
 

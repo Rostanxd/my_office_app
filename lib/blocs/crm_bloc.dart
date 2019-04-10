@@ -81,19 +81,22 @@ class CrmBloc extends BlocBase {
       if (isNumeric(term)) {
         id = term;
       } else {
-        if (term.contains("+")){
+        if (term.contains("+")) {
           lastName = term.split("+")[0];
           firstName = term.split("+")[1];
         } else {
           lastName = term;
         }
       }
-      yield await _crmRepository.fetchCustomerList(id, lastName, firstName);
+
+      /// Condition to customer id length
+      if (id.isEmpty || id.length > 4)
+        yield await _crmRepository.fetchCustomerList(id, lastName, firstName);
     });
   }
 
   bool isNumeric(String s) {
-    if(s == null) {
+    if (s == null) {
       return false;
     }
     return double.parse(s, (e) => null) != null;

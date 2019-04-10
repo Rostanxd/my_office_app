@@ -59,8 +59,9 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
     await _loginRepository
         .fetchUser(_id.value, _password.value)
         .then((response) {
-          /// Validation by the ip prefix if is a seller or a sub-admin
-          if (((response.accessId == '08' && response.level != '4') ||
+          /// Validation by the ip prefix
+          if (response.level != '3' &&
+              ((response.accessId == '08' && response.level != '4') ||
                   response.accessId == '05') &&
               !(myIp.contains(response.ipPrefix))) {
             _user.sink.addError('Acceso denegado.');
@@ -83,9 +84,16 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
             _user.sink.add(response);
 
             /// Binnacle
-            postBinnacle(Binnacle(_user.value.user, '', 'A01', deviceId, '01',
-                'login_user_form', 'Login Page', 'A', 'Logueando desde ip: $myIp'));
-
+            postBinnacle(Binnacle(
+                _user.value.user,
+                '',
+                'A01',
+                deviceId,
+                '01',
+                'login_user_form',
+                'Login Page',
+                'A',
+                'Logueando desde ip: $myIp'));
           } else {
             _user.sink.addError('Dispositivo no vinculado');
           }
