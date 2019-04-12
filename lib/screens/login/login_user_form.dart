@@ -153,7 +153,7 @@ class _LoginUserFormState extends State<LoginUserForm> {
                 onTap: () {
                   if (snapshot.data != null && snapshot.data) {
                     _loginBloc.logIn(
-                        _settingsBloc.deviceId.value, _settingsBloc.myIp.value);
+                        _settingsBloc.device.value, _settingsBloc.myIp.value);
                   }
                 },
                 child: Center(

@@ -1,10 +1,12 @@
 import 'package:my_office_th_app/blocs/bloc_base.dart';
 import 'package:my_office_th_app/blocs/login_validator.dart';
 import 'package:my_office_th_app/models/binnacle.dart';
+import 'package:my_office_th_app/models/device.dart';
 import 'package:my_office_th_app/models/holding.dart';
 import 'package:my_office_th_app/models/local.dart';
 import 'package:my_office_th_app/models/user.dart';
 import 'package:my_office_th_app/resources/login_repository.dart';
+import 'package:my_office_th_app/resources/settings_repository.dart';
 import 'package:my_office_th_app/utils/connection.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -18,6 +20,7 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
   final _localList = BehaviorSubject<List<Local>>();
   final _holdingList = BehaviorSubject<List<Holding>>();
   final LoginRepository _loginRepository = LoginRepository();
+  final SettingsRepository _settingsRepository = SettingsRepository();
 
   /// Retrieve data from stream
   Stream<String> get id => _id.stream.transform(validateId);
@@ -51,7 +54,9 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
   Function(Holding) get changeCurrentHolding => _holding.sink.add;
 
   /// To call the user api
-  fetchUser(String deviceId, String myIp) async {
+  logIn(Device _device, String _myIp) async {
+    print(_device.toString());
+
     List<UserDevice> _userDevice;
     bool _deviceValid = false;
     _logging.sink.add(true);
@@ -63,7 +68,7 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
           if (response.level != '3' &&
               ((response.accessId == '08' && response.level != '4') ||
                   response.accessId == '05') &&
-              !(myIp.contains(response.ipPrefix))) {
+              !(_myIp.contains(response.ipPrefix))) {
             _user.sink.addError('Acceso denegado.');
             _logging.sink.add(false);
             return;
@@ -72,9 +77,9 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
           /// Finding for the device in the user's device list
           _userDevice = response.deviceList;
           for (var i = 0; i < _userDevice.length; i++) {
-            print('${_userDevice[i].deviceId} == $deviceId');
-            if (_userDevice[i].deviceId == deviceId &&
-                _userDevice[i].state == 'A') {
+            print('${_userDevice[i].deviceId} == ${_device.id}');
+            if (_userDevice[i].deviceId == _device.id &&
+                _userDevice[i].state == 'A' && _device.id != '') {
               _deviceValid = true;
             }
           }
@@ -88,13 +93,17 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
                 _user.value.user,
                 '',
                 'A01',
-                deviceId,
+                _device.id,
                 '01',
                 'login_user_form',
                 'Login Page',
                 'A',
-                'Logueando desde ip: $myIp'));
+                'Logueando desde ip: $_myIp'));
           } else {
+            /// Adding the device to the user's devices
+            _settingsRepository.postUserDevice(_id.value, _device);
+
+            /// Adding error to the stream
             _user.sink.addError('Dispositivo no vinculado');
           }
 
@@ -167,10 +176,6 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
           print(error.toString());
         })
         .whenComplete(() => print('fetchLocal >> Complete!!'));
-  }
-
-  logIn(String deviceId, String myIp) {
-    fetchUser(deviceId, myIp);
   }
 
   logOut() {

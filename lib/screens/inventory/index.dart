@@ -185,7 +185,7 @@ class DataSearch extends SearchDelegate<String> {
           ));
     } else {
       /// Update the stream
-      _inventoryBloc.changeSearchStyle(query);
+      _inventoryBloc.changeSearchStyle(query.substring(0, 15));
 
       /// Fetching styles by query (stream)
       _inventoryBloc.fetchStyles();
@@ -267,7 +267,7 @@ class DataSearch extends SearchDelegate<String> {
                             _loginBloc.user.value.user,
                             '',
                             'A11',
-                            _settingsBloc.deviceId.value,
+                            _settingsBloc.device.value.id,
                             '01',
                             'item_details',
                             'Detalle del item',

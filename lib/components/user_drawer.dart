@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/crm_bloc.dart';
 import 'package:my_office_th_app/blocs/home_bloc.dart';
-import 'package:my_office_th_app/blocs/invoice_bloc.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
 import 'package:my_office_th_app/models/holding.dart';
 import 'package:my_office_th_app/models/local.dart';
@@ -13,7 +12,6 @@ import 'package:my_office_th_app/screens/crm/index.dart';
 import 'package:my_office_th_app/screens/home/index.dart';
 import 'package:my_office_th_app/screens/inventory/index.dart';
 import 'package:my_office_th_app/screens/login/index.dart';
-import 'package:my_office_th_app/screens/sales/invoice_home.dart';
 
 // ignore: must_be_immutable
 class UserDrawer extends StatelessWidget {
@@ -107,12 +105,19 @@ class UserDrawer extends StatelessWidget {
                     (Route<dynamic> route) => false);
               }),
           Divider(),
-          ListTile(
-              title: new Text("Dispositivo"),
-              trailing: new Icon(Icons.info),
-              onTap: () {
-                Navigator.pushNamed(context, '/device_info');
-              }),
+          _loginBloc.user.value.accessId != '01'
+              ? ListTile(
+                  title: new Text("Dispositivo"),
+                  trailing: new Icon(Icons.info),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/device_info');
+                  })
+              : ListTile(
+                  title: new Text("Configuración"),
+                  trailing: new Icon(Icons.settings),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/settings');
+                  }),
         ],
       ),
     );

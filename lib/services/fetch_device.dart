@@ -37,4 +37,49 @@ class DeviceApi {
 
     return _device;
   }
+
+  Future<String> postDevice(Device _device) async {
+
+    List _deviceList = List();
+
+    _deviceList.add(_device);
+
+    print("postDevice >> ${json.encode({
+      "SdtWsDevices": _deviceList
+    })}");
+
+    final response = await _httpClient.post(
+      Connection.host + '/rest/WsManDispositivoPost',
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({
+          "SdtWsDevices": _deviceList
+        }));
+
+    print('postDevice << ${response.body}');
+
+    return response.body;
+  }
+
+  Future<String> postUserDevice(String _userId, Device _device) async {
+    List _deviceList = List();
+
+    _deviceList.add(_device);
+
+    print("postDevice >> ${json.encode({
+      "userId": "$_userId",
+      "SdtWsDevices": _deviceList
+    })}");
+
+    final response = await _httpClient.post(
+        Connection.host + '/rest/WsManUsuarioDispositivoPost',
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({
+          "userId": "$_userId",
+          "SdtWsDevices": _deviceList
+        }));
+
+    print('postDevice << ${response.body}');
+
+    return response.body;
+  }
 }

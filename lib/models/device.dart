@@ -28,4 +28,26 @@ class Device extends Object {
    this.userUpdated = json['userUpdated'];
    this.dateUpdated = json['dateUpdated'];
  }
+
+ @override
+ String toString() {
+   return 'Device{id: $id, state: $state, ios: $ios, version: '
+       '$version, model: $model, name: $name, isPhysic: '
+       '$isPhysic, userCreated: $userCreated, dateCreated: '
+       '$dateCreated, userUpdated: $userUpdated, dateUpdated: $dateUpdated}';
+ }
+
+ Map<String, dynamic> toJson() => {
+   'id': this.id,
+   'state': this.state,
+   'ios': this.ios,
+   'version': this.version,
+   'model': this.model,
+   'name': this.name,
+   'isPhysic': this.isPhysic,
+   'userCreated': this.userCreated,
+   'dateCreated': this.dateCreated,
+   'userUpdated': this.userUpdated,
+   'dateUpdated': this.dateUpdated
+ };
 }

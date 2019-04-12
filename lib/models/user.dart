@@ -34,7 +34,9 @@ class User extends Object {
     this.holding = new Holding(json['holdingId'], json['holdingName']);
     this.local = new Local(json['localId'], json['localName']);
     this.identification = json['identification'];
-    this.deviceList = json['deviceList'].cast<UserDevice>();
+    var deviceList = json['deviceList'] as List;
+    this.deviceList = deviceList.map((d) => UserDevice.fromJson(d)).toList();
+
     this.ipPrefix = json['ipPrefix'];
   }
 }
@@ -59,5 +61,13 @@ class UserDevice extends Object {
     this.dateCreated = json['dateCreated'];
     this.userUpdated = json['userUpdated'];
     this.dateUpdated = json['dateUpdated'];
+  }
+
+  @override
+  String toString() {
+    return 'UserDevice{user: $user, deviceId: $deviceId, '
+        'state: $state, userCreated: $userCreated, '
+        'dateCreated: $dateCreated, userUpdated: $userUpdated, '
+        'dateUpdated: $dateUpdated}';
   }
 }

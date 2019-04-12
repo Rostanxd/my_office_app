@@ -8,6 +8,7 @@ import 'package:my_office_th_app/screens/home/index.dart';
 import 'package:my_office_th_app/screens/inventory/index.dart';
 import 'package:my_office_th_app/screens/login/index.dart';
 import 'package:my_office_th_app/screens/settings/device_info.dart';
+import 'package:my_office_th_app/screens/settings/index.dart';
 import 'package:my_office_th_app/screens/settings/signup.dart';
 
 void main() => runApp(BlocProvider<SettingsBloc>(
@@ -31,6 +32,7 @@ class MyApp extends StatelessWidget {
         '/home': (BuildContext context) => new HomePage(),
         '/item_home': (BuildContext context) => new InventoryHome(),
         '/device_info': (BuildContext context) => new DeviceInfo(),
+        '/settings': (BuildContext context) => new SettingsHome(),
       },
       home: MyLoginPage(),
     );

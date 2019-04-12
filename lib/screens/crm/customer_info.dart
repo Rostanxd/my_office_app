@@ -438,8 +438,8 @@ class _CustomerInfoState extends State<CustomerInfo> {
                 ),
                 color: Colors.lightBlue,
                 onPressed: () {
-                  _customerDetailBloc.updateCustomer(
-                      _loginBloc.user.value.user, _settingsBloc.deviceId.value);
+                  _customerDetailBloc.updateCustomer(_loginBloc.user.value.user,
+                      _settingsBloc.device.value.id);
                   Navigator.of(context).pop();
                   _customerDetailBloc.changeEditing(false);
                 },

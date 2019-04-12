@@ -44,4 +44,26 @@ class UserApi {
         gxResponse['SdtUsers'][0]['ipPrefix']);
     return user;
   }
+
+  Future<List<User>> fetchUsers() async {
+    List<User> _userList = List();
+
+    print('fetchUsers >> [no params]');
+
+    var response = await _httpClient.post(Connection.host + '/rest/WsManUsuariosDis',
+        headers: {"Content-Type": "application/json"},);
+
+    print('fetchUsers << ' + response.body);
+
+    /// To get easily the gx response
+    Map<String, dynamic> gxResponse = json.decode(response.body);
+
+    /// Genexus response structure
+    var responseList = gxResponse['SdtUsers'] as List;
+
+    /// Loading the list from the response
+    _userList = responseList.map((f) => User.fromJson((f))).toList();
+
+    return _userList;
+  }
 }

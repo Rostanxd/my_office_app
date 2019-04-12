@@ -59,11 +59,10 @@ class _MyLoginPageState extends State<MyLoginPage> {
                     AsyncSnapshot<AndroidDeviceInfo> snapshot) {
                   return snapshot.hasData
                       ? StreamBuilder(
-                          stream: _settingsBloc.authorizedDevice,
+                          stream: _settingsBloc.device,
                           builder: (BuildContext context,
                               AsyncSnapshot<Device> snapshot) {
                             if (snapshot.hasError) {
-                              print(snapshot.error.toString());
                               return _scaffoldError(snapshot.error.toString());
                             }
                             return Center(
@@ -83,7 +82,7 @@ class _MyLoginPageState extends State<MyLoginPage> {
                     AsyncSnapshot<IosDeviceInfo> snapshot) {
                   return snapshot.hasData
                       ? StreamBuilder(
-                          stream: _settingsBloc.authorizedDevice,
+                          stream: _settingsBloc.device,
                           builder: (BuildContext context,
                               AsyncSnapshot<Device> snapshot) {
                             if (snapshot.hasError) {
@@ -157,8 +156,7 @@ class _MyLoginPageState extends State<MyLoginPage> {
                               child: GestureDetector(
                                 onTap: () {
                                   if (Platform.isAndroid)
-                                    _settingsBloc.fetchInfoDevice(
-                                        _settingsBloc.deviceId.value);
+                                    _settingsBloc.fetchInfoDevice();
                                 },
                                 child: Center(
                                   child: Icon(
