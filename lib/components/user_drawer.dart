@@ -119,6 +119,14 @@ class UserDrawer extends StatelessWidget {
                   onTap: () {
                     Navigator.pushNamed(context, '/settings');
                   }),
+          ListTile(
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  Text("SFF - v0.0.2"),
+                ],
+              ),
+              onTap: () {})
         ],
       ),
     );

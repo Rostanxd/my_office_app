@@ -305,6 +305,14 @@ class _MyLoginPageState extends State<MyLoginPage> {
           onTap: () {
             Navigator.pushNamed(context, '/device_info');
           }),
+      ListTile(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              Text("SFF - v0.0.2"),
+            ],
+          ),
+          onTap: () {})
     ]));
   }
 }

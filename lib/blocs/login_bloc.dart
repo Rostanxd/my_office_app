@@ -69,7 +69,25 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
               ((response.accessId == '08' && response.level != '4') ||
                   response.accessId == '05') &&
               !(_myIp.contains(response.ipPrefix))) {
+
             _user.sink.addError('Acceso denegado.');
+
+            /// Adding the device to the user's devices
+            _settingsRepository.postUserDevice(
+                _id.value,
+                Device(
+                    _device.id,
+                    '',
+                    _device.ios,
+                    _device.version,
+                    _device.model,
+                    _device.name,
+                    _device.isPhysic,
+                    _device.userCreated,
+                    _device.dateCreated,
+                    _device.userUpdated,
+                    _device.dateUpdated));
+
             _logging.sink.add(false);
             return;
           }
@@ -79,7 +97,8 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
           for (var i = 0; i < _userDevice.length; i++) {
             print('${_userDevice[i].deviceId} == ${_device.id}');
             if (_userDevice[i].deviceId == _device.id &&
-                _userDevice[i].state == 'A' && _device.id != '') {
+                _userDevice[i].state == 'A' &&
+                _device.id != '') {
               _deviceValid = true;
             }
           }
@@ -101,7 +120,20 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
                 'Logueando desde ip: $_myIp'));
           } else {
             /// Adding the device to the user's devices
-            _settingsRepository.postUserDevice(_id.value, _device);
+            _settingsRepository.postUserDevice(
+                _id.value,
+                Device(
+                    _device.id,
+                    '',
+                    _device.ios,
+                    _device.version,
+                    _device.model,
+                    _device.name,
+                    _device.isPhysic,
+                    _device.userCreated,
+                    _device.dateCreated,
+                    _device.userUpdated,
+                    _device.dateUpdated));
 
             /// Adding error to the stream
             _user.sink.addError('Dispositivo no vinculado');

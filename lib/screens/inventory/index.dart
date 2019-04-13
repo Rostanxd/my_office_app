@@ -35,7 +35,9 @@ class _InventoryHomeState extends State<InventoryHome> {
           MaterialPageRoute(
               builder: (context) => BlocProvider(
                     bloc: ItemDetailsBloc(),
-                    child: ItemDetails(_barcodeRead),
+                    child: ItemDetails(_barcodeRead.length >= 15
+                        ? _barcodeRead.substring(0, 15)
+                        : _barcodeRead),
                   )));
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.CameraAccessDenied) {
@@ -185,7 +187,7 @@ class DataSearch extends SearchDelegate<String> {
           ));
     } else {
       /// Update the stream
-      _inventoryBloc.changeSearchStyle(query.substring(0, 15));
+      _inventoryBloc.changeSearchStyle(query);
 
       /// Fetching styles by query (stream)
       _inventoryBloc.fetchStyles();

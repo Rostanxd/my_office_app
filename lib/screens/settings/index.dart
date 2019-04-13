@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
-import 'package:my_office_th_app/blocs/login_bloc.dart';
 import 'package:my_office_th_app/blocs/setting_bloc.dart';
 import 'package:my_office_th_app/components/user_drawer.dart';
 import 'package:my_office_th_app/models/user.dart';
@@ -12,13 +11,11 @@ class SettingsHome extends StatefulWidget {
 
 class _SettingsHomeState extends State<SettingsHome> {
   SettingsBloc _settingsBloc;
-  LoginBloc _loginBloc;
   MediaQueryData queryData;
 
   @override
   void didChangeDependencies() {
     _settingsBloc = BlocProvider.of<SettingsBloc>(context);
-    _loginBloc = BlocProvider.of<LoginBloc>(context);
     _settingsBloc.fetchUsersDevices();
     super.didChangeDependencies();
   }
@@ -92,7 +89,7 @@ class _SettingsHomeState extends State<SettingsHome> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
-                  _userDevicesList(_userList[index].deviceList),
+                  _userDevicesList(_userList[index].user, _userList[index].deviceList),
                   Divider(),
                 ],
               ),
@@ -101,7 +98,7 @@ class _SettingsHomeState extends State<SettingsHome> {
     );
   }
 
-  Widget _userDevicesList(List<UserDevice> _deviceList) {
+  Widget _userDevicesList(String _userId, List<UserDevice> _deviceList) {
     Column _column = Column(
       children: <Widget>[],
     );
@@ -114,7 +111,7 @@ class _SettingsHomeState extends State<SettingsHome> {
                 Container(
                   child: Switch(
                     value: d.state == 'A' ? true : false,
-                    onChanged: (bool e) => _changeUserDeviceState(d),
+                    onChanged: (bool e) => _changeUserDeviceState(_userId, d),
                     activeColor: Colors.green,
                   ),
                 )
@@ -127,9 +124,9 @@ class _SettingsHomeState extends State<SettingsHome> {
         child: _column);
   }
 
-  bool _changeUserDeviceState(UserDevice d){
+  bool _changeUserDeviceState(String _userId, UserDevice d){
     _settingsBloc.postUserDeviceState(
-        _loginBloc.user.value.user, d.deviceId, d.state == 'A' ? 'E' : 'A');
+        _userId, d.deviceId, d.state == 'A' ? 'E' : 'A');
     return d.state == 'A' ? false : true;
   }
 }
