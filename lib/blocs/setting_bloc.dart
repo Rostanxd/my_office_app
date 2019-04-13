@@ -15,7 +15,8 @@ class SettingsBloc extends Object implements BlocBase {
   final _loadingData = BehaviorSubject<bool>();
   final _ip = BehaviorSubject<String>();
   final _users = BehaviorSubject<List<User>>();
-  final SettingsRepository _settingRepository = SettingsRepository();
+  final _message = BehaviorSubject<String>();
+  final SettingsRepository _settingsRepository = SettingsRepository();
 
   /// Retrieve data from the stream
   Observable<AndroidDeviceInfo> get androidDeviceInfo =>
@@ -64,18 +65,18 @@ class SettingsBloc extends Object implements BlocBase {
 
   fetchInfoDevice() async {
     _loadingData.sink.add(true);
-    await _settingRepository.deviceApi.fetchDevice(_device.value.id).then(
-        (response) {
-      /// Updating device info in the backend
-      postDevice();
+    await _settingsRepository.deviceApi.fetchDevice(_device.value.id).then(
+            (response) {
+          /// Updating device info in the backend
+          postDevice();
 
-      /// Error if the device is inactive
-      if (response.state != 'A') {
-        _device.sink.addError('Dispositivo inactivo');
-      } else {
-        _device.sink.add(response);
-      }
-    }, onError: (error) {
+          /// Error if the device is inactive
+          if (response.state != 'A') {
+            _device.sink.addError('Dispositivo inactivo');
+          } else {
+            _device.sink.add(response);
+          }
+        }, onError: (error) {
       if (error.runtimeType == RangeError) {
         /// Creating the device in the back end
         postDevice();
@@ -104,7 +105,7 @@ class SettingsBloc extends Object implements BlocBase {
   }
 
   postDevice() async {
-    await _settingRepository
+    await _settingsRepository
         .postDevice(_device.value)
         .timeout(Duration(seconds: Connection.timeOutSec))
         .then((response) {
@@ -112,16 +113,38 @@ class SettingsBloc extends Object implements BlocBase {
     }, onError: (error) {
       _device.sink.addError(error.runtimeType.toString());
       _loadingData.sink.add(false);
-    }).catchError((error){
+    }).catchError((error) {
       _device.sink.addError(error.runtimeType.toString());
       _loadingData.sink.add(false);
     });
   }
 
   fetchUsersDevices() async {
-    _settingRepository.fetchUsers().then((response){
+    _settingsRepository.fetchUsers().then((response) {
       _users.sink.add(response);
     });
+  }
+
+  postUserDeviceState(String _userId, String _deviceId, String _state) async {
+    Device _device = Device(
+        _deviceId,
+        _state,
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '');
+
+    /// Adding the device to the user's devices
+    _settingsRepository.postUserDevice(_userId, _device).then((response){
+      _message.sink.add('Dispostivo actualizado');
+    });
+
+    fetchUsersDevices();
   }
 
   @override
@@ -132,6 +155,7 @@ class SettingsBloc extends Object implements BlocBase {
     _loadingData.close();
     _ip.close();
     _users.close();
+    _message.close();
   }
 }
 

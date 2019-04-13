@@ -105,13 +105,14 @@ class UserDrawer extends StatelessWidget {
                     (Route<dynamic> route) => false);
               }),
           Divider(),
+          ListTile(
+              title: new Text("Dispositivo"),
+              trailing: new Icon(Icons.info),
+              onTap: () {
+                Navigator.pushNamed(context, '/device_info');
+              }),
           _loginBloc.user.value.accessId != '01'
-              ? ListTile(
-                  title: new Text("Dispositivo"),
-                  trailing: new Icon(Icons.info),
-                  onTap: () {
-                    Navigator.pushNamed(context, '/device_info');
-                  })
+              ? Container(child: null,)
               : ListTile(
                   title: new Text("Configuración"),
                   trailing: new Icon(Icons.settings),

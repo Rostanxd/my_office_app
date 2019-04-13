@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
+import 'package:my_office_th_app/blocs/login_bloc.dart';
 import 'package:my_office_th_app/blocs/setting_bloc.dart';
 import 'package:my_office_th_app/components/user_drawer.dart';
 import 'package:my_office_th_app/models/user.dart';
@@ -11,16 +12,21 @@ class SettingsHome extends StatefulWidget {
 
 class _SettingsHomeState extends State<SettingsHome> {
   SettingsBloc _settingsBloc;
+  LoginBloc _loginBloc;
+  MediaQueryData queryData;
 
   @override
   void didChangeDependencies() {
     _settingsBloc = BlocProvider.of<SettingsBloc>(context);
+    _loginBloc = BlocProvider.of<LoginBloc>(context);
     _settingsBloc.fetchUsersDevices();
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
+    queryData = MediaQuery.of(context);
+
     return Scaffold(
         resizeToAvoidBottomPadding: true,
         appBar: AppBar(
@@ -44,7 +50,7 @@ class _SettingsHomeState extends State<SettingsHome> {
             Container(
               margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
               child: Text(
-                'Dispositivos del sistema',
+                'Usuarios y dispositvos del sistema',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
               ),
             ),
@@ -70,7 +76,7 @@ class _SettingsHomeState extends State<SettingsHome> {
 
   Widget _userListView(List<User> _userList) {
     return Container(
-      height: 300.0,
+      height: queryData.size.height * 0.5,
       child: ListView.builder(
         itemCount: _userList.length,
         itemBuilder: (BuildContext context, int index) => Container(
@@ -86,20 +92,44 @@ class _SettingsHomeState extends State<SettingsHome> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
-                  Container(
-                    margin: EdgeInsets.only(left: 20.0, top: 10.0, right: 20.0),
-                    child: Column(children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Container(child: Text(''),)
-                        ],
-                      )
-                    ],),
-                  )
+                  _userDevicesList(_userList[index].deviceList),
+                  Divider(),
                 ],
               ),
             ),
       ),
     );
+  }
+
+  Widget _userDevicesList(List<UserDevice> _deviceList) {
+    Column _column = Column(
+      children: <Widget>[],
+    );
+
+    _column.children.addAll(_deviceList
+        .map((d) => Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Container(child: Text(d.deviceId)),
+                Container(
+                  child: Switch(
+                    value: d.state == 'A' ? true : false,
+                    onChanged: (bool e) => _changeUserDeviceState(d),
+                    activeColor: Colors.green,
+                  ),
+                )
+              ],
+            ))
+        .toList());
+
+    return Container(
+        margin: EdgeInsets.only(left: 10.0, top: 10.0, right: 20.0),
+        child: _column);
+  }
+
+  bool _changeUserDeviceState(UserDevice d){
+    _settingsBloc.postUserDeviceState(
+        _loginBloc.user.value.user, d.deviceId, d.state == 'A' ? 'E' : 'A');
+    return d.state == 'A' ? false : true;
   }
 }
