@@ -65,9 +65,8 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
         .fetchUser(_id.value, _password.value)
         .then((response) {
           /// Validation by the ip prefix
-          if (response.level != '3' &&
-              ((response.accessId == '08' && response.level != '4') ||
-                  response.accessId == '05') &&
+          if (!(response.level == '3' ||
+                  (response.accessId == '08' && response.level == '4')) &&
               !(_myIp.contains(response.ipPrefix))) {
 
             _user.sink.addError('Acceso denegado.');

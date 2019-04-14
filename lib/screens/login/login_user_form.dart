@@ -193,11 +193,15 @@ class _LoginUserFormState extends State<LoginUserForm> {
   /// he will be sent to the home page and updating holding and local streams,
   /// if he doesn't, sent to the login page with conditional interface (form).
   void _moveNextPage(User user) {
-    if (user.local.name.isNotEmpty &&
-            (user.accessId == '08' && user.level != '4') ||
-        user.accessId == '05') {
+    if (!(user.level == '3' ||
+        (user.accessId == '08' && user.level == '4'))){
+
+      print(user.holding.name);
+      print(user.local.name);
+
       _loginBloc.changeCurrentHolding(user.holding);
       _loginBloc.changeCurrentLocal(user.local);
+
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
               builder: (context) => BlocProvider<HomeBloc>(

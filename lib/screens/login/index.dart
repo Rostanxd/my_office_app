@@ -243,7 +243,16 @@ class _MyLoginPageState extends State<MyLoginPage> {
     return StreamBuilder(
       stream: _loginBloc.user,
       builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
-        return snapshot.hasData ? LoginLocalForm() : LoginUserForm();
+        if (snapshot.hasData){
+          if (!(snapshot.data.level == '3' ||
+              (snapshot.data.accessId == '08' && snapshot.data.level == '4'))){
+            return Container(child: null,);
+          }else{
+            return LoginLocalForm();
+          }
+        }else{
+          return LoginUserForm();
+        }
       },
     );
   }
@@ -309,7 +318,7 @@ class _MyLoginPageState extends State<MyLoginPage> {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
-              Text("SFF - v0.0.2"),
+              Text("SSF - v0.0.3"),
             ],
           ),
           onTap: () {})

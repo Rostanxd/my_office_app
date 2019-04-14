@@ -112,7 +112,9 @@ class UserDrawer extends StatelessWidget {
                 Navigator.pushNamed(context, '/device_info');
               }),
           _loginBloc.user.value.accessId != '01'
-              ? Container(child: null,)
+              ? Container(
+                  child: null,
+                )
               : ListTile(
                   title: new Text("Configuración"),
                   trailing: new Icon(Icons.settings),
@@ -123,7 +125,7 @@ class UserDrawer extends StatelessWidget {
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
-                  Text("SFF - v0.0.2"),
+                  Text("SSF - v0.0.3"),
                 ],
               ),
               onTap: () {})
@@ -145,7 +147,7 @@ class UserDrawer extends StatelessWidget {
                   shape: BoxShape.circle,
                   image: DecorationImage(
                       fit: BoxFit.cover,
-                      image: AssetImage('assets/img/people.jpg'))),
+                      image: AssetImage('assets/img/user.png'))),
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -175,40 +177,26 @@ class UserDrawer extends StatelessWidget {
                     top: 5.0,
                     left: 20.0,
                   ),
-                  child: StreamBuilder(
-                      stream: _loginBloc.holding,
-                      builder: (BuildContext context,
-                          AsyncSnapshot<Holding> snapshot) {
-                        return snapshot.hasData
-                            ? Text(
-                                snapshot.data.name,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14.0),
-                              )
-                            : CircularProgressIndicator();
-                      }),
+                  child: Text(
+                    _loginBloc.holding.value.name,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14.0),
+                  ),
                 ),
                 Container(
                   margin: EdgeInsets.only(
                     top: 5.0,
                     left: 20.0,
                   ),
-                  child: StreamBuilder(
-                      stream: _loginBloc.local,
-                      builder: (BuildContext context,
-                          AsyncSnapshot<Local> snapshot) {
-                        return snapshot.hasData
-                            ? Text(
-                                snapshot.data.name,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14.0),
-                              )
-                            : CircularProgressIndicator();
-                      }),
+                  child: Text(
+                    _loginBloc.local.value.name,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14.0),
+                  ),
                 ),
               ],
             ),
