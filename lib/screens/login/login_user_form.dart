@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
-import 'package:my_office_th_app/blocs/home_bloc.dart';
 import 'package:my_office_th_app/blocs/setting_bloc.dart';
-import 'package:my_office_th_app/models/user.dart';
-import 'package:my_office_th_app/screens/home/index.dart';
 
 class LoginUserForm extends StatefulWidget {
   @override
@@ -36,32 +33,6 @@ class _LoginUserFormState extends State<LoginUserForm> {
 
     /// Searching for the login bloc in the provider
     _loginBloc = BlocProvider.of<LoginBloc>(context);
-
-    /// Listener to the observable to catch the response.
-    _loginBloc.user.listen((User user) {
-      if (user != null){
-        _moveNextPage(user);
-      }
-    }, onError: (error) {
-      if (context != null){
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('Smart Sales Force'),
-                content: Text(error),
-                actions: <Widget>[
-                  FlatButton(
-                    child: Text('Aceptar'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              );
-            });
-      }
-    });
 
     super.didChangeDependencies();
   }
@@ -210,24 +181,5 @@ class _LoginUserFormState extends State<LoginUserForm> {
             : _submitButton(context);
       },
     );
-  }
-
-  /// Function to call the next page
-  void _moveNextPage(User user) {
-    if (!(user.level == '3' || (user.accessId == '08' && user.level == '4'))) {
-      print(user.holding.name);
-      print(user.local.name);
-
-      _loginBloc.changeCurrentHolding(user.holding);
-      _loginBloc.changeCurrentLocal(user.local);
-
-      Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-              builder: (context) => BlocProvider<HomeBloc>(
-                    bloc: HomeBloc(),
-                    child: HomePage(),
-                  )),
-          (Route<dynamic> route) => false);
-    }
   }
 }

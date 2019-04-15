@@ -25,19 +25,36 @@ class _InventoryHomeState extends State<InventoryHome> {
   SettingsBloc _settingsBloc;
   LoginBloc _loginBloc;
   InventoryBloc _inventoryBloc;
+  ItemDetailsBloc _itemDetailsBloc;
   WebViewController _controller;
 
   Future _barcodeScanning() async {
     try {
       var _barcodeRead = await BarcodeScanner.scan();
+      var _itemCode = _barcodeRead.length >= 15
+          ? _barcodeRead.substring(0, 15)
+          : _barcodeRead;
+
+      /// Binnacle
+      _loginBloc.postBinnacle(Binnacle(
+          _loginBloc.user.value.user,
+          '',
+          'A11',
+          _settingsBloc.device.value.id,
+          '01',
+          'item_details',
+          'Detalle del item',
+          'A',
+          'Buscando información del item $_itemCode'));
+
+      /// Push to the item's details
+      _itemDetailsBloc = ItemDetailsBloc();
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => BlocProvider(
-                    bloc: ItemDetailsBloc(),
-                    child: ItemDetails(_barcodeRead.length >= 15
-                        ? _barcodeRead.substring(0, 15)
-                        : _barcodeRead),
+                    bloc: _itemDetailsBloc,
+                    child: ItemDetails(_loginBloc, _itemDetailsBloc, _itemCode),
                   )));
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.CameraAccessDenied) {
@@ -277,12 +294,15 @@ class DataSearch extends SearchDelegate<String> {
                             'Buscando información del item ${snapshot.data[index].itemId}'));
 
                         /// Navigation to the item's detail
+                        ItemDetailsBloc _itemDetailsBloc = ItemDetailsBloc();
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => BlocProvider(
-                                      bloc: ItemDetailsBloc(),
+                                      bloc: _itemDetailsBloc,
                                       child: ItemDetails(
+                                          _loginBloc,
+                                          _itemDetailsBloc,
                                           snapshot.data[index].itemId),
                                     )));
                       },

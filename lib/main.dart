@@ -27,14 +27,15 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       routes: <String, WidgetBuilder>{
-        '/login': (BuildContext context) => new MyLoginPage(),
+        '/login': (BuildContext context) =>
+            new MyLoginPage(settingsBloc, loginBloc),
         '/signup': (BuildContext context) => new SignupPage(),
         '/home': (BuildContext context) => new HomePage(),
         '/item_home': (BuildContext context) => new InventoryHome(),
         '/device_info': (BuildContext context) => new DeviceInfo(),
         '/settings': (BuildContext context) => new SettingsHome(),
       },
-      home: MyLoginPage(),
+      home: MyLoginPage(settingsBloc, loginBloc),
     );
   }
 }

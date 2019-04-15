@@ -146,6 +146,9 @@ class ItemDetailsBloc extends Object implements BlocBase {
   uploadStyleImage(String user, File imageFile) async {
     File _photoThumb;
 
+    /// Updating the stream to enabled the camera button
+    _loadingImage.sink.add(true);
+
     /// Control if we don't have any photo captured
     if (imageFile == null) {
       _imageFile.sink.addError('No ha seleccionado ninguna imagen!');

@@ -3,8 +3,7 @@ import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/crm_bloc.dart';
 import 'package:my_office_th_app/blocs/home_bloc.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
-import 'package:my_office_th_app/models/holding.dart';
-import 'package:my_office_th_app/models/local.dart';
+import 'package:my_office_th_app/blocs/setting_bloc.dart';
 import 'package:my_office_th_app/models/user.dart';
 
 import 'package:my_office_th_app/blocs/inventory_bloc.dart';
@@ -15,10 +14,13 @@ import 'package:my_office_th_app/screens/login/index.dart';
 
 // ignore: must_be_immutable
 class UserDrawer extends StatelessWidget {
+  SettingsBloc _settingsBloc;
   LoginBloc _loginBloc;
 
   @override
   Widget build(BuildContext context) {
+    _settingsBloc = BlocProvider.of<SettingsBloc>(context);
+
     /// Searching for the login bloc in the provider
     _loginBloc = BlocProvider.of<LoginBloc>(context);
 
@@ -91,8 +93,11 @@ class UserDrawer extends StatelessWidget {
                   trailing: new Icon(Icons.location_on),
                   onTap: () {
                     Navigator.pop(context);
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => MyLoginPage()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                MyLoginPage(_settingsBloc, _loginBloc)));
                   }),
           ListTile(
               title: new Text("Salir"),
@@ -101,7 +106,9 @@ class UserDrawer extends StatelessWidget {
                 /// Function to set null user and local
                 _loginBloc.logOut();
                 Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => MyLoginPage()),
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            MyLoginPage(_settingsBloc, _loginBloc)),
                     (Route<dynamic> route) => false);
               }),
           Divider(),

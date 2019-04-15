@@ -2,30 +2,90 @@ import 'dart:io';
 
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
+import 'package:my_office_th_app/blocs/home_bloc.dart';
 
 import 'package:my_office_th_app/blocs/login_bloc.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/setting_bloc.dart';
 import 'package:my_office_th_app/models/device.dart';
 import 'package:my_office_th_app/models/user.dart';
+import 'package:my_office_th_app/screens/home/index.dart';
 
 import 'package:my_office_th_app/screens/login/login_user_form.dart';
 import 'package:my_office_th_app/screens/login/login_local_form.dart';
 
 class MyLoginPage extends StatefulWidget {
+  final SettingsBloc _settingsBloc;
+  final LoginBloc _loginBloc;
+
+  MyLoginPage(this._settingsBloc, this._loginBloc);
+
   @override
   _MyLoginPageState createState() => new _MyLoginPageState();
 }
 
 class _MyLoginPageState extends State<MyLoginPage> {
-  SettingsBloc _settingsBloc;
-  LoginBloc _loginBloc;
   MediaQueryData _queryData;
   double _queryMediaWidth, _queryMediaHeight;
+
+  /// Function to call the next page
+  void _moveNextPage(User user) {
+    if (!(user.level == '3' || (user.accessId == '08' && user.level == '4'))) {
+      print(user.holding.name);
+      print(user.local.name);
+
+      widget._loginBloc.changeCurrentHolding(user.holding);
+      widget._loginBloc.changeCurrentLocal(user.local);
+
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+              builder: (context) => BlocProvider<HomeBloc>(
+                    bloc: HomeBloc(),
+                    child: HomePage(),
+                  )),
+          (Route<dynamic> route) => false);
+    }
+  }
 
   @override
   void initState() {
     print('MyLoginPageState >> initState');
+
+    /// Calling function to verify device
+    Platform.isAndroid
+        ? widget._settingsBloc.fetchAndroidInfo()
+        : widget._settingsBloc.fetchIosInfo();
+
+    /// Add data to stream to control circular progress bar.
+    widget._settingsBloc.changeLoadingData(false);
+
+    /// To get ip
+    widget._settingsBloc.fetchIp();
+
+    /// Listener to the observable to catch the response.
+    widget._loginBloc.user.listen((User user) {
+      if (user != null) {
+        _moveNextPage(user);
+      }
+    }, onError: (error, stacktrace) {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Smart Sales Force'),
+              content: Text(error),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('Aceptar'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          });
+    });
+
     super.initState();
   }
 
@@ -41,23 +101,6 @@ class _MyLoginPageState extends State<MyLoginPage> {
   @override
   Widget build(BuildContext context) {
     print('MyLoginPageState >> build');
-    /// Calling the setting bloc on the provider.
-    _settingsBloc = BlocProvider.of<SettingsBloc>(context);
-
-    /// Calling function to verify device
-    Platform.isAndroid
-        ? _settingsBloc.fetchAndroidInfo()
-        : _settingsBloc.fetchIosInfo();
-
-    /// Calling the login bloc on the provider
-    _loginBloc = BlocProvider.of<LoginBloc>(context);
-
-    /// Add data to stream to control circular progress bar.
-    _settingsBloc.changeLoadingData(false);
-
-    /// To get ip
-    _settingsBloc.fetchIp();
-
     return Scaffold(
         resizeToAvoidBottomPadding: true,
         appBar: AppBar(
@@ -67,12 +110,12 @@ class _MyLoginPageState extends State<MyLoginPage> {
         drawer: _infoDrawer(context),
         body: Platform.isAndroid
             ? StreamBuilder(
-                stream: _settingsBloc.androidDeviceInfo,
+                stream: widget._settingsBloc.androidDeviceInfo,
                 builder: (BuildContext context,
                     AsyncSnapshot<AndroidDeviceInfo> snapshot) {
                   return snapshot.hasData
                       ? StreamBuilder(
-                          stream: _settingsBloc.device,
+                          stream: widget._settingsBloc.device,
                           builder: (BuildContext context,
                               AsyncSnapshot<Device> snapshot) {
                             if (snapshot.hasError) {
@@ -90,12 +133,12 @@ class _MyLoginPageState extends State<MyLoginPage> {
                 },
               )
             : StreamBuilder(
-                stream: _settingsBloc.iosDeviceInfo,
+                stream: widget._settingsBloc.iosDeviceInfo,
                 builder: (BuildContext context,
                     AsyncSnapshot<IosDeviceInfo> snapshot) {
                   return snapshot.hasData
                       ? StreamBuilder(
-                          stream: _settingsBloc.device,
+                          stream: widget._settingsBloc.device,
                           builder: (BuildContext context,
                               AsyncSnapshot<Device> snapshot) {
                             if (snapshot.hasError) {
@@ -130,7 +173,7 @@ class _MyLoginPageState extends State<MyLoginPage> {
             _header(),
             SizedBox(height: 15.0),
             StreamBuilder<bool>(
-              stream: _settingsBloc.loadingData,
+              stream: widget._settingsBloc.loadingData,
               builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
                 return snapshot.hasData && snapshot.data
                     ? Column(
@@ -149,8 +192,8 @@ class _MyLoginPageState extends State<MyLoginPage> {
                         children: <Widget>[
                           Center(
                             child: Container(
-                              margin:
-                                  EdgeInsets.only(top: _queryMediaHeight * 0.10),
+                              margin: EdgeInsets.only(
+                                  top: _queryMediaHeight * 0.10),
                               child: Text(
                                 error,
                                 style: TextStyle(
@@ -172,7 +215,7 @@ class _MyLoginPageState extends State<MyLoginPage> {
                               child: GestureDetector(
                                 onTap: () {
                                   if (Platform.isAndroid)
-                                    _settingsBloc.fetchInfoDevice();
+                                    widget._settingsBloc.fetchInfoDevice();
                                 },
                                 child: Center(
                                   child: Icon(
@@ -244,7 +287,7 @@ class _MyLoginPageState extends State<MyLoginPage> {
 
   Widget _userLogged() {
     return StreamBuilder(
-      stream: _loginBloc.user,
+      stream: widget._loginBloc.user,
       builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
         return snapshot.hasData
             ? Center(
@@ -261,7 +304,7 @@ class _MyLoginPageState extends State<MyLoginPage> {
 
   Widget _form() {
     return StreamBuilder(
-      stream: _loginBloc.user,
+      stream: widget._loginBloc.user,
       builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
         if (snapshot.hasData) {
           if (!(snapshot.data.level == '3' ||
@@ -281,7 +324,7 @@ class _MyLoginPageState extends State<MyLoginPage> {
 
   Widget _footPage() {
     return StreamBuilder(
-      stream: _loginBloc.user,
+      stream: widget._loginBloc.user,
       builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
         return snapshot.hasData
             ? Text('')

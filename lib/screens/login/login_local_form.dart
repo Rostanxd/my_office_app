@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/home_bloc.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
+import 'package:my_office_th_app/blocs/setting_bloc.dart';
 
 import 'package:my_office_th_app/models/holding.dart';
 import 'package:my_office_th_app/models/local.dart';
@@ -17,7 +18,8 @@ class LoginLocalForm extends StatefulWidget {
 }
 
 class _LoginLocalFormState extends State<LoginLocalForm> {
-  LoginBloc bloc;
+  SettingsBloc _settingsBloc;
+  LoginBloc _loginBloc;
   List<DropdownMenuItem<Holding>> _listDropDownHoldings =
       new List<DropdownMenuItem<Holding>>();
   List<DropdownMenuItem<Local>> _listDropDownLocals =
@@ -41,13 +43,13 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
 
   /// Function to be called from the holding dropdown to change its current value
   void _changeDropDownItemHolding(Holding _holdingSelected) {
-    bloc.fetchLocal(_holdingSelected.id);
-    bloc.changeCurrentHolding(_holdingSelected);
+    _loginBloc.fetchLocal(_holdingSelected.id);
+    _loginBloc.changeCurrentHolding(_holdingSelected);
   }
 
   /// Function to be called from the local dropdown to change its current value
   void _changeDropDownItemLocal(Local _localSelected) {
-    bloc.changeCurrentLocal(_localSelected);
+    _loginBloc.changeCurrentLocal(_localSelected);
   }
 
   @override
@@ -56,29 +58,31 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
     super.initState();
   }
 
-
   @override
   void didChangeDependencies() {
     print('LoginLocalFormState >> didChangeDependencies');
     _queryData = MediaQuery.of(context);
     _queryMediaWidth = _queryData.size.width;
 
-    /// Getting data from the login state container
-    bloc = BlocProvider.of<LoginBloc>(context);
+    /// Getting data from provider
+    _settingsBloc = BlocProvider.of<SettingsBloc>(context);
+
+    /// Getting data from provider
+    _loginBloc = BlocProvider.of<LoginBloc>(context);
 
     /// Loading DropdownMenuItem for holdings
-    bloc.fetchAllHolding();
+    _loginBloc.fetchAllHolding();
 
     /// Loading DropdownMenuItem for locals
-    bloc.fetchLocal('0');
+    _loginBloc.fetchLocal('0');
 
     /// Listener to update the holding dropdown
-    bloc.holdingList.listen((data) {
+    _loginBloc.holdingList.listen((data) {
       _updateDropdownListHolding(data);
     });
 
     /// Listener to update the local dropdown
-    bloc.localList.listen((data) {
+    _loginBloc.localList.listen((data) {
       _updateDropdownListLocal(data);
     });
 
@@ -130,14 +134,14 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
 
   Widget _holdingDropDown() {
     return StreamBuilder(
-        stream: bloc.holding,
+        stream: _loginBloc.holding,
         builder: (BuildContext context, AsyncSnapshot<Holding> snapshot) {
           return Container(
             child: Center(
                 child: snapshot.hasData
                     ? StreamBuilder(
-                        stream: bloc.holdingList,
-                        initialData: bloc.holdingList.value,
+                        stream: _loginBloc.holdingList,
+                        initialData: _loginBloc.holdingList.value,
                         builder: (BuildContext context,
                             AsyncSnapshot<List<Holding>> holdingListSnapshot) {
                           return holdingListSnapshot.hasData
@@ -160,14 +164,14 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
 
   Widget _localDropDown() {
     return StreamBuilder(
-        stream: bloc.local,
+        stream: _loginBloc.local,
         builder: (BuildContext context, AsyncSnapshot<Local> snapshot) {
           return Container(
             child: Center(
               child: snapshot.hasData
                   ? StreamBuilder(
-                      stream: bloc.localList,
-                      initialData: bloc.localList.value,
+                      stream: _loginBloc.localList,
+                      initialData: _loginBloc.localList.value,
                       builder: (BuildContext context,
                           AsyncSnapshot<List<Local>> localListSnapshot) {
                         return localListSnapshot.hasData
@@ -191,13 +195,14 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
 
   Widget _continueButton() {
     return InkWell(
-      onTap: (){
+      onTap: () {
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => BlocProvider<HomeBloc>(
-              bloc: HomeBloc(),
-              child: HomePage(),
-            )),
-                (Route<dynamic> route) => false);
+            MaterialPageRoute(
+                builder: (context) => BlocProvider<HomeBloc>(
+                      bloc: HomeBloc(),
+                      child: HomePage(),
+                    )),
+            (Route<dynamic> route) => false);
       },
       child: Container(
         height: 40.0,
@@ -223,11 +228,12 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
 
   Widget _cancelButton() {
     return InkWell(
-      onTap: (){
-        bloc.logOut();
+      onTap: () {
+        _loginBloc.logOut();
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => MyLoginPage()),
-                (Route<dynamic> route) => false);
+            MaterialPageRoute(
+                builder: (context) => MyLoginPage(_settingsBloc, _loginBloc)),
+            (Route<dynamic> route) => false);
       },
       child: Container(
         height: 40.0,

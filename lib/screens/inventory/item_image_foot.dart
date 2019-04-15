@@ -100,9 +100,6 @@ class _ItemImageFootState extends State<ItemImageFoot> {
   }
 
   Future _getImage() async {
-    /// Updating the stream to enabled the camera button
-    _itemDetailsBloc.changeLoadingImage(true);
-
     /// Calling the pick image plugin
     await ImagePicker.pickImage(
             source: _itemDetailsBloc.photoFromCamera.value

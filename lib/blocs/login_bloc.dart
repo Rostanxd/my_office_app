@@ -55,8 +55,6 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
 
   /// To call the user api
   logIn(Device _device, String _myIp) async {
-    print(_device.toString());
-
     List<UserDevice> _userDevice;
     bool _deviceValid = false;
     _logging.sink.add(true);
@@ -64,12 +62,11 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
     await _loginRepository
         .fetchUser(_id.value, _password.value)
         .then((response) {
-          if (response != null){
+          if (response != null) {
             /// Validation by the ip prefix
             if (!(response.level == '3' ||
-                (response.accessId == '08' && response.level == '4')) &&
-                !('192.169.'.contains(response.ipPrefix))) {
-
+                    (response.accessId == '08' && response.level == '4')) &&
+                !(_myIp.contains(response.ipPrefix))) {
               _user.sink.addError('Acceso denegado.');
 
               /// Adding the device to the user's devices
@@ -144,11 +141,7 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
           _logging.sink.add(false);
         }, onError: (error) {
           ///  If we got an error we add the error to the stream
-          if (error.runtimeType == RangeError) {
-            _user.sink.addError('Login error.');
-          } else {
-            _user.sink.addError(error.runtimeType.toString());
-          }
+          _user.sink.addError(error.runtimeType.toString());
           _logging.sink.add(false);
           print(error.toString());
         })
@@ -158,8 +151,7 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
           _user.sink.addError(error.runtimeType.toString());
           _logging.sink.add(false);
           print(error.toString());
-        })
-        .whenComplete(() => print('fetchUser >> Complete!'));
+        });
   }
 
   /// To call holding api
