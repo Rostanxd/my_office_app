@@ -8,14 +8,13 @@ class ItemPriceInkwell extends StatefulWidget {
   ItemPriceInkwell(this.item);
 
   @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return _ItemPriceInkwellState();
-  }
+  State<StatefulWidget> createState() => _ItemPriceInkwellState();
 }
 
 class _ItemPriceInkwellState extends State<ItemPriceInkwell> {
   bool _pressed = false;
+  MediaQueryData _queryData;
+  double _queryMediaWidth;
 
   void _changePrice() {
     setState(() {
@@ -25,12 +24,14 @@ class _ItemPriceInkwellState extends State<ItemPriceInkwell> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+    _queryData = MediaQuery.of(context);
+    _queryMediaWidth = _queryData.size.width;
+
     return InkWell(
         onTap: _changePrice,
         child: Container(
           height: 50.0,
-          width: 125.0,
+          width: _queryMediaWidth * 0.35,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30.0),
               gradient: LinearGradient(
@@ -45,7 +46,7 @@ class _ItemPriceInkwellState extends State<ItemPriceInkwell> {
                   ? 's/IVA \$ ' + widget.item.priceNoIva.toString()
                   : 'c/IVA \$ ' + widget.item.priceIva.toString(),
               style: TextStyle(
-                  fontSize: 16.0,
+                  fontSize: _queryMediaWidth * 0.04,
                   fontWeight: FontWeight.bold,
                   color: Colors.white),
             ),

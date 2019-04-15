@@ -14,7 +14,14 @@ class _SettingsHomeState extends State<SettingsHome> {
   MediaQueryData queryData;
 
   @override
+  void initState() {
+    print('SettingsHomeState >> initState');
+    super.initState();
+  }
+
+  @override
   void didChangeDependencies() {
+    print('SettingsHomeState >> didChangeDependencies');
     _settingsBloc = BlocProvider.of<SettingsBloc>(context);
     _settingsBloc.fetchUsersDevices();
     super.didChangeDependencies();
@@ -22,6 +29,8 @@ class _SettingsHomeState extends State<SettingsHome> {
 
   @override
   Widget build(BuildContext context) {
+    print('SettingsHomeState >> build');
+
     queryData = MediaQuery.of(context);
 
     return Scaffold(

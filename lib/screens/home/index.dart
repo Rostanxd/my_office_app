@@ -14,12 +14,14 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   LoginBloc _loginBloc;
   HomeBloc _homeBloc;
+  MediaQueryData _queryData;
 
   @override
   void didChangeDependencies() {
     print('Home >> didChangeDependencies');
     _loginBloc = BlocProvider.of<LoginBloc>(context);
     _homeBloc = BlocProvider.of<HomeBloc>(context);
+
     /// Managers set seller id to empty to watch all the sales
     _homeBloc.fetchAllCardInfo(
         _loginBloc.local.value.id,
@@ -32,7 +34,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     print('Home >> build');
-
+    _queryData = MediaQuery.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(""),
@@ -226,6 +228,7 @@ class _HomePageState extends State<HomePage> {
       String _titleRight,
       String _subLeft,
       String _subRight) {
+    var _textSize = _queryData.size.width * 0.035;
     return Container(
       margin: EdgeInsets.only(top: 10.0, right: 10.0, left: 10.0),
       decoration: BoxDecoration(
@@ -255,12 +258,12 @@ class _HomePageState extends State<HomePage> {
             Text(_titleLeft,
                 style: TextStyle(
                     color: Colors.white,
-                    fontSize: 11.0,
+                    fontSize: _textSize,
                     fontWeight: FontWeight.bold)),
             Text(_titleRight,
                 style: TextStyle(
                     color: Colors.white,
-                    fontSize: 11.0,
+                    fontSize: _textSize,
                     fontWeight: FontWeight.bold)),
           ],
         ),
@@ -270,10 +273,13 @@ class _HomePageState extends State<HomePage> {
             Text(_subLeft,
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 11.0,
+                  fontSize: _textSize,
                 )),
             Text(_subRight,
-                style: TextStyle(color: Colors.white, fontSize: 11.0)),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: _textSize,
+                )),
           ],
         ),
       ),

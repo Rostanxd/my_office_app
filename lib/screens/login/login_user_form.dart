@@ -16,19 +16,21 @@ class LoginUserForm extends StatefulWidget {
 class _LoginUserFormState extends State<LoginUserForm> {
   SettingsBloc _settingsBloc;
   LoginBloc _loginBloc;
+  MediaQueryData _queryData;
+  double _queryMediaWidth;
 
   @override
   void initState() {
+    print('LoginUserFormState >> initState');
     super.initState();
   }
 
   @override
   void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
+    print('LoginUserFormState >> didChangeDependencies');
+    _queryData = MediaQuery.of(context);
+    _queryMediaWidth = _queryData.size.width;
 
-  @override
-  Widget build(BuildContext context) {
     /// Getting the setting bloc
     _settingsBloc = BlocProvider.of(context);
 
@@ -37,16 +39,36 @@ class _LoginUserFormState extends State<LoginUserForm> {
 
     /// Listener to the observable to catch the response.
     _loginBloc.user.listen((User user) {
-      if (user != null) {
+      if (user != null){
         _moveNextPage(user);
+      }
+    }, onError: (error) {
+      if (context != null){
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Smart Sales Force'),
+                content: Text(error),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text('Aceptar'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            });
       }
     });
 
-    /// To call the dialog if we have an error in the
-    /// user stream.
-    _loginBloc.user.first.catchError((error) {
-      _showDialog(error);
-    });
+    super.didChangeDependencies();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    print('LoginUserFormState >> build');
 
     return (Container(
       padding: EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0),
@@ -140,31 +162,32 @@ class _LoginUserFormState extends State<LoginUserForm> {
     return StreamBuilder(
         stream: _loginBloc.submitValid,
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-          return Container(
-            height: 40.0,
-            child: Material(
-              borderRadius: BorderRadius.circular(20.0),
-              shadowColor: Color(0xff212121),
-              color: snapshot.data != null
-                  ? snapshot.data ? Color(0xff011e41) : Colors.grey
-                  : Colors.grey,
-              elevation: 7.0,
-              child: GestureDetector(
-                onTap: () {
-                  if (snapshot.data != null && snapshot.data) {
-                    _loginBloc.logIn(
-                        _settingsBloc.device.value, _settingsBloc.myIp.value);
-                  }
-                },
+          return InkWell(
+            onTap: () {
+              if (snapshot.data != null && snapshot.data) {
+                _loginBloc.logIn(
+                    _settingsBloc.device.value, _settingsBloc.myIp.value);
+              }
+            },
+            child: Container(
+              height: 40.0,
+              width: _queryMediaWidth * 0.75,
+              child: Material(
+                borderRadius: BorderRadius.circular(20.0),
+                shadowColor: Color(0xff212121),
+                color: snapshot.data != null
+                    ? snapshot.data ? Color(0xff011e41) : Colors.grey
+                    : Colors.grey,
+                elevation: 7.0,
                 child: Center(
-                  child: Text(
-                    'CONFIRMAR',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Montserrat'),
+                    child: Text(
+                      'CONFIRMAR',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Montserrat'),
+                    ),
                   ),
-                ),
               ),
             ),
           );
@@ -189,13 +212,9 @@ class _LoginUserFormState extends State<LoginUserForm> {
     );
   }
 
-  /// Function to call the next page, if user have a local
-  /// he will be sent to the home page and updating holding and local streams,
-  /// if he doesn't, sent to the login page with conditional interface (form).
+  /// Function to call the next page
   void _moveNextPage(User user) {
-    if (!(user.level == '3' ||
-        (user.accessId == '08' && user.level == '4'))){
-
+    if (!(user.level == '3' || (user.accessId == '08' && user.level == '4'))) {
       print(user.holding.name);
       print(user.local.name);
 
@@ -210,24 +229,5 @@ class _LoginUserFormState extends State<LoginUserForm> {
                   )),
           (Route<dynamic> route) => false);
     }
-  }
-
-  void _showDialog(String message) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Smart Sales Force'),
-            content: Text(message),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Aceptar'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        });
   }
 }

@@ -114,7 +114,7 @@ class _ItemImageFootState extends State<ItemImageFoot> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
     /// Getting the login bloc
     _loginBloc = BlocProvider.of<LoginBloc>(context);
 
@@ -124,6 +124,11 @@ class _ItemImageFootState extends State<ItemImageFoot> {
     /// Initialing variables in the bloc
     _itemDetailsBloc.changeOriginPhoto(false);
 
+    super.didChangeDependencies();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     _row = Row(
       children: <Widget>[
         StreamBuilder(

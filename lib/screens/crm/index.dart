@@ -17,15 +17,18 @@ class _CrmHomeState extends State<CrmHome> {
   LoginBloc _loginBloc;
   CrmBloc _crmBloc;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  MediaQueryData _queryData;
 
   @override
   void dispose() {
+    print('CrmHomeState >> dispose');
     _crmBloc.dispose();
     super.dispose();
   }
 
   @override
   void didChangeDependencies() {
+    print('CrmHomeState >> didChangeDependencies');
     _loginBloc = BlocProvider.of<LoginBloc>(context);
     _crmBloc = BlocProvider.of<CrmBloc>(context);
 
@@ -45,6 +48,8 @@ class _CrmHomeState extends State<CrmHome> {
 
   @override
   Widget build(BuildContext context) {
+    print('CrmHomeState >> build');
+    _queryData = MediaQuery.of(context);
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
@@ -157,6 +162,10 @@ class _CrmHomeState extends State<CrmHome> {
   }
 
   Widget _loadedData(TelemarketingEffectiveness _telemarketingEffectiveness) {
+    var _textDataSize = _queryData.size.width * 0.0275;
+    var _cellWidth = _queryData.size.width * 0.20;
+//    print(_textDataSize);
+//    print(_cellWidth);
     return Container(
       margin: EdgeInsets.only(bottom: 20.0),
       child: Column(
@@ -183,30 +192,35 @@ class _CrmHomeState extends State<CrmHome> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Container(
-                width: 60.0,
+                width: _cellWidth,
+//                color: Colors.green,
                 margin: EdgeInsets.only(left: 20.0, top: 10.0),
                 child: Text(
                   'Llamadas',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10.0),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: _textDataSize),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 60.0,
+                width: _cellWidth,
+//                color: Colors.amber,
                 margin: EdgeInsets.only(top: 10.0),
                 child: Text(
                   _telemarketingEffectiveness.managementCalls,
-                  style: TextStyle(fontSize: 10.0),
+                  style: TextStyle(fontSize: _textDataSize),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 60.0,
+                width: _cellWidth,
+//                color: Colors.grey,
                 margin: EdgeInsets.only(top: 10.0),
                 child: InkWell(
                   child: Text(
                     '${_telemarketingEffectiveness.managementCallsVsCustomers} LC.',
-                    style: TextStyle(fontSize: 10.0, color: Colors.blueAccent),
+                    style: TextStyle(
+                        fontSize: _textDataSize, color: Colors.blueAccent),
                   ),
                   onTap: () {
                     /// Message to the scaffold.
@@ -216,11 +230,12 @@ class _CrmHomeState extends State<CrmHome> {
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 60.0,
+                width: _cellWidth,
+//                color: Colors.red,
                 margin: EdgeInsets.only(right: 20.0, top: 10.0),
                 child: Text(
                   '',
-                  style: TextStyle(fontSize: 10.0),
+                  style: TextStyle(fontSize: _textDataSize),
                 ),
               )
             ],
@@ -229,38 +244,39 @@ class _CrmHomeState extends State<CrmHome> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Container(
-                width: 60.0,
+                width: _cellWidth,
                 margin: EdgeInsets.only(left: 20.0, top: 10.0),
                 child: Text(
                   'Clientes',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10.0),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: _textDataSize),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 60.0,
+                width: _cellWidth,
                 margin: EdgeInsets.only(top: 10.0),
                 child: Text(
                   _telemarketingEffectiveness.managementCustomers,
-                  style: TextStyle(fontSize: 10.0),
+                  style: TextStyle(fontSize: _textDataSize),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 60.0,
+                width: _cellWidth,
                 margin: EdgeInsets.only(top: 10.0),
                 child: Text(
                   '',
-                  style: TextStyle(fontSize: 10.0),
+                  style: TextStyle(fontSize: _textDataSize),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 60.0,
+                width: _cellWidth,
                 margin: EdgeInsets.only(right: 20.0, top: 10.0),
                 child: Text(
                   '',
-                  style: TextStyle(fontSize: 10.0),
+                  style: TextStyle(fontSize: _textDataSize),
                 ),
               )
             ],
@@ -288,30 +304,31 @@ class _CrmHomeState extends State<CrmHome> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Container(
-                width: 60.0,
+                width: _cellWidth,
                 margin: EdgeInsets.only(left: 20.0, top: 10.0),
                 child: Text(
                   'Clientes',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10.0),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: _textDataSize),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 60.0,
+                width: _cellWidth,
                 margin: EdgeInsets.only(top: 10.0),
                 child: Text(
                   _telemarketingEffectiveness.returnCustomers,
-                  style: TextStyle(fontSize: 10.0),
+                  style: TextStyle(fontSize: _textDataSize),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 60.0,
+                width: _cellWidth,
                 margin: EdgeInsets.only(top: 10.0),
                 child: InkWell(
                   child: Text(
                     '${_telemarketingEffectiveness.returnCustomersVsSalesCustomers}% RVC.',
-                    style: TextStyle(fontSize: 10.0, color: Colors.blueAccent),
+                    style: TextStyle(fontSize: _textDataSize, color: Colors.blueAccent),
                   ),
                   onTap: () {
                     /// Message to the scaffold.
@@ -321,12 +338,13 @@ class _CrmHomeState extends State<CrmHome> {
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 60.0,
+                width: _cellWidth,
                 margin: EdgeInsets.only(right: 20.0, top: 10.0),
                 child: InkWell(
                   child: Text(
                     '${_telemarketingEffectiveness.returnCustomersVsManagementCustomers}% RGC.',
-                    style: TextStyle(fontSize: 10.0, color: Colors.blueAccent),
+                    style: TextStyle(
+                        fontSize: _textDataSize, color: Colors.blueAccent),
                   ),
                   onTap: () {
                     /// Message to the scaffold.
@@ -340,30 +358,31 @@ class _CrmHomeState extends State<CrmHome> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Container(
-                width: 60.0,
+                width: _cellWidth,
                 margin: EdgeInsets.only(left: 20.0, top: 10.0),
                 child: Text(
                   'Valor',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10.0),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: _textDataSize),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 60.0,
+                width: _cellWidth,
                 margin: EdgeInsets.only(top: 10.0),
                 child: Text(
                   '\$ ${_telemarketingEffectiveness.returnAmount}',
-                  style: TextStyle(fontSize: 10.0),
+                  style: TextStyle(fontSize: _textDataSize),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 60.0,
+                width: _cellWidth,
                 margin: EdgeInsets.only(top: 10.0),
                 child: InkWell(
                   child: Text(
                     '${_telemarketingEffectiveness.returnAmountVsSalesAmount}% RVV.',
-                    style: TextStyle(fontSize: 10.0, color: Colors.blueAccent),
+                    style: TextStyle(fontSize: _textDataSize, color: Colors.blueAccent),
                   ),
                   onTap: () {
                     /// Message to the scaffold.
@@ -373,7 +392,7 @@ class _CrmHomeState extends State<CrmHome> {
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 60.0,
+                width: _cellWidth,
                 margin: EdgeInsets.only(right: 20.0, top: 10.0),
                 child: Text(
                   '',
@@ -405,25 +424,26 @@ class _CrmHomeState extends State<CrmHome> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Container(
-                width: 60.0,
+                width: _cellWidth,
                 margin: EdgeInsets.only(left: 20.0, top: 10.0),
                 child: Text(
                   'Clientes',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10.0),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: _textDataSize),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 60.0,
+                width: _cellWidth,
                 margin: EdgeInsets.only(top: 10.0),
                 child: Text(
                   _telemarketingEffectiveness.salesCustomers,
-                  style: TextStyle(fontSize: 10.0),
+                  style: TextStyle(fontSize: _textDataSize),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 60.0,
+                width: _cellWidth,
                 margin: EdgeInsets.only(top: 10.0),
                 child: Text(
                   '',
@@ -431,11 +451,11 @@ class _CrmHomeState extends State<CrmHome> {
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 60.0,
+                width: _cellWidth,
                 margin: EdgeInsets.only(right: 20.0, top: 10.0),
                 child: Text(
                   '',
-                  style: TextStyle(fontSize: 10.0),
+                  style: TextStyle(fontSize: _textDataSize),
                 ),
               )
             ],
@@ -444,38 +464,38 @@ class _CrmHomeState extends State<CrmHome> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Container(
-                width: 60.0,
+                width: _cellWidth,
                 margin: EdgeInsets.only(left: 20.0, top: 10.0),
                 child: Text(
                   'Valor',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10.0),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: _textDataSize),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 60.0,
+                width: _cellWidth,
                 margin: EdgeInsets.only(top: 10.0),
                 child: Text(
                   '\$ ${_telemarketingEffectiveness.salesAmount}',
-                  style: TextStyle(fontSize: 10.0),
+                  style: TextStyle(fontSize: _textDataSize),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 60.0,
+                width: _cellWidth,
                 margin: EdgeInsets.only(top: 10.0),
                 child: Text(
                   '',
-                  style: TextStyle(fontSize: 10.0),
+                  style: TextStyle(fontSize: _textDataSize),
                 ),
               ),
               Container(
                 alignment: Alignment.centerRight,
-                width: 60.0,
+                width: _cellWidth,
                 margin: EdgeInsets.only(right: 20.0, top: 10.0),
                 child: Text(
                   '',
-                  style: TextStyle(fontSize: 10.0),
+                  style: TextStyle(fontSize: _textDataSize),
                 ),
               )
             ],
@@ -575,15 +595,14 @@ class DataSearch extends SearchDelegate<String> {
     /// instead we call the customer detail page
     return StreamBuilder<List<Customer>>(
       stream: _crmBloc.customerList,
-      builder:
-          (BuildContext context, AsyncSnapshot<List<Customer>> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<List<Customer>> snapshot) {
         if (snapshot.hasError) {
           return Container(
               margin: EdgeInsets.all(20.0),
               child: Text(
                 'Se ha encontrado un Error. ' +
                     'Comunicar al Dpto. de Sistemas.\n\n'
-                        'Tipo: ${snapshot.error.runtimeType}',
+                    'Tipo: ${snapshot.error.runtimeType}',
                 style: TextStyle(fontSize: 16.0),
               ));
         }

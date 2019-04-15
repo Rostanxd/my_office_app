@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/item_details_bloc.dart';
@@ -20,10 +22,14 @@ class ItemDetails extends StatefulWidget {
 class _ItemDetailsState extends State<ItemDetails> {
   LoginBloc _loginBloc;
   ItemDetailsBloc _itemDetailsBloc;
+  GlobalKey<ScaffoldState> _scaffoldGlobalKey = GlobalKey<ScaffoldState>();
 
   @override
   void didChangeDependencies() {
     print('Item Details >> didChangeDependecies');
+
+    /// Getting the bloc of the login
+    _loginBloc = BlocProvider.of<LoginBloc>(context);
     super.didChangeDependencies();
   }
 
@@ -47,9 +53,6 @@ class _ItemDetailsState extends State<ItemDetails> {
     /// Getting the bloc of the item details
     _itemDetailsBloc = BlocProvider.of<ItemDetailsBloc>(context);
 
-    /// Getting the bloc of the login
-    _loginBloc = BlocProvider.of<LoginBloc>(context);
-
     /// Adding the data to the stream
     _itemDetailsBloc.changeItemId(widget.itemId);
 
@@ -69,6 +72,87 @@ class _ItemDetailsState extends State<ItemDetails> {
 
     /// Default index for the bottom navigation bar.
     _itemDetailsBloc.changeIndex(0);
+
+    /// Listen the stream image file, showing a dialog.
+    /// Once we load a new image to the item
+    /// We show a snack bar with a message and set null the stream.
+    _itemDetailsBloc.loadingImage.listen((data) {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return StreamBuilder(
+              stream: _itemDetailsBloc.loadingImage,
+              builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                return snapshot.hasData && snapshot.data
+                    ? AlertDialog(
+                        title: Text('Cargando foto del estilo'),
+                        content: Container(
+                            height: 40.0,
+                            width: 40.0,
+                            child: Center(child: CircularProgressIndicator())),
+                      )
+                    : StreamBuilder(
+                        builder: (BuildContext context,
+                            AsyncSnapshot<File> snapshot) {
+                          print(snapshot.data);
+                          if (snapshot.hasError) {
+                            return AlertDialog(
+                              actions: <Widget>[
+                                RaisedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text('Cerrar'),
+                                ),
+                              ],
+                              title: Text('Cargando foto del estilo'),
+                              content: Container(
+                                  height: 40.0,
+                                  width: 40.0,
+                                  child: Center(child: Text(snapshot.error))),
+                            );
+                          }
+                          return snapshot.hasData
+                              ? AlertDialog(
+                                  title: Text('Cargando foto del estilo'),
+                                  content: Container(
+                                      height: 40.0,
+                                      width: 40.0,
+                                      child: Center(
+                                          child: Text(
+                                              'Imagen cargada correctamente.'))),
+                                  actions: <Widget>[
+                                    RaisedButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text('Cerrar'),
+                                    ),
+                                  ],
+                                )
+                              : AlertDialog(
+                                  title: Text('Cargando foto del estilo'),
+                                  content: Container(
+                                      height: 40.0,
+                                      width: 40.0,
+                                      child: Center(
+                                          child: Text(
+                                              'No ha seleccionado ninguna imagen...'))),
+                                  actions: <Widget>[
+                                    FlatButton(
+                                      child: Text('Cerrar'),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                  ],
+                                );
+                        },
+                      );
+              },
+            );
+          });
+    });
 
     /// Adding the 2 first page for all user access
     var _widgetOptions = [
@@ -101,6 +185,7 @@ class _ItemDetailsState extends State<ItemDetails> {
         title: new Text(_itemDetailsBloc.itemId.value),
         backgroundColor: Color(0xff011e41),
       ),
+      key: _scaffoldGlobalKey,
       body: Center(
         child: StreamBuilder<Item>(
           stream: _itemDetailsBloc.item,

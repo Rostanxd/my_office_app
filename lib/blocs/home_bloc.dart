@@ -33,11 +33,18 @@ class HomeBloc extends Object with HomeValidator implements BlocBase {
   Observable<CardInfo> get cardSalesAnalysis => _cardSalesAnalysis.stream;
 
   Stream<bool> get refreshHome => Observable.combineLatest5(
-          cardMonthlySales,
-          cardWeeklySales,
-          cardDailySales,
-          cardCustomersWeek,
-          cardSalesAnalysis, (a, b, c, d, e) => true);
+      _cardMonthlySales,
+      _cardWeeklySales,
+      _cardDailySales,
+      _cardCustomersWeek,
+      _cardSalesAnalysis,
+      (a, b, c, d, e) {
+        if (a != null && b != null && c != null && d != null && e != null){
+          return true;
+        } else {
+          return false;
+        }
+      });
 
   /// Add data to stream
   Function(String) get changeDateToFind => _dateToFind.sink.add;
@@ -64,6 +71,12 @@ class HomeBloc extends Object with HomeValidator implements BlocBase {
   }
 
   fetchAllCardInfo(String localId, String sellerId) {
+    _cardMonthlySales.sink.add(null);
+    _cardWeeklySales.sink.add(null);
+    _cardDailySales.sink.add(null);
+    _cardCustomersWeek.sink.add(null);
+    _cardSalesAnalysis.sink.add(null);
+
     fetchMonthlySales(localId, sellerId);
     fetchWeeklySales(localId, sellerId);
     fetchDailySales(localId, sellerId);

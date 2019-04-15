@@ -26,22 +26,23 @@ class UserApi {
     /// To get easily the gx response
     Map<String, dynamic> gxResponse = json.decode(response.body);
 
-    var responseDeviceList = gxResponse['SdtUsers'][0]['deviceList'] as List;
-    deviceList = responseDeviceList.map((d) => UserDevice.fromJson(d)).toList();
-
-    user = User(
-        gxResponse['SdtUsers'][0]['user'],
-        gxResponse['SdtUsers'][0]['name'],
-        gxResponse['SdtUsers'][0]['level'],
-        gxResponse['SdtUsers'][0]['accessId'],
-        gxResponse['SdtUsers'][0]['sellerId'],
-        Holding(gxResponse['SdtUsers'][0]['holdingId'],
-            gxResponse['SdtUsers'][0]['holdingName']),
-        Local(gxResponse['SdtUsers'][0]['localId'],
-            gxResponse['SdtUsers'][0]['localName']),
-        gxResponse['SdtUsers'][0]['identification'],
-        deviceList,
-        gxResponse['SdtUsers'][0]['ipPrefix']);
+    if (gxResponse['SdtUsers'].length > 0){
+      var responseDeviceList = gxResponse['SdtUsers'][0]['deviceList'] as List;
+      deviceList = responseDeviceList.map((d) => UserDevice.fromJson(d)).toList();
+      user = User(
+          gxResponse['SdtUsers'][0]['user'],
+          gxResponse['SdtUsers'][0]['name'],
+          gxResponse['SdtUsers'][0]['level'],
+          gxResponse['SdtUsers'][0]['accessId'],
+          gxResponse['SdtUsers'][0]['sellerId'],
+          Holding(gxResponse['SdtUsers'][0]['holdingId'],
+              gxResponse['SdtUsers'][0]['holdingName']),
+          Local(gxResponse['SdtUsers'][0]['localId'],
+              gxResponse['SdtUsers'][0]['localName']),
+          gxResponse['SdtUsers'][0]['identification'],
+          deviceList,
+          gxResponse['SdtUsers'][0]['ipPrefix']);
+    }
     return user;
   }
 

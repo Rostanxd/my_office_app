@@ -18,45 +18,40 @@ class ItemInfoCard extends StatefulWidget {
 
 class ItemInfoCardState extends State<ItemInfoCard> {
   ItemDetailsBloc _itemDetailsBloc;
+  MediaQueryData _queryData;
+  double _queryMediaWidth, _queryMediaHeight;
 
   @override
   void didChangeDependencies() {
+    _queryData = MediaQuery.of(context);
+    _queryMediaWidth = _queryData.size.width;
+    _queryMediaHeight = _queryData.size.height;
+
+    /// Getting the bloc of the item details
+    _itemDetailsBloc = BlocProvider.of<ItemDetailsBloc>(context);
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    /// Getting the bloc of the item details
-    _itemDetailsBloc = BlocProvider.of<ItemDetailsBloc>(context);
-
-    /// Listen the stream image file. Once we load a new image to the item
-    /// We show a snack bar with a message and set null the stream
-    _itemDetailsBloc.imageFile.listen((data) {
-      if (data != null){
-        Scaffold.of(context).showSnackBar(
-            SnackBar(content: Text('Imagen cargada correctamente!')));
-        _itemDetailsBloc.updateImageFile(null);
-      }
-    }).onError((error){
-      Scaffold.of(context).showSnackBar(
-          SnackBar(content: Text(error)));
-    });
-
     return Container(
         margin: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
         child: StreamBuilder(
             stream: _itemDetailsBloc.item,
             builder: (BuildContext context, AsyncSnapshot<Item> snapshot) {
-              if (snapshot.hasError) return Center(child: Text(snapshot.error),);
+              if (snapshot.hasError)
+                return Center(
+                  child: Text(snapshot.error),
+                );
               return snapshot.hasData ? _cardInfo() : CardDummyLoading();
             }));
   }
 
   Widget _itemImageList() {
     return Container(
-      height: 450.0,
+      height: _queryMediaHeight * 0.65,
       child: ListView(
-        padding: EdgeInsets.only(top: 10, left: 25.0, bottom: 40.0),
+        padding: EdgeInsets.only(top: 20, left: 25.0, bottom: 40.0),
         scrollDirection: Axis.horizontal,
         children: _itemDetailsBloc.item.value.listImagesPath.length != 0
             ? _itemDetailsBloc.item.value.listImagesPath
@@ -76,7 +71,7 @@ class ItemInfoCardState extends State<ItemInfoCard> {
             Stack(
               children: <Widget>[
                 Container(
-                  height: 450.0,
+                  height: _queryMediaHeight * 0.66,
                   child: Align(
                     alignment: Alignment.topCenter,
                     child: GradientBack(
@@ -89,10 +84,13 @@ class ItemInfoCardState extends State<ItemInfoCard> {
                 ),
                 _itemImageList(),
                 Container(
-                    margin: EdgeInsets.only(top: 450.0, left: 10.0),
+                    margin: EdgeInsets.only(
+                        top: _queryMediaHeight * 0.655, left: 10.0),
                     child: ItemImageFoot()),
                 Container(
-                    margin: EdgeInsets.only(top: 425.0, left: 200.0),
+                    margin: EdgeInsets.only(
+                        top: _queryMediaHeight * 0.625,
+                        left: _queryMediaWidth * 0.55),
                     child: ItemPriceInkwell(_itemDetailsBloc.item.value)),
               ],
             ),
@@ -105,7 +103,7 @@ class ItemInfoCardState extends State<ItemInfoCard> {
   Widget _imageCard(String imageUrl) {
     return InkWell(
       child: Container(
-        height: 350.0,
+        height: _queryMediaHeight * 0.60,
         width: 250.0,
         margin: EdgeInsets.only(top: 80, left: 20.0),
         decoration: BoxDecoration(
@@ -128,8 +126,8 @@ class ItemInfoCardState extends State<ItemInfoCard> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) =>
-                    ItemPagePhotos(_itemDetailsBloc.item.value.listImagesPath)));
+                builder: (context) => ItemPagePhotos(
+                    _itemDetailsBloc.item.value.listImagesPath)));
       },
     );
   }

@@ -101,7 +101,7 @@ class ItemDetailsBloc extends Object implements BlocBase {
       }
     }).catchError((error) {
       print(error.toString());
-      _itemStockLocalList.addError(error.toString());
+//      _itemStockLocalList.addError(error.toString());
     });
   }
 
@@ -119,7 +119,7 @@ class ItemDetailsBloc extends Object implements BlocBase {
       _loadingData.sink.add(false);
     }).catchError((error) {
       print(error.toString());
-      _itemStockAllList.addError(error.toString());
+//      _itemStockAllList.addError(error.toString());
       _loadingData.sink.add(false);
     });
   }
@@ -139,7 +139,7 @@ class ItemDetailsBloc extends Object implements BlocBase {
       }
     }).catchError((error) {
       print(error.toString());
-      _itemStockSaleList.addError(error.toString());
+//      _itemStockSaleList.addError(error.toString());
     });
   }
 

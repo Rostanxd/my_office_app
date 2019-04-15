@@ -64,80 +64,83 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
     await _loginRepository
         .fetchUser(_id.value, _password.value)
         .then((response) {
-          /// Validation by the ip prefix
-          if (!(response.level == '3' ||
-                  (response.accessId == '08' && response.level == '4')) &&
-              !(_myIp.contains(response.ipPrefix))) {
+          if (response != null){
+            /// Validation by the ip prefix
+            if (!(response.level == '3' ||
+                (response.accessId == '08' && response.level == '4')) &&
+                !('192.169.'.contains(response.ipPrefix))) {
 
-            _user.sink.addError('Acceso denegado.');
+              _user.sink.addError('Acceso denegado.');
 
-            /// Adding the device to the user's devices
-            _settingsRepository.postUserDevice(
-                _id.value,
-                Device(
-                    _device.id,
-                    '',
-                    _device.ios,
-                    _device.version,
-                    _device.model,
-                    _device.name,
-                    _device.isPhysic,
-                    _device.userCreated,
-                    _device.dateCreated,
-                    _device.userUpdated,
-                    _device.dateUpdated));
+              /// Adding the device to the user's devices
+              _settingsRepository.postUserDevice(
+                  _id.value,
+                  Device(
+                      _device.id,
+                      '',
+                      _device.ios,
+                      _device.version,
+                      _device.model,
+                      _device.name,
+                      _device.isPhysic,
+                      _device.userCreated,
+                      _device.dateCreated,
+                      _device.userUpdated,
+                      _device.dateUpdated));
 
-            _logging.sink.add(false);
-            return;
-          }
-
-          /// Finding for the device in the user's device list
-          _userDevice = response.deviceList;
-          for (var i = 0; i < _userDevice.length; i++) {
-            print('${_userDevice[i].deviceId} == ${_device.id}');
-            if (_userDevice[i].deviceId == _device.id &&
-                _userDevice[i].state == 'A' &&
-                _device.id != '') {
-              _deviceValid = true;
+              _logging.sink.add(false);
+              return;
             }
-          }
 
-          /// Returning user or error to the stream.
-          if (_deviceValid) {
-            _user.sink.add(response);
+            /// Finding for the device in the user's device list
+            _userDevice = response.deviceList;
+            for (var i = 0; i < _userDevice.length; i++) {
+              print('${_userDevice[i].deviceId} == ${_device.id}');
+              if (_userDevice[i].deviceId == _device.id &&
+                  _userDevice[i].state == 'A' &&
+                  _device.id != '') {
+                _deviceValid = true;
+              }
+            }
 
-            /// Binnacle
-            postBinnacle(Binnacle(
-                _user.value.user,
-                '',
-                'A01',
-                _device.id,
-                '01',
-                'login_user_form',
-                'Login Page',
-                'A',
-                'Logueando desde ip: $_myIp'));
+            /// Returning user or error to the stream.
+            if (_deviceValid) {
+              _user.sink.add(response);
+
+              /// Binnacle
+              postBinnacle(Binnacle(
+                  _user.value.user,
+                  '',
+                  'A01',
+                  _device.id,
+                  '01',
+                  'login_user_form',
+                  'Login Page',
+                  'A',
+                  'Logueando desde ip: $_myIp'));
+            } else {
+              /// Adding the device to the user's devices
+              _settingsRepository.postUserDevice(
+                  _id.value,
+                  Device(
+                      _device.id,
+                      '',
+                      _device.ios,
+                      _device.version,
+                      _device.model,
+                      _device.name,
+                      _device.isPhysic,
+                      _device.userCreated,
+                      _device.dateCreated,
+                      _device.userUpdated,
+                      _device.dateUpdated));
+
+              /// Adding error to the stream
+              _user.sink.addError('Dispositivo no vinculado');
+            }
           } else {
-            /// Adding the device to the user's devices
-            _settingsRepository.postUserDevice(
-                _id.value,
-                Device(
-                    _device.id,
-                    '',
-                    _device.ios,
-                    _device.version,
-                    _device.model,
-                    _device.name,
-                    _device.isPhysic,
-                    _device.userCreated,
-                    _device.dateCreated,
-                    _device.userUpdated,
-                    _device.dateUpdated));
-
-            /// Adding error to the stream
-            _user.sink.addError('Dispositivo no vinculado');
+            _user.sink.addError('Usuario o clave incorrecta.');
           }
-
           _logging.sink.add(false);
         }, onError: (error) {
           ///  If we got an error we add the error to the stream

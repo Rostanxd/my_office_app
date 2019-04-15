@@ -22,6 +22,8 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
       new List<DropdownMenuItem<Holding>>();
   List<DropdownMenuItem<Local>> _listDropDownLocals =
       new List<DropdownMenuItem<Local>>();
+  MediaQueryData _queryData;
+  double _queryMediaWidth;
 
   void _updateDropdownListHolding(List<Holding> _holdingList) {
     _listDropDownHoldings.clear();
@@ -49,11 +51,18 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
   }
 
   @override
-  // ignore: must_call_super
-  void initState() {}
+  void initState() {
+    print('LoginLocalFormState >> init');
+    super.initState();
+  }
+
 
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
+    print('LoginLocalFormState >> didChangeDependencies');
+    _queryData = MediaQuery.of(context);
+    _queryMediaWidth = _queryData.size.width;
+
     /// Getting data from the login state container
     bloc = BlocProvider.of<LoginBloc>(context);
 
@@ -73,16 +82,30 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
       _updateDropdownListLocal(data);
     });
 
+    super.didChangeDependencies();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          _optionTitleText('Holding'),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              _optionTitleText('Holding'),
+            ],
+          ),
           SizedBox(height: 10.0),
           _holdingDropDown(),
-          _optionTitleText('Local'),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              _optionTitleText('Local'),
+            ],
+          ),
           SizedBox(height: 10.0),
           _localDropDown(),
           SizedBox(height: 40.0),
@@ -167,22 +190,23 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
   }
 
   Widget _continueButton() {
-    return Container(
-      height: 40.0,
-      child: Material(
-        borderRadius: BorderRadius.circular(20.0),
-        shadowColor: Color(0xff212121),
-        color: Color(0xff011e41),
-        elevation: 7.0,
-        child: GestureDetector(
-          onTap: () {
-            Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => BlocProvider<HomeBloc>(
-                  bloc: HomeBloc(),
-                  child: HomePage(),
-                )),
+    return InkWell(
+      onTap: (){
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => BlocProvider<HomeBloc>(
+              bloc: HomeBloc(),
+              child: HomePage(),
+            )),
                 (Route<dynamic> route) => false);
-          },
+      },
+      child: Container(
+        height: 40.0,
+        width: _queryMediaWidth * 0.75,
+        child: Material(
+          borderRadius: BorderRadius.circular(20.0),
+          shadowColor: Color(0xff212121),
+          color: Color(0xff011e41),
+          elevation: 7.0,
           child: Center(
             child: Text(
               'CONTINUAR',
@@ -198,20 +222,21 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
   }
 
   Widget _cancelButton() {
-    return Container(
-      height: 40.0,
-      child: Material(
-        borderRadius: BorderRadius.circular(20.0),
-        shadowColor: Color(0xff212121),
-        color: Color(0xFFeb2227),
-        elevation: 7.0,
-        child: GestureDetector(
-          onTap: () {
-            bloc.logOut();
-            Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => MyLoginPage()),
+    return InkWell(
+      onTap: (){
+        bloc.logOut();
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => MyLoginPage()),
                 (Route<dynamic> route) => false);
-          },
+      },
+      child: Container(
+        height: 40.0,
+        width: _queryMediaWidth * 0.75,
+        child: Material(
+          borderRadius: BorderRadius.circular(20.0),
+          shadowColor: Color(0xff212121),
+          color: Color(0xFFeb2227),
+          elevation: 7.0,
           child: Center(
             child: Text(
               'CANCELAR',

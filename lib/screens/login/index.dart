@@ -20,14 +20,27 @@ class MyLoginPage extends StatefulWidget {
 class _MyLoginPageState extends State<MyLoginPage> {
   SettingsBloc _settingsBloc;
   LoginBloc _loginBloc;
+  MediaQueryData _queryData;
+  double _queryMediaWidth, _queryMediaHeight;
+
+  @override
+  void initState() {
+    print('MyLoginPageState >> initState');
+    super.initState();
+  }
 
   @override
   void didChangeDependencies() {
+    print('MyLoginPageState >> didChangeDependencies');
+    _queryData = MediaQuery.of(context);
+    _queryMediaWidth = _queryData.size.width;
+    _queryMediaHeight = _queryData.size.height;
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
+    print('MyLoginPageState >> build');
     /// Calling the setting bloc on the provider.
     _settingsBloc = BlocProvider.of<SettingsBloc>(context);
 
@@ -104,7 +117,7 @@ class _MyLoginPageState extends State<MyLoginPage> {
 
   @override
   void dispose() {
-    print('login dispose!');
+    print('MyLoginPageState >> dispose');
     super.dispose();
   }
 
@@ -123,7 +136,8 @@ class _MyLoginPageState extends State<MyLoginPage> {
                     ? Column(
                         children: <Widget>[
                           Container(
-                            margin: EdgeInsets.only(top: 80.0),
+                            margin:
+                                EdgeInsets.only(top: _queryMediaHeight * 0.20),
                             child: Center(
                               child: CircularProgressIndicator(),
                             ),
@@ -135,7 +149,8 @@ class _MyLoginPageState extends State<MyLoginPage> {
                         children: <Widget>[
                           Center(
                             child: Container(
-                              margin: EdgeInsets.only(top: 100.0),
+                              margin:
+                                  EdgeInsets.only(top: _queryMediaHeight * 0.10),
                               child: Text(
                                 error,
                                 style: TextStyle(
@@ -146,8 +161,9 @@ class _MyLoginPageState extends State<MyLoginPage> {
                           ),
                           Container(
                             height: 40.0,
-                            width: 300.0,
-                            margin: EdgeInsets.only(top: 40.0),
+                            width: _queryMediaWidth * 0.75,
+                            margin:
+                                EdgeInsets.only(top: _queryMediaHeight * 0.10),
                             child: Material(
                               borderRadius: BorderRadius.circular(20.0),
                               shadowColor: Color(0xff212121),
@@ -196,24 +212,28 @@ class _MyLoginPageState extends State<MyLoginPage> {
   }
 
   Widget _header() {
+    var _textTitleSize = _queryMediaWidth * 0.14;
     return Container(
       child: Stack(
         children: <Widget>[
           Container(
             padding: EdgeInsets.fromLTRB(15.0, 40.0, 0.0, 0.0),
             child: Text('Smart Sales',
-                style: TextStyle(fontSize: 60.0, fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                    fontSize: _textTitleSize, fontWeight: FontWeight.bold)),
           ),
           Container(
             padding: EdgeInsets.fromLTRB(16.0, 100.0, 0.0, 0.0),
             child: Text('Force',
-                style: TextStyle(fontSize: 60.0, fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                    fontSize: _textTitleSize, fontWeight: FontWeight.bold)),
           ),
           Container(
-            padding: EdgeInsets.fromLTRB(175.0, 100.0, 0.0, 0.0),
+            padding: EdgeInsets.fromLTRB(
+                _queryData.size.width * 0.4, 100.0, 0.0, 0.0),
             child: Text('.',
                 style: TextStyle(
-                    fontSize: 60.0,
+                    fontSize: _textTitleSize,
                     fontWeight: FontWeight.bold,
                     color: Color(0xff011e41))),
           )
@@ -243,14 +263,16 @@ class _MyLoginPageState extends State<MyLoginPage> {
     return StreamBuilder(
       stream: _loginBloc.user,
       builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
-        if (snapshot.hasData){
+        if (snapshot.hasData) {
           if (!(snapshot.data.level == '3' ||
-              (snapshot.data.accessId == '08' && snapshot.data.level == '4'))){
-            return Container(child: null,);
-          }else{
+              (snapshot.data.accessId == '08' && snapshot.data.level == '4'))) {
+            return Container(
+              child: null,
+            );
+          } else {
             return LoginLocalForm();
           }
-        }else{
+        } else {
           return LoginUserForm();
         }
       },
