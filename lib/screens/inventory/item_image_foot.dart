@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/item_details_bloc.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
+import 'package:my_office_th_app/blocs/setting_bloc.dart';
 
 class ItemImageFoot extends StatefulWidget {
   @override
@@ -13,6 +14,7 @@ class ItemImageFoot extends StatefulWidget {
 }
 
 class _ItemImageFootState extends State<ItemImageFoot> {
+  SettingsBloc _settingsBloc;
   LoginBloc _loginBloc;
   ItemDetailsBloc _itemDetailsBloc;
 
@@ -100,18 +102,25 @@ class _ItemImageFootState extends State<ItemImageFoot> {
   }
 
   Future _getImage() async {
+    /// Updating the listener
+    _itemDetailsBloc.changeLoadingImage(true);
+
     /// Calling the pick image plugin
     await ImagePicker.pickImage(
             source: _itemDetailsBloc.photoFromCamera.value
                 ? ImageSource.camera
                 : ImageSource.gallery)
         .then((data) {
-      _itemDetailsBloc.uploadStyleImage(_loginBloc.user.value.user, data);
+      _itemDetailsBloc.uploadStyleImage(
+          _loginBloc.user.value.user, _settingsBloc.device.value.id, data);
     });
   }
 
   @override
   void didChangeDependencies() {
+    /// Getting the settings bloc
+    _settingsBloc = BlocProvider.of<SettingsBloc>(context);
+
     /// Getting the login bloc
     _loginBloc = BlocProvider.of<LoginBloc>(context);
 

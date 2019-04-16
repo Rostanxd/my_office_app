@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:my_office_th_app/blocs/item_details_bloc.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
@@ -48,87 +46,61 @@ class _ItemDetailsState extends State<ItemDetails> {
 
     /// Item's stock/sale
     widget._itemDetailsBloc.fetchItemStockSales(
-        widget._itemDetailsBloc.itemId.value, widget._loginBloc.local.value.id, 'C');
+        widget._itemDetailsBloc.itemId.value,
+        widget._loginBloc.local.value.id,
+        'C');
 
     /// Default index for the bottom navigation bar.
     widget._itemDetailsBloc.changeIndex(0);
 
+    /// Listening to the bool loading variable
+    widget._itemDetailsBloc.loadingImage.listen((data) {
+      print(data);
+      if (data)
+        _scaffoldGlobalKey.currentState.showSnackBar(SnackBar(
+          content: Text('Cargando imágen...'),
+          duration: Duration(seconds: 3),
+        ));
+    });
+
     /// Listen the stream image file, showing a dialog.
     /// Once we load a new image to the item we show a dialog.
-    widget._itemDetailsBloc.loadingImage.listen((data) {
+    widget._itemDetailsBloc.imageFile.listen((data) {
       showDialog(
           context: context,
           builder: (BuildContext context) {
-            return StreamBuilder(
-              stream: widget._itemDetailsBloc.loadingImage,
-              builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                print('bool >> ${snapshot.data}');
-                return snapshot.hasData && snapshot.data
-                    ? AlertDialog(
-                  title: Text('Cargando foto del estilo'),
-                  content: Container(
-                      height: 40.0,
-                      width: 40.0,
-                      child: Center(child: CircularProgressIndicator())),
-                )
-                    : StreamBuilder(
-                  builder: (BuildContext context,
-                      AsyncSnapshot<File> snapshot) {
-                    if (snapshot.hasError) {
-                      return AlertDialog(
-                        actions: <Widget>[
-                          RaisedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text('Cerrar'),
-                          ),
-                        ],
-                        title: Text('Cargando foto del estilo'),
-                        content: Container(
-                            height: 40.0,
-                            width: 40.0,
-                            child: Center(child: Text(snapshot.error))),
-                      );
-                    }
-                    return snapshot.hasData
-                        ? AlertDialog(
-                      title: Text('Cargando foto del estilo'),
-                      content: Container(
-                          height: 40.0,
-                          width: 40.0,
-                          child: Center(
-                              child: Text(
-                                  'Imagen cargada correctamente.'))),
-                      actions: <Widget>[
-                        RaisedButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: Text('Cerrar'),
-                        ),
-                      ],
-                    )
-                        : AlertDialog(
-                      title: Text('Cargando foto del estilo'),
-                      content: Container(
-                          height: 40.0,
-                          width: 40.0,
-                          child: Center(
-                              child: Text(
-                                  'No ha seleccionado ninguna imagen...'))),
-                      actions: <Widget>[
-                        FlatButton(
-                          child: Text('Cerrar'),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ],
-                    );
+            return AlertDialog(
+              title: Text('Cargando foto del estilo'),
+              content: Container(
+                  height: 40.0,
+                  width: 40.0,
+                  child: Center(child: Text('Imagen cargada correctamente.'))),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('Cerrar'),
+                  onPressed: () {
+                    Navigator.pop(context);
                   },
-                );
-              },
+                ),
+              ],
+            );
+          });
+    }, onError: (error) {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Error'),
+              content: Container(
+                  height: 40.0, width: 40.0, child: Center(child: Text(error))),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('Cerrar'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
             );
           });
     });

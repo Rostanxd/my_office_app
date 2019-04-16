@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:image/image.dart' as im;
 import 'package:my_office_th_app/blocs/bloc_base.dart';
+import 'package:my_office_th_app/models/binnacle.dart';
 import 'package:my_office_th_app/models/item.dart';
 import 'package:my_office_th_app/models/item_stock.dart';
 import 'package:my_office_th_app/resources/inventory_repository.dart';
+import 'package:my_office_th_app/resources/login_repository.dart';
 import 'package:rxdart/rxdart.dart';
 
 class ItemDetailsBloc extends Object implements BlocBase {
@@ -22,6 +24,7 @@ class ItemDetailsBloc extends Object implements BlocBase {
   final _imageFile = BehaviorSubject<File>();
   final _loadingImage = BehaviorSubject<bool>();
   final InventoryRepository _inventoryRepository = InventoryRepository();
+  final LoginRepository _loginRepository = LoginRepository();
 
   /// Retrieve data from the stream.
   ValueObservable<String> get itemId => _itemId.stream;
@@ -143,11 +146,8 @@ class ItemDetailsBloc extends Object implements BlocBase {
     });
   }
 
-  uploadStyleImage(String user, File imageFile) async {
+  uploadStyleImage(String _userId, String _deviceId, File imageFile) async {
     File _photoThumb;
-
-    /// Updating the stream to enabled the camera button
-    _loadingImage.sink.add(true);
 
     /// Control if we don't have any photo captured
     if (imageFile == null) {
@@ -169,10 +169,22 @@ class ItemDetailsBloc extends Object implements BlocBase {
       /// Calling the API to post the image.
       await _inventoryRepository
           .postImageStyle(_item.value.styleId, _photoThumb.path.split("/").last,
-              '.jpg', user, base64Encode(_photoThumb.readAsBytesSync()))
+              '.jpg', _userId, base64Encode(_photoThumb.readAsBytesSync()))
           .then((data) {
         _imageFile.sink.add(imageFile);
         _loadingImage.sink.add(false);
+
+        /// Binnacle
+        _loginRepository.postBinnacle(Binnacle(
+            _userId,
+            '',
+            'A22',
+            _deviceId,
+            '02',
+            'item_image_foot',
+            'Carga foto de estilo.',
+            'A',
+            'Carga foto del estilo ${_item.value.styleId}.'));
 
         /// As we load a new image to the item, we need to get again
         /// the item's image list and rebuild the info detail of the item.
@@ -188,8 +200,8 @@ class ItemDetailsBloc extends Object implements BlocBase {
       });
     } catch (error) {
       print(error.toString());
-      _imageFile.sink.addError(error.runtimeType.toString());
       _loadingImage.sink.add(false);
+      _imageFile.sink.addError(error.runtimeType.toString());
     }
   }
 
