@@ -95,6 +95,9 @@ class _MyLoginPageState extends State<MyLoginPage> {
     _queryData = MediaQuery.of(context);
     _queryMediaWidth = _queryData.size.width;
     _queryMediaHeight = _queryData.size.height;
+
+    /// Setting Media Query Data
+    widget._settingsBloc.setQueryData(_queryData);
     super.didChangeDependencies();
   }
 

@@ -1,4 +1,5 @@
 import 'package:device_info/device_info.dart';
+import 'package:flutter/material.dart';
 import 'package:get_ip/get_ip.dart';
 import 'package:my_office_th_app/blocs/bloc_base.dart';
 import 'package:my_office_th_app/models/device.dart';
@@ -16,6 +17,7 @@ class SettingsBloc extends Object implements BlocBase {
   final _ip = BehaviorSubject<String>();
   final _users = BehaviorSubject<List<User>>();
   final _message = BehaviorSubject<String>();
+  final _queryData = BehaviorSubject<MediaQueryData>();
   final SettingsRepository _settingsRepository = SettingsRepository();
 
   /// Retrieve data from the stream
@@ -32,7 +34,11 @@ class SettingsBloc extends Object implements BlocBase {
 
   Observable<List<User>> get users => _users.stream;
 
+  ValueObservable<MediaQueryData> get queryData => _queryData.stream;
+
   /// Add data to the stream
+  Function(MediaQueryData) get setQueryData => _queryData.sink.add;
+
   Function(bool) get changeLoadingData => _loadingData.sink.add;
 
   fetchAndroidInfo() async {
@@ -156,6 +162,7 @@ class SettingsBloc extends Object implements BlocBase {
     _ip.close();
     _users.close();
     _message.close();
+    _queryData.close();
   }
 }
 

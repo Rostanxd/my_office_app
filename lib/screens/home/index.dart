@@ -3,22 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/home_bloc.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
+import 'package:my_office_th_app/blocs/setting_bloc.dart';
 import 'package:my_office_th_app/components/user_drawer.dart';
 import 'package:my_office_th_app/models/card_info.dart';
 
-class HomePage extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
+// ignore: must_be_immutable
+class HomePage extends StatelessWidget {
+  SettingsBloc _settingsBloc;
   LoginBloc _loginBloc;
   HomeBloc _homeBloc;
   MediaQueryData _queryData;
 
   @override
-  void didChangeDependencies() {
-    print('Home >> didChangeDependencies');
+  Widget build(BuildContext context) {
+    print('Home >> build');
+    _settingsBloc = BlocProvider.of<SettingsBloc>(context);
     _loginBloc = BlocProvider.of<LoginBloc>(context);
     _homeBloc = BlocProvider.of<HomeBloc>(context);
 
@@ -28,13 +27,9 @@ class _HomePageState extends State<HomePage> {
         _loginBloc.user.value.accessId != '08'
             ? _loginBloc.user.value.sellerId
             : '');
-    super.didChangeDependencies();
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    print('Home >> build');
-    _queryData = MediaQuery.of(context);
+    _queryData = _settingsBloc.queryData.value;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(""),

@@ -19,6 +19,8 @@ class UserDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('UserDrawer >> build');
+
     _settingsBloc = BlocProvider.of<SettingsBloc>(context);
 
     /// Searching for the login bloc in the provider
