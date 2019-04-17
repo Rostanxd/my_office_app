@@ -8,15 +8,22 @@ import 'package:my_office_th_app/components/user_drawer.dart';
 import 'package:my_office_th_app/models/card_info.dart';
 
 // ignore: must_be_immutable
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  HomePageState createState() {
+    return new HomePageState();
+  }
+}
+
+class HomePageState extends State<HomePage> {
   SettingsBloc _settingsBloc;
   LoginBloc _loginBloc;
   HomeBloc _homeBloc;
   MediaQueryData _queryData;
 
   @override
-  Widget build(BuildContext context) {
-    print('Home >> build');
+  void didChangeDependencies() {
+    print('Home >> didChangeDependencies');
     _settingsBloc = BlocProvider.of<SettingsBloc>(context);
     _loginBloc = BlocProvider.of<LoginBloc>(context);
     _homeBloc = BlocProvider.of<HomeBloc>(context);
@@ -29,7 +36,12 @@ class HomePage extends StatelessWidget {
             : '');
 
     _queryData = _settingsBloc.queryData.value;
+    super.didChangeDependencies();
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    print('Home >> build');
     return Scaffold(
       appBar: AppBar(
         title: Text(""),

@@ -27,4 +27,7 @@ class CrmRepository {
 
   Future<String> updateCustomerData(Customer customer, String userId) =>
       _customerApi.updateCustomers(customer, userId);
+
+  Future<String> postCustomerTelemarketing(Telemarketing _telemarketing) =>
+      _telemarketingApi.postCustomerTelemarketing(_telemarketing);
 }

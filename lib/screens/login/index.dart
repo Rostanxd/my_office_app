@@ -13,6 +13,7 @@ import 'package:my_office_th_app/screens/home/index.dart';
 
 import 'package:my_office_th_app/screens/login/login_user_form.dart';
 import 'package:my_office_th_app/screens/login/login_local_form.dart';
+import 'package:my_office_th_app/utils/info.dart';
 
 class MyLoginPage extends StatefulWidget {
   final SettingsBloc _settingsBloc;
@@ -386,7 +387,7 @@ class _MyLoginPageState extends State<MyLoginPage> {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
-              Text("SSF - v0.0.3"),
+              Text("SSF - ${Info.version}"),
             ],
           ),
           onTap: () {})

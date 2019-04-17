@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/item_details_bloc.dart';
+import 'package:my_office_th_app/blocs/setting_bloc.dart';
 
 import 'package:my_office_th_app/components/card_dummy_loading.dart';
 import 'package:my_office_th_app/components/gradient_back.dart';
@@ -17,18 +18,18 @@ class ItemInfoCard extends StatefulWidget {
 }
 
 class ItemInfoCardState extends State<ItemInfoCard> {
+  SettingsBloc _settingsBloc;
   ItemDetailsBloc _itemDetailsBloc;
   MediaQueryData _queryData;
   double _queryMediaWidth, _queryMediaHeight;
 
   @override
   void didChangeDependencies() {
-    _queryData = MediaQuery.of(context);
+    _settingsBloc = BlocProvider.of<SettingsBloc>(context);
+    _itemDetailsBloc = BlocProvider.of<ItemDetailsBloc>(context);
+    _queryData = _settingsBloc.queryData.value;
     _queryMediaWidth = _queryData.size.width;
     _queryMediaHeight = _queryData.size.height;
-
-    /// Getting the bloc of the item details
-    _itemDetailsBloc = BlocProvider.of<ItemDetailsBloc>(context);
     super.didChangeDependencies();
   }
 

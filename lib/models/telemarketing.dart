@@ -31,6 +31,26 @@ class Telemarketing extends Object {
     this.dateCreated = json['dateCreated'];
     this.dateUpdated = json['dateUpdated'];
   }
+
+  Map<String, dynamic> toJson() => {
+    'sellerId': this.sellerId,
+    'date': this.date,
+    'result': this.result,
+    'customerId': this.customerId,
+    'motivate': this.motivate,
+    'note': this.note,
+    'attempts': this.attempts,
+    'dateCreated': this.dateCreated,
+    'dateUpdated': this.dateUpdated
+  };
+
+  @override
+  String toString() {
+    return 'Telemarketing{sellerId: $sellerId, date: $date, '
+        'result: $result, customerId: $customerId, motivate: $motivate, '
+        'note: $note, attempts: $attempts, dateCreated: $dateCreated, '
+        'dateUpdated: $dateUpdated}';
+  }
 }
 
 class TelemarketingEffectiveness extends Object {

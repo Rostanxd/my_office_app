@@ -11,6 +11,7 @@ import 'package:my_office_th_app/screens/crm/index.dart';
 import 'package:my_office_th_app/screens/home/index.dart';
 import 'package:my_office_th_app/screens/inventory/index.dart';
 import 'package:my_office_th_app/screens/login/index.dart';
+import 'package:my_office_th_app/utils/info.dart';
 
 // ignore: must_be_immutable
 class UserDrawer extends StatelessWidget {
@@ -134,7 +135,7 @@ class UserDrawer extends StatelessWidget {
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
-                  Text("SSF - v0.0.3"),
+                  Text("SSF - ${Info.version}"),
                 ],
               ),
               onTap: () {})

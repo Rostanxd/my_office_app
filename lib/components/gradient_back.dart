@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:my_office_th_app/blocs/bloc_provider.dart';
+import 'package:my_office_th_app/blocs/setting_bloc.dart';
 
 // ignore: must_be_immutable
 class GradientBack extends StatelessWidget {
-
+  SettingsBloc _settingsBloc;
   String title = 'Title';
   String subtitleOne = 'Subtitle One';
   String subtitleTwo = 'Subtitle Two';
@@ -13,7 +15,8 @@ class GradientBack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _queryData = MediaQuery.of(context);
+    _settingsBloc = BlocProvider.of<SettingsBloc>(context);
+    _queryData = _settingsBloc.queryData.value;
     _queryMediaHeight = _queryData.size.height;
     _queryMediaWidth = _queryData.size.width;
     return Container(

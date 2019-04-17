@@ -23,6 +23,7 @@ class ItemDetailsBloc extends Object implements BlocBase {
   final _photoFromCamera = BehaviorSubject<bool>();
   final _imageFile = BehaviorSubject<File>();
   final _loadingImage = BehaviorSubject<bool>();
+  final _priceBool = BehaviorSubject<bool>();
   final InventoryRepository _inventoryRepository = InventoryRepository();
   final LoginRepository _loginRepository = LoginRepository();
 
@@ -52,6 +53,8 @@ class ItemDetailsBloc extends Object implements BlocBase {
 
   ValueObservable<bool> get loadingImage => _loadingImage.stream;
 
+  Observable<bool> get priceBool => _priceBool.stream;
+
   /// Add data to the streams.
   Function(Item) get changeItem => _item.sink.add;
 
@@ -68,6 +71,8 @@ class ItemDetailsBloc extends Object implements BlocBase {
   Function(File) get updateImageFile => _imageFile.sink.add;
 
   Function(bool) get changeLoadingImage => _loadingImage.sink.add;
+
+  Function(bool) get changePriceBool => _priceBool.sink.add;
 
   /// Functions to call APIs.
   fetchItem(String itemId, String styleId) async {
@@ -220,5 +225,6 @@ class ItemDetailsBloc extends Object implements BlocBase {
     _photoFromCamera.close();
     _imageFile.close();
     _loadingImage.close();
+    _priceBool.close();
   }
 }

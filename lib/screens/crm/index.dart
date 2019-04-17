@@ -3,6 +3,7 @@ import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/crm_bloc.dart';
 import 'package:my_office_th_app/blocs/customer_detail_bloc.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
+import 'package:my_office_th_app/blocs/setting_bloc.dart';
 import 'package:my_office_th_app/components/user_drawer.dart';
 import 'package:my_office_th_app/models/customer.dart';
 import 'package:my_office_th_app/models/telemarketing.dart';
@@ -14,6 +15,7 @@ class CrmHome extends StatefulWidget {
 }
 
 class _CrmHomeState extends State<CrmHome> {
+  SettingsBloc _settingsBloc;
   LoginBloc _loginBloc;
   CrmBloc _crmBloc;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -29,8 +31,11 @@ class _CrmHomeState extends State<CrmHome> {
   @override
   void didChangeDependencies() {
     print('CrmHomeState >> didChangeDependencies');
+    _settingsBloc = BlocProvider.of<SettingsBloc>(context);
     _loginBloc = BlocProvider.of<LoginBloc>(context);
     _crmBloc = BlocProvider.of<CrmBloc>(context);
+
+    _queryData = _settingsBloc.queryData.value;
 
     /// Calling API.
     _crmBloc.fetchAllCardInfo(
@@ -43,13 +48,22 @@ class _CrmHomeState extends State<CrmHome> {
             .showSnackBar(new SnackBar(content: new Text('$message')));
     });
 
+    _crmBloc.customer.listen((data){
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => BlocProvider(
+                bloc: CustomerDetailBloc(),
+                child: CustomerDetail(data),
+              )));
+    });
+
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
     print('CrmHomeState >> build');
-    _queryData = MediaQuery.of(context);
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
@@ -328,7 +342,8 @@ class _CrmHomeState extends State<CrmHome> {
                 child: InkWell(
                   child: Text(
                     '${_telemarketingEffectiveness.returnCustomersVsSalesCustomers}% RVC.',
-                    style: TextStyle(fontSize: _textDataSize, color: Colors.blueAccent),
+                    style: TextStyle(
+                        fontSize: _textDataSize, color: Colors.blueAccent),
                   ),
                   onTap: () {
                     /// Message to the scaffold.
@@ -382,7 +397,8 @@ class _CrmHomeState extends State<CrmHome> {
                 child: InkWell(
                   child: Text(
                     '${_telemarketingEffectiveness.returnAmountVsSalesAmount}% RVV.',
-                    style: TextStyle(fontSize: _textDataSize, color: Colors.blueAccent),
+                    style: TextStyle(
+                        fontSize: _textDataSize, color: Colors.blueAccent),
                   ),
                   onTap: () {
                     /// Message to the scaffold.
@@ -468,7 +484,8 @@ class _CrmHomeState extends State<CrmHome> {
                 margin: EdgeInsets.only(left: 20.0, top: 10.0),
                 child: Text(
                   'Valor',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: _textDataSize),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: _textDataSize),
                 ),
               ),
               Container(
@@ -527,7 +544,7 @@ class _CrmHomeState extends State<CrmHome> {
             child: ListView.builder(
                 itemCount: data.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return CheckboxListTile(
+                  return ListTile(
                     title: Text(
                       data[index].customerNames,
                       style: TextStyle(fontSize: 12.0),
@@ -536,9 +553,7 @@ class _CrmHomeState extends State<CrmHome> {
                       '${data[index].message}',
                       style: TextStyle(fontSize: 12.0),
                     ),
-                    value: true,
-                    onChanged: (bool value) {},
-                    secondary: Container(
+                    leading: Container(
                       width: 40.0,
                       height: 40.0,
                       decoration: BoxDecoration(
@@ -548,6 +563,9 @@ class _CrmHomeState extends State<CrmHome> {
                               image: AssetImage(
                                   'assets/img/${data[index].image}'))),
                     ),
+                    onTap: () {
+                      _crmBloc.fetchCustomer(data[index].customerId);
+                    },
                   );
                 }),
           )

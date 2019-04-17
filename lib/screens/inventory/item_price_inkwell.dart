@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:my_office_th_app/blocs/bloc_provider.dart';
+import 'package:my_office_th_app/blocs/item_details_bloc.dart';
+import 'package:my_office_th_app/blocs/setting_bloc.dart';
 
-import 'package:my_office_th_app/models/item.dart' as mi;
+import 'package:my_office_th_app/models/item.dart';
 
 class ItemPriceInkwell extends StatefulWidget {
-  final mi.Item item;
+  final Item item;
 
   ItemPriceInkwell(this.item);
 
@@ -12,21 +15,29 @@ class ItemPriceInkwell extends StatefulWidget {
 }
 
 class _ItemPriceInkwellState extends State<ItemPriceInkwell> {
+  SettingsBloc _settingsBloc;
+  ItemDetailsBloc _itemDetailsBloc;
   bool _pressed = false;
   MediaQueryData _queryData;
   double _queryMediaWidth;
 
+  @override
+  void didChangeDependencies() {
+    _settingsBloc = BlocProvider.of<SettingsBloc>(context);
+    _itemDetailsBloc = BlocProvider.of<ItemDetailsBloc>(context);
+    _queryData = _settingsBloc.queryData.value;
+    _queryMediaWidth = _queryData.size.width;
+    _itemDetailsBloc.changePriceBool(_pressed);
+    super.didChangeDependencies();
+  }
+
   void _changePrice() {
-    setState(() {
-      _pressed = !this._pressed;
-    });
+    _pressed = !_pressed;
+    _itemDetailsBloc.changePriceBool(_pressed);
   }
 
   @override
   Widget build(BuildContext context) {
-    _queryData = MediaQuery.of(context);
-    _queryMediaWidth = _queryData.size.width;
-
     return InkWell(
         onTap: _changePrice,
         child: Container(
@@ -41,16 +52,26 @@ class _ItemPriceInkwellState extends State<ItemPriceInkwell> {
                   stops: [0.0, 0.6],
                   tileMode: TileMode.clamp)),
           child: Center(
-            child: Text(
-              this._pressed
-                  ? 's/IVA \$ ' + widget.item.priceNoIva.toString()
-                  : 'c/IVA \$ ' + widget.item.priceIva.toString(),
-              style: TextStyle(
-                  fontSize: _queryMediaWidth * 0.04,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
-            ),
-          ),
+              child: StreamBuilder(
+                  stream: _itemDetailsBloc.priceBool,
+                  builder:
+                      (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                    return snapshot.hasData && snapshot.data
+                        ? Text(
+                            'c/IVA \$ ${widget.item.priceIva.toString()}',
+                            style: TextStyle(
+                                fontSize: _queryMediaWidth * 0.04,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          )
+                        : Text(
+                            's/IVA \$ ${widget.item.priceNoIva.toString()}',
+                            style: TextStyle(
+                                fontSize: _queryMediaWidth * 0.04,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          );
+                  })),
         ));
   }
 }

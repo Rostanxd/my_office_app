@@ -12,6 +12,7 @@ class CrmBloc extends BlocBase {
   final _customerAnniversaryList = BehaviorSubject<List<CustomerAnniversary>>();
   final _message = BehaviorSubject<String>();
   final _customerSearch = BehaviorSubject<String>();
+  final _customer = BehaviorSubject<Customer>();
   CrmRepository _crmRepository = CrmRepository();
 
   /// Observables
@@ -27,6 +28,8 @@ class CrmBloc extends BlocBase {
   Observable<String> get message => _message.stream;
 
   Observable<String> get customerSearch => _customerSearch.stream;
+
+  Observable<Customer> get customer => _customer.stream;
 
   /// Functions
 
@@ -95,6 +98,12 @@ class CrmBloc extends BlocBase {
     });
   }
 
+  fetchCustomer(String id) async {
+    await _crmRepository.fetchCustomer(id).then((response) {
+      _customer.sink.add(response);
+    });
+  }
+
   bool isNumeric(String s) {
     if (s == null) {
       return false;
@@ -108,5 +117,6 @@ class CrmBloc extends BlocBase {
     _customerAnniversaryList.close();
     _message.close();
     _customerSearch.close();
+    _customer.close();
   }
 }

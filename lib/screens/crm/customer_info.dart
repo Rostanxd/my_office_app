@@ -19,6 +19,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
   CustomerDetailBloc _customerDetailBloc;
   SettingsBloc _settingsBloc;
   LoginBloc _loginBloc;
+  MediaQueryData _queryData;
   TextEditingController _idCtrl = TextEditingController();
   TextEditingController _lastNameCtrl = TextEditingController();
   TextEditingController _firstNameCtrl = TextEditingController();
@@ -42,7 +43,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
             ? formatter.parse(_customerDetailBloc.bornDate.value)
             : _now,
         firstDate: DateTime(1900),
-        lastDate: DateTime(_now.year + 1));
+        lastDate: DateTime(_now.year - 17));
 
     if (picked != null) {
       _customerDetailBloc.changeBornDate(formatter.format(picked).toString());
@@ -54,6 +55,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
     print('CustomerInfo >> didChangeDependencies');
     _settingsBloc = BlocProvider.of<SettingsBloc>(context);
     _loginBloc = BlocProvider.of<LoginBloc>(context);
+    _queryData = _settingsBloc.queryData.value;
     _customerDetailBloc = BlocProvider.of<CustomerDetailBloc>(context);
 
     /// Looking for the customer data.
@@ -181,7 +183,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
                     onChanged: _customerDetailBloc.changeFirstName,
                     enabled: _editing,
                     decoration: InputDecoration(
-                        labelText: 'Nombes',
+                        labelText: 'Nombres',
                         labelStyle: TextStyle(
                             fontFamily: 'Montserrat',
                             fontWeight: FontWeight.bold,
@@ -300,6 +302,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
   }
 
   Widget _editingBornDate(bool _editing) {
+    var _textSize = _queryData.size.width * 0.044;
     return _editing
         ? Container(
             margin: EdgeInsets.only(left: 20.0, right: 10.0),
@@ -314,16 +317,22 @@ class _CustomerInfoState extends State<CustomerInfo> {
                 stream: _customerDetailBloc.bornDate,
                 builder:
                     (BuildContext context, AsyncSnapshot<String> snapshot) {
+                  if (snapshot.hasError)
+                    return Text(
+                      snapshot.data.isEmpty ? 'dd/MM/yyyy' : snapshot.data,
+                      style: TextStyle(
+                          color: Colors.blueAccent, fontSize: _textSize),
+                    );
                   return snapshot.hasData
                       ? Text(
                           snapshot.data,
                           style: TextStyle(
-                              color: Colors.blueAccent, fontSize: 18.0),
+                              color: Colors.blueAccent, fontSize: _textSize),
                         )
                       : Text(
                           snapshot.data.isEmpty ? 'dd/MM/yyyy' : snapshot.data,
                           style: TextStyle(
-                              color: Colors.blueAccent, fontSize: 18.0),
+                              color: Colors.blueAccent, fontSize: _textSize),
                         );
                 },
               ),
@@ -350,12 +359,12 @@ class _CustomerInfoState extends State<CustomerInfo> {
                                   ? 'dd/MM/yyyy'
                                   : snapshot.data,
                               style: TextStyle(
-                                  color: Colors.black, fontSize: 18.0),
+                                  color: Colors.black, fontSize: _textSize),
                             )
                           : Text(
                               'dd/MM/yyyy',
                               style: TextStyle(
-                                  color: Colors.black, fontSize: 18.0),
+                                  color: Colors.black, fontSize: _textSize),
                             );
                     })),
           );
@@ -376,14 +385,14 @@ class _CustomerInfoState extends State<CustomerInfo> {
               ),
               Container(
                   margin: EdgeInsets.only(top: 20.0, right: 20.0, bottom: 20.0),
-                  child: RaisedButton(
+                  child: IconButton(
                     onPressed: () {
                       _customerDetailBloc.fetchCustomer(widget.customer.id);
                       _customerDetailBloc.changeEditing(false);
                     },
-                    child: Icon(
+                    icon: Icon(
                       Icons.cancel,
-                      color: Colors.white,
+                      color: Colors.redAccent,
                     ),
                     color: Colors.redAccent,
                   )),
@@ -394,15 +403,14 @@ class _CustomerInfoState extends State<CustomerInfo> {
             children: <Widget>[
               Container(
                   margin: EdgeInsets.only(top: 20.0, right: 20.0, bottom: 20.0),
-                  child: RaisedButton(
+                  child: IconButton(
                     onPressed: () {
                       _customerDetailBloc.changeEditing(true);
                     },
-                    child: Icon(
+                    icon: Icon(
                       Icons.edit,
-                      color: Colors.white,
+                      color: Colors.lightBlue,
                     ),
-                    color: Colors.lightBlue,
                   ))
             ],
           );
@@ -410,16 +418,15 @@ class _CustomerInfoState extends State<CustomerInfo> {
 
   Widget _confirmButton(bool _submit) {
     return Container(
-        margin: EdgeInsets.only(top: 20.0, right: 5.0, bottom: 20.0),
-        child: RaisedButton(
+        margin: EdgeInsets.only(top: 20.0, right: 10.0, bottom: 20.0),
+        child: IconButton(
           onPressed: () {
             if (_submit) _confirmDialog();
           },
-          child: Icon(
+          icon: Icon(
             Icons.save,
-            color: Colors.white,
+            color: _submit ? Colors.lightBlue : Colors.grey,
           ),
-          color: _submit ? Colors.lightBlue : Colors.grey,
         ));
   }
 

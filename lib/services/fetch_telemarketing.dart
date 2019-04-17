@@ -33,16 +33,17 @@ class TelemarketingApi {
     return _telemarketingList;
   }
 
-  Future<String> postCustomerTelemarketing(
-      Telemarketing _telemarketing) async {
+  Future<String> postCustomerTelemarketing(Telemarketing _telemarketing) async {
     List<Telemarketing> _telemarketingList = List();
     _telemarketingList.add(_telemarketing);
 
-    print('postCustomerTelemarketing >> ${_telemarketing.toString()}');
+    print('postCustomerTelemarketing >> ${json.encode({
+      "SdtWsTelemarketing": _telemarketingList
+    })}');
     final response = await _httpClient.post(
-      Connection.host + '/rest/WsCrmTelemarketingPost',
-      headers: {"Content-Type":"application/json"},
-      body: json.encode({"SdtWsTelemarketing": _telemarketingList}));
+        Connection.host + '/rest/WsCrmTelemarketingPost',
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({"SdtWsTelemarketing": _telemarketingList}));
 
     print('postCustomerTelemarketing << ${response.body}');
 

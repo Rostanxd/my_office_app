@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:my_office_th_app/blocs/bloc_base.dart';
 import 'package:my_office_th_app/blocs/customer_validator.dart';
 import 'package:my_office_th_app/models/binnacle.dart';
@@ -25,6 +26,8 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
 
   CrmRepository _crmRepository = CrmRepository();
   LoginRepository _loginRepository = LoginRepository();
+
+    DateFormat formatter = new DateFormat('dd/MM/yyyy');
 
   /// Telemarketing
   final _telemarketingList = BehaviorSubject<List<Telemarketing>>();
@@ -83,7 +86,81 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
       cellphone,
       email,
       telephone,
-      (a, b, c, d, e, f) => true);
+      (a, b, c, d, e, f) {
+        /// First Name validation
+        if (_customer.value.firstName.isNotEmpty && a.isEmpty) {
+          this._firstName.sink.addError('No puede eliminar información');
+          return false;
+        }
+
+        /// Last Name validation
+        if(_customer.value.lastName.isNotEmpty && b.isEmpty){
+          this._lastName.sink.addError('No puede eliminar información');
+          return false;
+        }
+
+        /// Born Date validation
+        if (_customer.value.bornDate.isNotEmpty && c.isEmpty){
+          this._bornDate.sink.addError('No puede eliminar información');
+          print('fecha borrada');
+          return false;
+        }
+
+        /// Cellphone validation
+        if (_customer.value.cellphoneOne.isEmpty &&
+            _customer.value.cellphoneTwo.isNotEmpty &&
+            d.isEmpty) {
+          this._cellphone.sink.addError('No puede eliminar información.');
+          return false;
+        } else {
+          if (_customer.value.cellphoneOne.isNotEmpty && d.isEmpty) {
+            this._cellphone.sink.addError('No puede eliminar información.');
+            return false;
+          }
+        }
+
+        if (d.length < 10) {
+          this._cellphone.sink.addError('Número inválido.');
+          return false;
+        }
+
+        if (!isNumeric(d)){
+          this._cellphone.sink.addError('Número inválido');
+          return false;
+        }
+
+        /// Email validation
+        if (_customer.value.email.isNotEmpty && e.isEmpty) {
+          this._email.sink.addError('No puede eliminar información');
+          return false;
+        }
+
+        /// Telephone validation
+        if (_customer.value.telephoneOne.isEmpty &&
+            _customer.value.telephoneTwo.isNotEmpty &&
+            f.isEmpty) {
+          this._telephone.sink.addError('No puede eliminar información.');
+          return false;
+        } else {
+          if (_customer.value.telephoneOne.isNotEmpty && f.isEmpty) {
+            this._telephone.sink.addError('No puede eliminar información.');
+            return false;
+          }
+        }
+
+        if (f.length < 7) {
+          this._telephone.sink.addError('Número inválido.');
+          return false;
+        }
+
+        if (!isNumeric(f)){
+          this._telephone.sink.addError('Número inválido');
+          return false;
+        }
+
+        /// If we don't have error. It's ok!
+        return true;
+      });
 
   Observable<List<Telemarketing>> get telemarketingList =>
       _telemarketingList.stream;
@@ -101,82 +178,15 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
 
   Function(String) get changeId => _id.sink.add;
 
-  changeLastName(String _lastName) {
-    if(_customer.value.lastName.isNotEmpty && _lastName.isEmpty){
-      this._lastName.sink.addError('No puede eliminar información');
-      return;
-    }
-    this._lastName.sink.add(_lastName);
-  }
+  Function(String) get changeLastName => _lastName.sink.add;
 
-  changeFirstName(String _firstName) {
-    if (_customer.value.firstName.isNotEmpty && _firstName.isEmpty) {
-      this._firstName.sink.addError('No puede eliminar información');
-      return;
-    }
-    this._firstName.sink.add(_firstName);
-  }
+  Function(String) get changeFirstName => _firstName.sink.add;
 
-  changeEmail(String _email) {
-    if (_customer.value.email.isNotEmpty && _email.isEmpty) {
-      this._email.sink.addError('No puede eliminar información');
-      return;
-    }
+  Function(String) get changeEmail => _email.sink.add;
 
-    this._email.sink.add(_email);
-  }
+  Function(String) get changeCellphone => _cellphone.sink.add;
 
-  changeCellphone(String _cellphone) {
-    if (_customer.value.cellphoneOne.isEmpty &&
-        _customer.value.cellphoneTwo.isNotEmpty &&
-        _cellphone.isEmpty) {
-      this._cellphone.sink.addError('No puede eliminar información.');
-      return;
-    } else {
-      if (_customer.value.cellphoneOne.isNotEmpty && _cellphone.isEmpty) {
-        this._cellphone.sink.addError('No puede eliminar información.');
-        return;
-      }
-    }
-
-    if (_cellphone.length < 10) {
-      this._cellphone.sink.addError('Número inválido.');
-      return;
-    }
-
-    if (!isNumeric(_cellphone)){
-      this._cellphone.sink.addError('Número inválido');
-      return;
-    }
-
-    this._cellphone.sink.add(_cellphone);
-  }
-
-  changeTelephone(String _telephone) {
-    if (_customer.value.telephoneOne.isEmpty &&
-        _customer.value.telephoneTwo.isNotEmpty &&
-        _telephone.isEmpty) {
-      this._telephone.sink.addError('No puede eliminar información.');
-      return;
-    } else {
-      if (_customer.value.telephoneOne.isNotEmpty && _telephone.isEmpty) {
-        this._telephone.sink.addError('No puede eliminar información.');
-        return;
-      }
-    }
-
-    if (_telephone.length < 7) {
-      this._telephone.sink.addError('Número inválido.');
-      return;
-    }
-
-    if (!isNumeric(_telephone)){
-      this._telephone.sink.addError('Número inválido');
-      return;
-    }
-
-    this._telephone.sink.add(_telephone);
-  }
+  Function(String) get changeTelephone => _telephone.sink.add;
 
   fetchCustomer(String id) async {
     _id.sink.add(id);
