@@ -45,6 +45,9 @@ dependencies:
   # To call resources like web, email and telephone default from device
   url_launcher: ^5.0.2
 
+  # To use flare animations
+  flare_flutter:
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

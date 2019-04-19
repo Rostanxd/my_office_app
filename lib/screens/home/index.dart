@@ -6,6 +6,7 @@ import 'package:my_office_th_app/blocs/login_bloc.dart';
 import 'package:my_office_th_app/blocs/setting_bloc.dart';
 import 'package:my_office_th_app/components/user_drawer.dart';
 import 'package:my_office_th_app/models/card_info.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 // ignore: must_be_immutable
 class HomePage extends StatefulWidget {
@@ -20,6 +21,7 @@ class HomePageState extends State<HomePage> {
   LoginBloc _loginBloc;
   HomeBloc _homeBloc;
   MediaQueryData _queryData;
+  WebViewController _controller;
 
   @override
   void didChangeDependencies() {
@@ -54,6 +56,33 @@ class HomePageState extends State<HomePage> {
         _cardInfoDailySales(),
         _cardInfoCustomersWeek(),
         _cardInfoSalesAnalysis(),
+        Container(
+          margin: EdgeInsets.only(top: 20.0),
+          height: _queryData.size.height * 0.7,
+          child: _loginBloc.user.value.local.name.isNotEmpty &&
+                      (_loginBloc.user.value.accessId == '08' &&
+                          _loginBloc.user.value.level != '4') ||
+                  _loginBloc.user.value.accessId == '05'
+              ? WebView(
+                  javascriptMode: JavascriptMode.unrestricted,
+                  initialUrl:
+                      'http://info.thgye.com.ec/VtaSemanalCom.html?'
+                      'sellerId=&localId=${_loginBloc.local.value.id}',
+                  onWebViewCreated: (WebViewController webViewController) {
+                    _controller = webViewController;
+                  },
+                )
+              : WebView(
+                  javascriptMode: JavascriptMode.unrestricted,
+                  initialUrl:
+                      'http://info.thgye.com.ec/VtaSemanalCom.html?'
+                      'sellerId=${_loginBloc.user.value.sellerId}&'
+                          'localId=${_loginBloc.local.value.id}',
+                  onWebViewCreated: (WebViewController webViewController) {
+                    _controller = webViewController;
+                  },
+                ),
+        ),
       ]),
       floatingActionButton: StreamBuilder<bool>(
         stream: _homeBloc.refreshHome,
@@ -64,6 +93,7 @@ class HomePageState extends State<HomePage> {
                   onPressed: () {
                     _homeBloc.fetchAllCardInfo(_loginBloc.local.value.id,
                         _loginBloc.user.value.sellerId);
+                    _controller.reload();
                   })
               : FloatingActionButton(
                   backgroundColor: Colors.grey,
