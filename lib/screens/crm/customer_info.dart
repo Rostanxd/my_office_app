@@ -88,45 +88,49 @@ class _CustomerInfoState extends State<CustomerInfo> {
   @override
   Widget build(BuildContext context) {
     print('CustomerInfo >> build');
-    return Container(
-      margin: EdgeInsets.all(10.0),
-      child: Card(
-          elevation: 5.0,
-          child: Column(
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                child: Text(
-                  'Datos Generales del Cliente',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
-                ),
-              ),
-              Divider(),
-              StreamBuilder(
-                stream: _customerDetailBloc.customer,
-                builder:
-                    (BuildContext context, AsyncSnapshot<Customer> snapshot) {
-                  return snapshot.hasData
-                      ? StreamBuilder(
-                          stream: _customerDetailBloc.editing,
-                          builder: (BuildContext context,
-                              AsyncSnapshot<bool> snapshot) {
-                            if (snapshot.hasError)
-                              return Text(
-                                  snapshot.error.runtimeType.toString());
-                            return snapshot.hasData
-                                ? _customerForm(snapshot.data)
-                                : _customerForm(false);
-                          })
-                      : Center(
-                          child: Container(
-                              margin: EdgeInsets.all(20.0),
-                              child: CircularProgressIndicator()),
-                        );
-                },
-              ),
-            ],
-          )),
+    return ListView(
+      children: <Widget>[
+        Container(
+          margin: EdgeInsets.all(10.0),
+          child: Card(
+              elevation: 5.0,
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                    child: Text(
+                      'Datos Generales del Cliente',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+                    ),
+                  ),
+                  Divider(),
+                  StreamBuilder(
+                    stream: _customerDetailBloc.customer,
+                    builder:
+                        (BuildContext context, AsyncSnapshot<Customer> snapshot) {
+                      return snapshot.hasData
+                          ? StreamBuilder(
+                              stream: _customerDetailBloc.editing,
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<bool> snapshot) {
+                                if (snapshot.hasError)
+                                  return Text(
+                                      snapshot.error.runtimeType.toString());
+                                return snapshot.hasData
+                                    ? _customerForm(snapshot.data)
+                                    : _customerForm(false);
+                              })
+                          : Center(
+                              child: Container(
+                                  margin: EdgeInsets.all(20.0),
+                                  child: CircularProgressIndicator()),
+                            );
+                    },
+                  ),
+                ],
+              )),
+        ),
+      ],
     );
   }
 

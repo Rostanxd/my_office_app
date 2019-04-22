@@ -30,4 +30,8 @@ class CrmRepository {
 
   Future<String> postCustomerTelemarketing(Telemarketing _telemarketing) =>
       _telemarketingApi.postCustomerTelemarketing(_telemarketing);
+
+  Future<CustomerLastSummary> fetchCustomerLastSummary(
+          String holdingId, String customerId) =>
+      _customerApi.fetchCustomerLastSummary(holdingId, customerId);
 }

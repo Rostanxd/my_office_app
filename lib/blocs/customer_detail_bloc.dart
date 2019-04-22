@@ -14,6 +14,7 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
   final _editing = BehaviorSubject<bool>();
   final _updating = BehaviorSubject<bool>();
   final _customer = BehaviorSubject<Customer>();
+  final _lastSummary = BehaviorSubject<CustomerLastSummary>();
 
   /// Customer fields
   final _id = BehaviorSubject<String>();
@@ -27,7 +28,7 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
   CrmRepository _crmRepository = CrmRepository();
   LoginRepository _loginRepository = LoginRepository();
 
-    DateFormat formatter = new DateFormat('dd/MM/yyyy');
+  DateFormat formatter = new DateFormat('dd/MM/yyyy');
 
   /// Telemarketing
   final _telemarketingList = BehaviorSubject<List<Telemarketing>>();
@@ -80,13 +81,8 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
           ''));
 
   Stream<bool> get submitCustomer => Observable.combineLatest6(
-      firstName,
-      lastName,
-      bornDate,
-      cellphone,
-      email,
-      telephone,
-      (a, b, c, d, e, f) {
+          firstName, lastName, bornDate, cellphone, email, telephone,
+          (a, b, c, d, e, f) {
         /// First Name validation
         if (_customer.value.firstName.isNotEmpty && a.isEmpty) {
           this._firstName.sink.addError('No puede eliminar información');
@@ -94,13 +90,13 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
         }
 
         /// Last Name validation
-        if(_customer.value.lastName.isNotEmpty && b.isEmpty){
+        if (_customer.value.lastName.isNotEmpty && b.isEmpty) {
           this._lastName.sink.addError('No puede eliminar información');
           return false;
         }
 
         /// Born Date validation
-        if (_customer.value.bornDate.isNotEmpty && c.isEmpty){
+        if (_customer.value.bornDate.isNotEmpty && c.isEmpty) {
           this._bornDate.sink.addError('No puede eliminar información');
           print('fecha borrada');
           return false;
@@ -124,7 +120,7 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
           return false;
         }
 
-        if (!isNumeric(d)){
+        if (!isNumeric(d)) {
           this._cellphone.sink.addError('Número inválido');
           return false;
         }
@@ -153,7 +149,7 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
           return false;
         }
 
-        if (!isNumeric(f)){
+        if (!isNumeric(f)) {
           this._telephone.sink.addError('Número inválido');
           return false;
         }
@@ -164,6 +160,8 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
 
   Observable<List<Telemarketing>> get telemarketingList =>
       _telemarketingList.stream;
+
+  Observable<CustomerLastSummary> get lastSummary => _lastSummary.stream;
 
   /// Functions
   Function(int) get changeIndex => _index.sink.add;
@@ -256,6 +254,16 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
     });
   }
 
+  fetchCustomerLastSummary(String holdingId, String customerId) async {
+    await _crmRepository
+        .fetchCustomerLastSummary(holdingId, customerId)
+        .timeout(Duration(seconds: Connection.timeOutSec)).then((data){
+          _lastSummary.sink.add(data);
+    }, onError: (error){
+          _lastSummary.sink.addError(error.toString());
+    });
+  }
+
   bool isNumeric(String s) {
     if (s == null) {
       return false;
@@ -277,5 +285,6 @@ class CustomerDetailBloc with CustomerValidator implements BlocBase {
     _telephone.close();
     _bornDate.close();
     _telemarketingList.close();
+    _lastSummary.close();
   }
 }

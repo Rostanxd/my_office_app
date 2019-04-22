@@ -97,3 +97,28 @@ class Customer implements Person {
         'telephoneTwo': this.telephoneTwo
       };
 }
+
+class CustomerLastSummary extends Object {
+  String customerId;
+  String date;
+  String amount;
+  String sellerId;
+  String sellerName;
+  String localId;
+  String localName;
+  String average;
+
+  CustomerLastSummary(this.customerId, this.date, this.amount, this.sellerId,
+      this.sellerName, this.localId, this.localName, this.average);
+
+  CustomerLastSummary.fromJson(Map<String, dynamic> json){
+    this.customerId = json['customerId'];
+    this.date = json['date'];
+    this.amount = json['amount'];
+    this.sellerId = json['sellerId'];
+    this.sellerName = json['sellerName'];
+    this.localId = json['localId'];
+    this.localName = json['localName'];
+    this.average = json['average'];
+  }
+}

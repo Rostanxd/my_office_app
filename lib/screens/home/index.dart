@@ -57,27 +57,21 @@ class HomePageState extends State<HomePage> {
         _cardInfoCustomersWeek(),
         _cardInfoSalesAnalysis(),
         Container(
-          margin: EdgeInsets.only(top: 20.0),
+          margin: EdgeInsets.only(top: 10.0),
           height: _queryData.size.height * 0.7,
-          child: _loginBloc.user.value.local.name.isNotEmpty &&
-                      (_loginBloc.user.value.accessId == '08' &&
-                          _loginBloc.user.value.level != '4') ||
-                  _loginBloc.user.value.accessId == '05'
+          child: _loginBloc.user.value.accessId == '05'
               ? WebView(
                   javascriptMode: JavascriptMode.unrestricted,
-                  initialUrl:
-                      'http://info.thgye.com.ec/VtaSemanalCom.html?'
-                      'sellerId=&localId=${_loginBloc.local.value.id}',
+                  initialUrl: 'http://info.thgye.com.ec/VtaSemanalCom.html?'
+                      'sellerId=${_loginBloc.user.value.sellerId}&localId=${_loginBloc.local.value.id}',
                   onWebViewCreated: (WebViewController webViewController) {
                     _controller = webViewController;
                   },
                 )
               : WebView(
                   javascriptMode: JavascriptMode.unrestricted,
-                  initialUrl:
-                      'http://info.thgye.com.ec/VtaSemanalCom.html?'
-                      'sellerId=${_loginBloc.user.value.sellerId}&'
-                          'localId=${_loginBloc.local.value.id}',
+                  initialUrl: 'http://info.thgye.com.ec/VtaSemanalCom.html?'
+                      'sellerId=&localId=${_loginBloc.local.value.id}',
                   onWebViewCreated: (WebViewController webViewController) {
                     _controller = webViewController;
                   },

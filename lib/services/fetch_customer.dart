@@ -37,8 +37,7 @@ class CustomerApi {
     final response = await _httpClient.post(
         Connection.host + '/rest/WsCrmClientes',
         headers: {"Content-Type": "application/json"},
-        body: json.encode(
-            {"id": "$id", "lastName": "", "firstName": ""}));
+        body: json.encode({"id": "$id", "lastName": "", "firstName": ""}));
 
     print('fetchCustomer << ${response.body}');
 
@@ -66,14 +65,39 @@ class CustomerApi {
     final response = await _httpClient.post(
         Connection.host + '/rest/WsCrmClientePost',
         headers: {"Content-Type": "application/json"},
-        body: json.encode({
-          "SdtWsClientes": _customerList,
-          "userId": "$userId"
-        }));
+        body:
+            json.encode({"SdtWsClientes": _customerList, "userId": "$userId"}));
 
     /// Printing response from the rest
     print("updateCustomers << ${response.body}");
 
     return response.body;
+  }
+
+  Future<CustomerLastSummary> fetchCustomerLastSummary(
+      String holdingId, String customerId) async {
+    print('fetchCustomerLastSummary >> ${json.encode({
+      "holdingId": "$holdingId",
+      "customerId": "$customerId"
+    })}');
+
+    final response = await _httpClient.post(
+        Connection.host + '/rest/WsPvtClienteResumenUltCompra',
+        headers: {"Content-Type": "application/json"},
+        body: json
+            .encode({"holdingId": "$holdingId", "customerId": "$customerId"}));
+
+    print('fetchCustomerLastSummary << ${response.body}');
+
+    /// To get easily the gx response
+    Map<String, dynamic> gxResponse = json.decode(response.body);
+
+    /// Genexus response structure
+    var responseList = gxResponse['SdtWsClienteUltCompra'] as List;
+
+    /// Loading the list from the response
+    return responseList
+        .map((f) => CustomerLastSummary.fromJson((f)))
+        .toList()[0];
   }
 }

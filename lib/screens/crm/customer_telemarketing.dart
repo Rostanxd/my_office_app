@@ -48,77 +48,81 @@ class _CustomerTelemarketingState extends State<CustomerTelemarketing> {
   @override
   Widget build(BuildContext context) {
     print('CustomerTelemarketing >> build');
-    return Container(
-      margin: EdgeInsets.all(10.0),
-      child: Card(
-          elevation: 5.0,
-          child: Column(
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                child: Text(
-                  'Telemarketing del cliente',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
-                ),
-              ),
-              Divider(),
-              Container(
-                height: _queryData.size.height * 0.5,
-                child: StreamBuilder<List<Telemarketing>>(
-                  stream: _customerDetailBloc.telemarketingList,
-                  builder: (BuildContext context,
-                      AsyncSnapshot<List<Telemarketing>> snapshot) {
-                    if (snapshot.hasError)
-                      return Center(
-                        child: Text(snapshot.error),
-                      );
-                    return snapshot.hasData
-                        ? _telemarketingList(snapshot.data)
-                        : Center(
-                            child: CircularProgressIndicator(),
-                          );
-                  },
-                ),
-              ),
-              Divider(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+    return ListView(
+      children: <Widget>[
+        Container(
+          margin: EdgeInsets.all(10.0),
+          child: Card(
+              elevation: 5.0,
+              child: Column(
                 children: <Widget>[
                   Container(
-                      margin:
-                          EdgeInsets.only(top: 10.0, right: 20.0, bottom: 10.0),
-                      child: IconButton(
-                        onPressed: () {
-                          if (_loginBloc.user.value.accessId == '05') {
-                            CustomerTelemarketingBloc
-                                _customerTelemarketingBloc =
-                                CustomerTelemarketingBloc();
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => BlocProvider(
-                                          bloc: _customerTelemarketingBloc,
-                                          child: CustomerTelemarketingForm(
-                                              widget.customer,
-                                              _customerTelemarketingBloc),
-                                        )));
-                          } else {
-                            Scaffold.of(context).showSnackBar(SnackBar(
-                                content: Text(
-                                    'Lo sentimos su usuario no tiene código de vendedor asignado.')));
-                          }
-                        },
-                        icon: Icon(
-                          Icons.edit,
-                          color: _loginBloc.user.value.accessId == '05'
-                              ? Colors.lightBlue
-                              : Colors.grey,
-                        ),
-                      ))
+                    margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                    child: Text(
+                      'Telemarketing del cliente',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+                    ),
+                  ),
+                  Divider(),
+                  Container(
+                    height: _queryData.size.height * 0.5,
+                    child: StreamBuilder<List<Telemarketing>>(
+                      stream: _customerDetailBloc.telemarketingList,
+                      builder: (BuildContext context,
+                          AsyncSnapshot<List<Telemarketing>> snapshot) {
+                        if (snapshot.hasError)
+                          return Center(
+                            child: Text(snapshot.error),
+                          );
+                        return snapshot.hasData
+                            ? _telemarketingList(snapshot.data)
+                            : Center(
+                                child: CircularProgressIndicator(),
+                              );
+                      },
+                    ),
+                  ),
+                  Divider(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      Container(
+                          margin:
+                              EdgeInsets.only(top: 10.0, right: 20.0, bottom: 10.0),
+                          child: IconButton(
+                            onPressed: () {
+                              if (_loginBloc.user.value.accessId == '05') {
+                                CustomerTelemarketingBloc
+                                    _customerTelemarketingBloc =
+                                    CustomerTelemarketingBloc();
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => BlocProvider(
+                                              bloc: _customerTelemarketingBloc,
+                                              child: CustomerTelemarketingForm(
+                                                  widget.customer,
+                                                  _customerTelemarketingBloc),
+                                            )));
+                              } else {
+                                Scaffold.of(context).showSnackBar(SnackBar(
+                                    content: Text(
+                                        'Lo sentimos su usuario no tiene código de vendedor asignado.')));
+                              }
+                            },
+                            icon: Icon(
+                              Icons.edit,
+                              color: _loginBloc.user.value.accessId == '05'
+                                  ? Colors.lightBlue
+                                  : Colors.grey,
+                            ),
+                          ))
+                    ],
+                  )
                 ],
-              )
-            ],
-          )),
+              )),
+        ),
+      ],
     );
   }
 
