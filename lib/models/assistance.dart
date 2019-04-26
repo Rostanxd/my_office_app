@@ -1,16 +1,29 @@
 class Assistance {
-  final String day;
-  final String employeeId;
-  final String entryHour;
-  final String lunchOutHour;
-  final String lunchInHour;
-  final String exitHour;
-  final String entryMsg;
-  final String lunchOutMsg;
-  final String lunchInMsg;
-  final String exitMsg;
+  String day;
+  String employeeId;
+  String entryHour;
+  String lunchOutHour;
+  String lunchInHour;
+  String exitHour;
+  String entryMsg;
+  String lunchOutMsg;
+  String lunchInMsg;
+  String exitMsg;
 
   Assistance(this.day, this.employeeId, this.entryHour,
       this.lunchOutHour, this.lunchInHour, this.exitHour,
       this.entryMsg, this.lunchOutMsg, this.lunchInMsg, this.exitMsg);
+
+  Assistance.fromJson(Map<String, dynamic> json){
+    this.day = json['day'];
+    this.employeeId = json['employeeId'];
+    this.entryHour = json['entryHour'];
+    this.lunchOutHour = json['lunchOutHour'];
+    this.lunchInHour = json['lunchInHour'];
+    this.exitHour = json['exitHour'];
+    this.entryMsg = json['entryMsg'];
+    this.lunchOutMsg = json['lunchOutMsg'];
+    this.lunchInMsg = json['lunchInMsg'];
+    this.exitMsg = json['exitMsg'];
+  }
 }

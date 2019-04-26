@@ -1,242 +1,258 @@
 import 'package:flutter/material.dart';
+import 'package:my_office_th_app/blocs/bloc_provider.dart';
+import 'package:my_office_th_app/blocs/home_bloc.dart';
+import 'package:my_office_th_app/blocs/login_bloc.dart';
+import 'package:my_office_th_app/blocs/setting_bloc.dart';
 
-import 'package:http/http.dart' as http;
-
-import 'package:my_office_th_app/models/holding.dart' as mh;
-import 'package:my_office_th_app/models/local.dart' as ml;
+import 'package:my_office_th_app/models/holding.dart';
+import 'package:my_office_th_app/models/local.dart';
 import 'package:my_office_th_app/screens/home/index.dart';
 
 import 'package:my_office_th_app/screens/login/index.dart';
-import 'package:my_office_th_app/screens/login/login_state_container.dart';
-import 'package:my_office_th_app/services/fetch_holdings.dart' as sh;
-import 'package:my_office_th_app/services/fetch_locals.dart' as sl;
-import 'package:my_office_th_app/utils/connection.dart';
 
 class LoginLocalForm extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return _LoginLocalFormState();
   }
 }
 
 class _LoginLocalFormState extends State<LoginLocalForm> {
-  mh.Holding _currentHolding;
-  ml.Local _currentLocal;
-  List<mh.Holding> _listHoldings = new List<mh.Holding>();
-  List<ml.Local> _listLocals = new List<ml.Local>();
-  List<DropdownMenuItem<mh.Holding>> _listDropDownHoldings =
-      new List<DropdownMenuItem<mh.Holding>>();
-  List<DropdownMenuItem<ml.Local>> _listDropDownLocals =
-      new List<DropdownMenuItem<ml.Local>>();
+  SettingsBloc _settingsBloc;
+  LoginBloc _loginBloc;
+  List<DropdownMenuItem<Holding>> _listDropDownHoldings =
+      new List<DropdownMenuItem<Holding>>();
+  List<DropdownMenuItem<Local>> _listDropDownLocals =
+      new List<DropdownMenuItem<Local>>();
+  MediaQueryData _queryData;
+  double _queryMediaWidth;
 
-//  Variables to keep showing the circular progress.
-  bool _boolHolding = false;
-  bool _boolLocals = false;
-
-  void _getHoldings() {
-    setState(() {
-      this._boolHolding = true;
-    });
-
-    sh
-        .fetchHoldings(http.Client())
-        .timeout(Duration(seconds: Connection.timeOutSec))
-        .then((result) {
-      setState(() {
-        this._boolHolding = false;
-
-        for (mh.Holding h in result) {
-          this._listHoldings.add(h);
-        }
-
-        for (var _hld in _listHoldings) {
-          this._listDropDownHoldings.add(
-              new DropdownMenuItem(value: _hld, child: new Text(_hld.name)));
-        }
-
-        _currentHolding = _listDropDownHoldings[0].value;
-      });
-    }, onError: (error) {
-      print(error);
-    }).catchError((error) {
-      print(error);
-    });
+  void _updateDropdownListHolding(List<Holding> _holdingList) {
+    _listDropDownHoldings.clear();
+    _listDropDownHoldings = _holdingList
+        .map((h) => DropdownMenuItem(value: h, child: Text(h.name)))
+        .toList();
   }
 
-  void _changeDropDownItemHolding(mh.Holding _holdingSelected) {
-    setState(() {
-      _currentHolding = _holdingSelected;
-      _getLocals(_currentHolding.id);
-    });
+  void _updateDropdownListLocal(List<Local> _localList) {
+    _listDropDownLocals.clear();
+    _listDropDownLocals = _localList
+        .map((l) => DropdownMenuItem(value: l, child: Text(l.name)))
+        .toList();
   }
 
-  void _getLocals(String holdingId) {
-    setState(() {
-      this._boolLocals = true;
-    });
-
-    sl
-        .fetchLocals(http.Client(), holdingId)
-        .timeout(Duration(seconds: Connection.timeOutSec))
-        .then((result) {
-      setState(() {
-        this._boolLocals = false;
-
-//        Updating the list variable for the holdings, and the dropdown
-        _listLocals.clear();
-        for (ml.Local l in result) {
-          _listLocals.add(l);
-        }
-
-        _listDropDownLocals.clear();
-        for (var _loc in this._listLocals) {
-          this._listDropDownLocals.add(
-              new DropdownMenuItem(value: _loc, child: new Text(_loc.name)));
-        }
-
-        _currentLocal = _listDropDownLocals[0].value;
-      });
-    }, onError: (error) {
-      print(error);
-    }).catchError((error) {
-      print(error);
-    });
+  /// Function to be called from the holding dropdown to change its current value
+  void _changeDropDownItemHolding(Holding _holdingSelected) {
+    _loginBloc.fetchLocal(_holdingSelected.id);
+    _loginBloc.changeCurrentHolding(_holdingSelected);
   }
 
-  void _changeDropDownItemLocal(ml.Local _localSelected) {
-    setState(() {
-      this._currentLocal = _localSelected;
-    });
+  /// Function to be called from the local dropdown to change its current value
+  void _changeDropDownItemLocal(Local _localSelected) {
+    _loginBloc.changeCurrentLocal(_localSelected);
   }
 
   @override
   void initState() {
-//    Loading DropdownMenuItem for holdings
-    this._getHoldings();
+    print('LoginLocalFormState >> init');
+    super.initState();
+  }
 
-//    Loading DropdownMenuItem for locals
-    this._getLocals('0');
+  @override
+  void didChangeDependencies() {
+    print('LoginLocalFormState >> didChangeDependencies');
+    _queryData = MediaQuery.of(context);
+    _queryMediaWidth = _queryData.size.width;
+
+    /// Getting data from provider
+    _settingsBloc = BlocProvider.of<SettingsBloc>(context);
+
+    /// Getting data from provider
+    _loginBloc = BlocProvider.of<LoginBloc>(context);
+
+    /// Loading DropdownMenuItem for holdings
+    _loginBloc.fetchAllHolding();
+
+    /// Loading DropdownMenuItem for locals
+    _loginBloc.fetchLocal('0');
+
+    /// Listener to update the holding dropdown
+    _loginBloc.holdingList.listen((data) {
+      _updateDropdownListHolding(data);
+    });
+
+    /// Listener to update the local dropdown
+    _loginBloc.localList.listen((data) {
+      _updateDropdownListLocal(data);
+    });
+
+    super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-//    Getting data from the item sate container
-    final container = LoginStateContainer.of(context);
-
-    var _circularProgress = CircularProgressIndicator();
-
     return Container(
       padding: EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Container(
-            margin: EdgeInsets.only(
-              top: 20.0,
-              left: 20.0,
-            ),
-            child: Text('Holding',
-                style: TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xff011e41))),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              _optionTitleText('Holding'),
+            ],
           ),
           SizedBox(height: 10.0),
-          Container(
-            child: Center(
-              child: _boolHolding
-                  ? _circularProgress
-                  : DropdownButton<mh.Holding>(
-                      value: _currentHolding,
-                      items: _listDropDownHoldings,
-                      onChanged: (mh.Holding h) {
-                        this._changeDropDownItemHolding(h);
-                      },
-                    ),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(top: 20.0, left: 20.0),
-            child: Text('Local',
-                style: TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xff011e41))),
+          _holdingDropDown(),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              _optionTitleText('Local'),
+            ],
           ),
           SizedBox(height: 10.0),
-          Container(
-            child: Center(
-              child: _boolLocals
-                  ? _circularProgress
-                  : DropdownButton<ml.Local>(
-                      value: _currentLocal,
-                      items: _listDropDownLocals,
-                      onChanged: (ml.Local l) {
-                        this._changeDropDownItemLocal(l);
-                      },
-                    ),
-            ),
-          ),
+          _localDropDown(),
           SizedBox(height: 40.0),
-          Container(
-            height: 40.0,
-            child: Material(
-              borderRadius: BorderRadius.circular(20.0),
-              shadowColor: Color(0xff212121),
-              color: Color(0xff011e41),
-              elevation: 7.0,
-              child: GestureDetector(
-                onTap: () {
-                  container.updateHolding(this._currentHolding);
-                  container.updateLogin(this._currentLocal);
-
-                  Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (context) => HomePage()),
-                      (Route<dynamic> route) => false);
-                },
-                child: Center(
-                  child: Text(
-                    'CONTINUE',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Montserrat'),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          _continueButton(),
           SizedBox(height: 20.0),
-          Container(
-            height: 40.0,
-            child: Material(
-              borderRadius: BorderRadius.circular(20.0),
-              shadowColor: Color(0xff212121),
-              color: Color(0xFFeb2227),
-              elevation: 7.0,
-              child: GestureDetector(
-                onTap: () {
-                  container.logOut();
+          _cancelButton(),
+        ],
+      ),
+    );
+  }
 
-                  Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (context) => MyLoginPage()),
-                      (Route<dynamic> route) => false);
-                },
-                child: Center(
-                  child: Text(
-                    'CANCEL',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Montserrat'),
-                  ),
-                ),
-              ),
+  Widget _optionTitleText(String title) {
+    return Container(
+      margin: EdgeInsets.only(top: 20.0, left: 20.0),
+      child: Text(title,
+          style: TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+              color: Color(0xff011e41))),
+    );
+  }
+
+  Widget _holdingDropDown() {
+    return StreamBuilder(
+        stream: _loginBloc.holding,
+        builder: (BuildContext context, AsyncSnapshot<Holding> snapshot) {
+          return Container(
+            child: Center(
+                child: snapshot.hasData
+                    ? StreamBuilder(
+                        stream: _loginBloc.holdingList,
+                        initialData: _loginBloc.holdingList.value,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<List<Holding>> holdingListSnapshot) {
+                          return holdingListSnapshot.hasData
+                              ? DropdownButton<Holding>(
+                                  value: snapshot.data,
+                                  items: _listDropDownHoldings,
+                                  onChanged: (Holding h) {
+                                    _changeDropDownItemHolding(h);
+                                  },
+                                )
+                              : CircularProgressIndicator();
+                        },
+                      )
+                    : CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                      )),
+          );
+        });
+  }
+
+  Widget _localDropDown() {
+    return StreamBuilder(
+        stream: _loginBloc.local,
+        builder: (BuildContext context, AsyncSnapshot<Local> snapshot) {
+          return Container(
+            child: Center(
+              child: snapshot.hasData
+                  ? StreamBuilder(
+                      stream: _loginBloc.localList,
+                      initialData: _loginBloc.localList.value,
+                      builder: (BuildContext context,
+                          AsyncSnapshot<List<Local>> localListSnapshot) {
+                        return localListSnapshot.hasData
+                            ? DropdownButton<Local>(
+                                value: snapshot.data,
+                                items: _listDropDownLocals,
+                                onChanged: (Local l) {
+                                  _changeDropDownItemLocal(l);
+                                },
+                              )
+                            : CircularProgressIndicator();
+                      },
+                    )
+                  : CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                    ),
+            ),
+          );
+        });
+  }
+
+  Widget _continueButton() {
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+                builder: (context) => BlocProvider<HomeBloc>(
+                      bloc: HomeBloc(),
+                      child: HomePage(),
+                    )),
+            (Route<dynamic> route) => false);
+      },
+      child: Container(
+        height: 40.0,
+        width: _queryMediaWidth * 0.75,
+        child: Material(
+          borderRadius: BorderRadius.circular(20.0),
+          shadowColor: Color(0xff212121),
+          color: Color(0xff011e41),
+          elevation: 7.0,
+          child: Center(
+            child: Text(
+              'CONTINUAR',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Montserrat'),
             ),
           ),
-        ],
+        ),
+      ),
+    );
+  }
+
+  Widget _cancelButton() {
+    return InkWell(
+      onTap: () {
+        _loginBloc.logOut();
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+                builder: (context) => MyLoginPage(_settingsBloc, _loginBloc)),
+            (Route<dynamic> route) => false);
+      },
+      child: Container(
+        height: 40.0,
+        width: _queryMediaWidth * 0.75,
+        child: Material(
+          borderRadius: BorderRadius.circular(20.0),
+          shadowColor: Color(0xff212121),
+          color: Color(0xFFeb2227),
+          elevation: 7.0,
+          child: Center(
+            child: Text(
+              'CANCELAR',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Montserrat'),
+            ),
+          ),
+        ),
       ),
     );
   }

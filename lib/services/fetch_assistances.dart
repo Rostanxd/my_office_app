@@ -1,74 +1,40 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:my_office_th_app/factories/assistance.dart' as fa;
-import 'package:my_office_th_app/models/assistance.dart' as ma;
-import 'package:my_office_th_app/utils/connection.dart' as con;
+import 'package:my_office_th_app/models/assistance.dart';
+import 'package:my_office_th_app/utils/connection.dart';
 
-Future<List<fa.Assistance>> fetchAssistance(
-    http.Client client, String date, String employeeId) async {
+class AssistanceApi {
+  final _httpClient = http.Client();
 
-  final response = await client.post(con.Connection.host + '/rest/WsAssistance',
-      headers: {"Content-Type": "application/json"},
-      body: json.encode({"date": "$date", "employeeId": "$employeeId"}));
+  Future<Assistance> fetchDateAssistance(String date, String employeeId) async {
+    print('fetchDateAssistance >> $date $employeeId');
+    Assistance assistance;
+    var response = await _httpClient.post(
+        Connection.host + '/rest/WsNomAsistencias',
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({"date": "$date", "employeeId": "$employeeId"}));
 
-  //  Code generated for object sdt from genexus.
-  var mapSdt = <Map>[];
+    print('fetchDateAssistance << ${response.body}');
 
-  Map<String, dynamic> mapResponse = json.decode(response.body);
+    /// To get easily the gx response
+    Map<String, dynamic> gxResponse = json.decode(response.body);
 
-  for (var i = 0; i < mapResponse['SdtAssistances'].length; i++) {
-    mapSdt.add(mapResponse['SdtAssistances'][i]);
+    /// Loading assistance from the response
+    assistance = Assistance(
+        gxResponse['SdtAssistances'][0]['day'],
+        gxResponse['SdtAssistances'][0]['employeeId'],
+        gxResponse['SdtAssistances'][0]['entryHour'],
+        gxResponse['SdtAssistances'][0]['lunchOutHour'],
+        gxResponse['SdtAssistances'][0]['lunchInHour'],
+        gxResponse['SdtAssistances'][0]['exitHour'],
+        gxResponse['SdtAssistances'][0]['entryMsg'],
+        gxResponse['SdtAssistances'][0]['lunchOutMsg'],
+        gxResponse['SdtAssistances'][0]['lunchInMsg'],
+        gxResponse['SdtAssistances'][0]['exitMsg']);
+
+    return assistance;
   }
-
-  var jsonSdt = json.encode(mapSdt);
-
-  return compute(parseAssistance, jsonSdt);
-}
-
-Future<ma.Assistance> fetchAnAssistance(
-    http.Client client, String date, String employeeId) async {
-  var assistance;
-  var response = await http.post(con.Connection.host + '/rest/WsAssistance',
-      headers: {"Content-Type": "application/json"},
-      body: json.encode({"date": "$date", "employeeId": "$employeeId"}));
-
-  print(response.body);
-
-  Map<String, dynamic> mapResponse = json.decode(response.body);
-
-  for (var i = 0; i < mapResponse['SdtAssistances'].length; i++) {
-    assistance = ma.Assistance(
-        mapResponse['SdtAssistances'][i]['day'],
-        mapResponse['SdtAssistances'][i]['employeeId'],
-        mapResponse['SdtAssistances'][i]['entryHour'],
-        mapResponse['SdtAssistances'][i]['lunchOutHour'],
-        mapResponse['SdtAssistances'][i]['lunchInHour'],
-        mapResponse['SdtAssistances'][i]['exitHour'],
-        mapResponse['SdtAssistances'][i]['entryMsg'],
-        mapResponse['SdtAssistances'][i]['lunchOutMsg'],
-        mapResponse['SdtAssistances'][i]['lunchInMsg'],
-        mapResponse['SdtAssistances'][i]['exitMsg']);
-  }
-
-//  If we don't have data in this day.
-  if (assistance == null) {
-    assistance = ma.Assistance(
-      date, employeeId, '00:00', '00:00', '00:00', '00:00',
-      'No record.', 'No record.', 'No record.', 'No record.'
-    );
-  }
-
-  return assistance;
-}
-
-List<fa.Assistance> parseAssistance(String responseBody) {
-  final parsed = json.decode(responseBody).cast<Map<String, dynamic>>();
-
-  return parsed
-      .map<fa.Assistance>((json) => fa.Assistance.fromJson(json))
-      .toList();
 }

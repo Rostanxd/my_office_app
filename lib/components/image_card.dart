@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:my_office_th_app/screens/inventory/item_page_photos.dart';
-import 'package:my_office_th_app/screens/inventory/item_state_container.dart';
-
 class ImageCard extends StatelessWidget {
   final String imageUrl;
 
@@ -10,9 +7,6 @@ class ImageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-//    Getting data from the item sate container
-    final container = ItemStateContainer.of(context);
-
     return InkWell(
       child: Container(
         height: 350.0,
@@ -34,13 +28,7 @@ class ImageCard extends StatelessWidget {
                   offset: Offset(0.0, 7.0))
             ]),
       ),
-      onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    ItemPagePhotos(container.item.listImagesPath)));
-      },
+      onTap: () {},
     );
   }
 }

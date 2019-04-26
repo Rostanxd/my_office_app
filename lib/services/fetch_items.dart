@@ -1,122 +1,138 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:my_office_th_app/factories/item.dart' as fi;
-import 'package:my_office_th_app/models/item.dart' as mi;
-import 'package:my_office_th_app/utils/connection.dart' as con;
+import 'package:my_office_th_app/models/item.dart';
+import 'package:my_office_th_app/models/item_stock.dart';
+import 'package:my_office_th_app/utils/connection.dart';
 
-Future<List<fi.Item>> fetchItems(http.Client client, String itemId, String styleId) async {
-  final response = await client.post(con.Connection.host + '/rest/WsItem',
-      headers: {"Content-Type": "application/json"},
-      body: json.encode({
-        "itemId": "$itemId",
-        "styleId": "$styleId"
-      }));
+class ItemApi {
+  final _httpClient = http.Client();
 
-  print(response.body);
+  Future<List<Item>> fetchItems(String itemId, String styleId) async {
+    List<Item> itemList = new List<Item>();
+    final response = await _httpClient.post(
+        Connection.host + '/rest/WsImpItems',
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({"itemId": "$itemId", "styleId": "$styleId"}));
 
-  //  Code generated for object sdt from genexus.
-  var mapSdt = <Map>[];
+    print('fetchItems >> ' + response.body);
 
-  Map<String, dynamic> mapResponse = json.decode(response.body);
+    /// To get easily the gx response
+    Map<String, dynamic> gxResponse = json.decode(response.body);
 
-  for (var i = 0; i < mapResponse['SdtItems'].length; i++) {
-    mapSdt.add(mapResponse['SdtItems'][i]);
+    /// Genexus response structure
+    var responseList = gxResponse['SdtItems'] as List;
+
+    /// Loading the list from the response
+    itemList = responseList.map((l) => Item.fromJson(l)).toList();
+
+    return itemList;
   }
 
-  var jsonSdt = json.encode(mapSdt);
+  Future<List<Item>> fetchStyles(String styleId) async {
+    print('fetchStyles >> ' + styleId);
+    List<Item> itemList = new List<Item>();
+    final response =
+        await _httpClient.post(Connection.host + '/rest/WsImpEstilos',
+            headers: {"Content-Type": "application/json"},
+            body: json.encode({
+              "styleId": "$styleId",
+            }));
 
-  return compute(parseItems, jsonSdt);
-}
+    print('fetchStyles << ' + response.body);
 
-Future<List<mi.Item>> fetchItemsModel (http.Client client, String itemId, String styleId) async {
-  final response = await client.post(con.Connection.host + '/rest/WsItem',
-      headers: {"Content-Type": "application/json"},
-      body: json.encode({
-        "itemId": "$itemId",
-        "styleId": "$styleId"
-      }));
+    /// To get easily the gx response
+    Map<String, dynamic> gxResponse = json.decode(response.body);
 
-  List<mi.Item> listItem = new List<mi.Item>();
+    /// Genexus response structure
+    var responseList = gxResponse['SdtItems'] as List;
 
-  print('fetchItemsModel >> ' + response.body);
+    /// Loading the list from the response
+    itemList = responseList.map((l) => Item.fromJson(l)).toList();
 
-  Map<String, dynamic> mapResponse = json.decode(response.body);
-
-  for (var i = 0; i < mapResponse['SdtItems'].length; i++) {
-    listItem.add(new mi.Item(
-        mapResponse['SdtItems'][i]['itemId'],
-        mapResponse['SdtItems'][i]['styleId'],
-        mapResponse['SdtItems'][i]['styleName'],
-        mapResponse['SdtItems'][i]['lineName'],
-        mapResponse['SdtItems'][i]['productName'],
-        mapResponse['SdtItems'][i]['seasonName'],
-        mapResponse['SdtItems'][i]['priceIva'],
-        mapResponse['SdtItems'][i]['priceNoIva'],
-        mapResponse['SdtItems'][i]['imagePath'],
-        mapResponse['SdtItems'][i]['listImagesPath'].cast<String>(),
-        mapResponse['SdtItems'][i]['rank']));
+    return itemList;
   }
 
-  return listItem;
-}
+  Future<Item> fetchItem(String itemId, String styleId) async {
+    print('fetchItem >> $itemId $styleId');
 
-Future<List<fi.Item>> fetchStyles(http.Client client, String styleId) async {
-  final response = await client.post(con.Connection.host + '/rest/WsEstilo',
-      headers: {"Content-Type": "application/json"},
-      body: json.encode({
-        "styleId": "$styleId",
-      }));
+    Item item;
+    final response = await _httpClient.post(
+        Connection.host + '/rest/WsImpItems',
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({"itemId": "$itemId", "styleId": "$styleId"}));
 
-  print(response.body);
+    print('fetchItem << ' + response.body);
 
-  //  Code generated for object sdt from genexus.
-  var mapSdt = <Map>[];
+    /// To get easily the gx response
+    Map<String, dynamic> gxResponse = json.decode(response.body);
 
-  Map<String, dynamic> mapResponse = json.decode(response.body);
+    item = Item(
+        gxResponse['SdtItems'][0]['itemId'],
+        gxResponse['SdtItems'][0]['styleId'],
+        gxResponse['SdtItems'][0]['styleName'],
+        gxResponse['SdtItems'][0]['lineName'],
+        gxResponse['SdtItems'][0]['productName'],
+        gxResponse['SdtItems'][0]['seasonName'],
+        gxResponse['SdtItems'][0]['priceIva'],
+        gxResponse['SdtItems'][0]['priceNoIva'],
+        gxResponse['SdtItems'][0]['imagePath'],
+        gxResponse['SdtItems'][0]['listImagesPath'].cast<String>(),
+        gxResponse['SdtItems'][0]['rank']);
 
-  for (var i = 0; i < mapResponse['SdtItems'].length; i++) {
-    mapSdt.add(mapResponse['SdtItems'][i]);
+    return item;
   }
 
-  var jsonSdt = json.encode(mapSdt);
+  Future<List<ItemStock>> fetchItemStock(
+      String itemId, String localId, String type) async {
+    print('fetchItemStock >> $itemId $localId $type');
 
-  return compute(parseItems, jsonSdt);
-}
+    List<ItemStock> itemStockList = new List<ItemStock>();
+    var response = await _httpClient.post(
+        Connection.host + '/rest/WsImpItemStocks',
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(
+            {"itemId": "$itemId", "BodCodigo": "$localId", "type": "$type"}));
 
-Future<mi.Item> fetchAnItem(http.Client client, String itemId, String styleId) async {
-  mi.Item item;
-  var response = await http.post(con.Connection.host + '/rest/WsItem',
-      headers: {"Content-Type": "application/json"},
-      body: json.encode({"itemId": "$itemId", "styleId": "$styleId"}));
+    print('fetchItemStock << ' + response.body);
 
-  print(response.body);
+    /// To get easily the gx response
+    Map<String, dynamic> gxResponse = json.decode(response.body);
 
-  Map<String, dynamic> mapResponse = json.decode(response.body);
+    /// Genexus response structure
+    var responseList = gxResponse['sdt_inv_estilos_app'] as List;
 
-  for (var i = 0; i < mapResponse['SdtItems'].length; i++) {
-    item = mi.Item(
-        mapResponse['SdtItems'][i]['itemId'],
-        mapResponse['SdtItems'][i]['styleId'],
-        mapResponse['SdtItems'][i]['styleName'],
-        mapResponse['SdtItems'][i]['lineName'],
-        mapResponse['SdtItems'][i]['productName'],
-        mapResponse['SdtItems'][i]['seasonName'],
-        mapResponse['SdtItems'][i]['priceIva'],
-        mapResponse['SdtItems'][i]['priceNoIva'],
-        mapResponse['SdtItems'][i]['imagePath'],
-        mapResponse['SdtItems'][i]['listImagesPath'].cast<String>(),
-        mapResponse['SdtItems'][i]['rank']);
+    /// Loading the list from the response
+    responseList.map((l) {
+      itemStockList.add(ItemStock(
+          l['Color'],
+          l['Talla'],
+          int.parse(l['StockLocal']),
+          int.parse(l['StockOtros']),
+          l['ItmCodigo']));
+    }).toList();
+
+    return itemStockList;
   }
 
-  return item;
-}
+  Future postImageStyle(String styleId, String imageName, String extension, String user,
+      String imageBase64, String size) async {
 
-List<fi.Item> parseItems(String responseBody) {
-  final parsed = json.decode(responseBody).cast<Map<String, dynamic>>();
+    print('postImageStyle >> $styleId $imageName $extension $user $imageBase64');
 
-  return parsed.map<fi.Item>((json) => fi.Item.fromJson(json)).toList();
+    var response = await _httpClient.post(Connection.host + '/rest/WsImpEstImgPost',
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({
+          "styleId": "$styleId",
+          "imgName": "$imageName",
+          "imgExtension": ".jpg",
+          "user": "$user",
+          "image64": "$imageBase64",
+          "size": "$size"
+        }));
+
+    print('postImageStyle << ${response.body}');
+  }
 }

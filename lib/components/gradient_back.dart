@@ -1,18 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:my_office_th_app/blocs/bloc_provider.dart';
+import 'package:my_office_th_app/blocs/setting_bloc.dart';
 
+// ignore: must_be_immutable
 class GradientBack extends StatelessWidget {
-
+  SettingsBloc _settingsBloc;
   String title = 'Title';
   String subtitleOne = 'Subtitle One';
   String subtitleTwo = 'Subtitle Two';
+  MediaQueryData _queryData;
+  double _queryMediaHeight, _queryMediaWidth;
 
   GradientBack(this.title, this.subtitleOne, this.subtitleTwo);
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+    _settingsBloc = BlocProvider.of<SettingsBloc>(context);
+    _queryData = _settingsBloc.queryData.value;
+    _queryMediaHeight = _queryData.size.height;
+    _queryMediaWidth = _queryData.size.width;
     return Container(
-      height: 350.0,
+      height: _queryMediaHeight * 0.9,
       decoration: BoxDecoration(
           gradient: LinearGradient(
               colors: [
@@ -38,7 +46,7 @@ class GradientBack extends StatelessWidget {
               this.title,
               style: TextStyle(
                   color: Colors.white,
-                  fontSize: 20.0,
+                  fontSize: _queryMediaWidth * 0.06,
                   fontFamily: "Lato",
                   fontWeight: FontWeight.bold
               ),
@@ -47,7 +55,7 @@ class GradientBack extends StatelessWidget {
               this.subtitleOne,
               style: TextStyle(
                   color: Colors.white,
-                  fontSize: 16.0,
+                  fontSize: _queryMediaWidth * 0.05,
                   fontFamily: "Lato",
                   fontWeight: FontWeight.bold
               ),
@@ -56,7 +64,7 @@ class GradientBack extends StatelessWidget {
               this.subtitleTwo,
               style: TextStyle(
                   color: Colors.white,
-                  fontSize: 16.0,
+                  fontSize: _queryMediaWidth * 0.04,
                   fontFamily: "Lato",
                   fontWeight: FontWeight.bold
               ),

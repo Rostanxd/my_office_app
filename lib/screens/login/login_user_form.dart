@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
-
-import 'package:http/http.dart' as http;
-
-import 'package:my_office_th_app/models/user.dart' as mu;
-import 'package:my_office_th_app/screens/home/index.dart';
-import 'package:my_office_th_app/screens/login/login_state_container.dart';
-import 'package:my_office_th_app/services/fetch_users.dart' as su;
-import 'package:my_office_th_app/utils/connection.dart';
+import 'package:my_office_th_app/blocs/bloc_provider.dart';
+import 'package:my_office_th_app/blocs/login_bloc.dart';
+import 'package:my_office_th_app/blocs/setting_bloc.dart';
 
 class LoginUserForm extends StatefulWidget {
   @override
@@ -16,194 +11,175 @@ class LoginUserForm extends StatefulWidget {
 }
 
 class _LoginUserFormState extends State<LoginUserForm> {
-  final _formKey = GlobalKey<FormState>();
+  SettingsBloc _settingsBloc;
+  LoginBloc _loginBloc;
+  MediaQueryData _queryData;
+  double _queryMediaWidth;
 
-  mu.User _myUser;
-  String _user, _password;
-  bool _login = false;
-
-  void _checkLogin(BuildContext context) {
-//    Getting data from the item sate container
-    final container = LoginStateContainer.of(context);
-
-//    Change the state to true to keep the circle loading
-    setState(() {
-      _login = true;
-    });
-
-    var _userLogged = su.fetchAnUser(http.Client(), _user, _password);
-
-//    When I have a response from the future, take the result to evaluate.
-    _userLogged.timeout(new Duration(seconds: Connection.timeOutSec)).then(
-        (result) {
-      setState(() {
-        this._login = false;
-        if (result != null) {
-          this._myUser = result;
-
-          if (this._myUser.local.id.isEmpty) {
-//            Update the user inherited
-            container.updateUser(_myUser);
-          } else {
-//            Update the user and local inherited
-            container.updateUser(_myUser);
-            container.updateHolding(_myUser.holding);
-            container.updateLogin(_myUser.local);
-
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => HomePage()));
-          }
-        } else {
-          Scaffold.of(context)
-              .showSnackBar(SnackBar(content: Text("User login failed!")));
-        }
-      });
-    }, onError: (error) {
-      setState(() => this._login = false);
-      Scaffold.of(context)
-          .showSnackBar(SnackBar(content: Text("Connection time-out!")));
-    }).catchError((error) {
-      print(error);
-
-      setState(() => this._login = false);
-      Scaffold.of(context)
-          .showSnackBar(SnackBar(content: Text("Error connection!")));
-    });
+  @override
+  void initState() {
+    print('LoginUserFormState >> initState');
+    super.initState();
   }
 
-  Column _buildingColumn(BuildContext context) {
-    var formColumn = new Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: <Widget>[
-        new TextFormField(
-          decoration: InputDecoration(
-              labelText: 'USER',
-              labelStyle: TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey),
-              focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xff011e41)))),
-          validator: (val) => val.isEmpty ? 'User is empty' : null,
-          onSaved: (val) => this._user = val,
-        ),
-        SizedBox(height: 20.0),
-        new TextFormField(
-          decoration: InputDecoration(
-              labelText: 'PASSWORD',
-              labelStyle: TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey),
-              focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xff011e41)))),
-          validator: (val) => val.isEmpty
-              ? 'Please insert your password to '
-                  'continue...'
-              : null,
-          onSaved: (val) => _password = val,
-          obscureText: true,
-        ),
-        SizedBox(height: 5.0),
-        Container(
-          alignment: Alignment(1.0, 0.0),
-          padding: EdgeInsets.only(top: 15.0, left: 20.0),
-          child: InkWell(
-            child: Text(
-              'Forgot Password',
-              style: TextStyle(
-                  color: Color(0xFFeb2227),
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Montserrat',
-                  decoration: TextDecoration.underline),
-            ),
-          ),
-        ),
-        SizedBox(height: 40.0),
-      ],
-    );
+  @override
+  void didChangeDependencies() {
+    print('LoginUserFormState >> didChangeDependencies');
+    _queryData = MediaQuery.of(context);
+    _queryMediaWidth = _queryData.size.width;
 
-    if (_login) {
-      formColumn.children.add(new Container(
-        height: 40.0,
-        color: Colors.transparent,
-        child: new CircularProgressIndicator(),
-      ));
-    } else {
-      formColumn.children.add(
-        new Container(
-          height: 40.0,
-          child: Material(
-            borderRadius: BorderRadius.circular(20.0),
-            shadowColor: Color(0xff212121),
-            color: Color(0xff011e41),
-            elevation: 7.0,
-            child: GestureDetector(
-              onTap: () {
-                if (_formKey.currentState.validate()) {
-                  _formKey.currentState.save();
-                  _checkLogin(context);
-                }
-              },
-              child: Center(
-                child: Text(
-                  'LOGIN',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Montserrat'),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-    }
+    /// Getting the setting bloc
+    _settingsBloc = BlocProvider.of(context);
 
-//    Adding the other buttons
-    formColumn.children.add(new SizedBox(height: 20.0));
+    /// Searching for the login bloc in the provider
+    _loginBloc = BlocProvider.of<LoginBloc>(context);
 
-//    Facebook button
-    /*
-    formColumn.children.add(new Container(
-      height: 40.0,
-      color: Colors.transparent,
-      child: Container(
-        decoration: BoxDecoration(
-            border: Border.all(
-                color: Colors.black, style: BorderStyle.solid, width: 1.0),
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(20.0)),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Center(
-              child: ImageIcon(AssetImage('assets/img/facebook.png')),
-            ),
-            SizedBox(width: 10.0),
-            Center(
-              child: Text('Log in with facebook',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, fontFamily: 'Montserrat')),
-            )
-          ],
-        ),
-      ),
-    ));
-    */
-
-    return formColumn;
+    super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    return (new Container(
+    print('LoginUserFormState >> build');
+
+    return (Container(
       padding: EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0),
-      child: new Column(
+      child: Column(
         children: <Widget>[
-          new Form(key: _formKey, child: _buildingColumn(context)),
+          Form(
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              _idField(),
+              SizedBox(height: 20.0),
+              _passwordField(),
+              SizedBox(height: 5.0),
+              _forgotInkWell(),
+              SizedBox(height: 40.0),
+              _streamButtonSubmit(context)
+            ],
+          )),
         ],
       ),
     ));
+  }
+
+  /// Field for the user's Id
+  Widget _idField() {
+    return StreamBuilder(
+      stream: _loginBloc.id,
+      builder: (context, snapshot) {
+        return TextField(
+          onChanged: _loginBloc.changeId,
+          decoration: InputDecoration(
+              labelText: 'USUARIO',
+              labelStyle: TextStyle(
+                  fontFamily: 'Montserrat',
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey),
+              focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xff011e41))),
+              errorText: snapshot.error),
+        );
+      },
+    );
+  }
+
+  /// Field for the user's password
+  Widget _passwordField() {
+    return StreamBuilder(
+      stream: _loginBloc.password,
+      builder: (context, snapshot) {
+        return TextField(
+          onChanged: _loginBloc.changePassword,
+          obscureText: true,
+          decoration: InputDecoration(
+              labelText: 'CLAVE',
+              labelStyle: TextStyle(
+                  fontFamily: 'Montserrat',
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey),
+              focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xff011e41))),
+              errorText: snapshot.error),
+        );
+      },
+    );
+  }
+
+  /// Inkwell to call a interface for the user when he forgot his password.
+  Widget _forgotInkWell() {
+    return Container(
+      alignment: Alignment(1.0, 0.0),
+      padding: EdgeInsets.only(top: 15.0, left: 20.0),
+      child: InkWell(
+        child: Text(
+          'Olvidé mi clave',
+          style: TextStyle(
+              color: Color(0xFFeb2227),
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Montserrat',
+              decoration: TextDecoration.underline),
+        ),
+        onTap: () {
+          Scaffold.of(context)
+              .showSnackBar(SnackBar(content: Text('En desarrollo!')));
+        },
+      ),
+    );
+  }
+
+  /// Submit button for the form
+  Widget _submitButton(BuildContext context) {
+    return StreamBuilder(
+        stream: _loginBloc.submitValid,
+        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+          return InkWell(
+            onTap: () {
+              if (snapshot.data != null && snapshot.data) {
+                _loginBloc.logIn(
+                    _settingsBloc.device.value, _settingsBloc.myIp.value);
+              }
+            },
+            child: Container(
+              height: 40.0,
+              width: _queryMediaWidth * 0.75,
+              child: Material(
+                borderRadius: BorderRadius.circular(20.0),
+                shadowColor: Color(0xff212121),
+                color: snapshot.data != null
+                    ? snapshot.data ? Color(0xff011e41) : Colors.grey
+                    : Colors.grey,
+                elevation: 7.0,
+                child: Center(
+                    child: Text(
+                      'CONFIRMAR',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Montserrat'),
+                    ),
+                  ),
+              ),
+            ),
+          );
+        });
+  }
+
+  /// Streamer to build button login or circular progress indicator
+  Widget _streamButtonSubmit(BuildContext context) {
+    return StreamBuilder(
+      stream: _loginBloc.logging,
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        return snapshot.hasData
+            ? snapshot.data
+                ? Container(
+                    height: 40.0,
+                    color: Colors.transparent,
+                    child: CircularProgressIndicator(),
+                  )
+                : _submitButton(context)
+            : _submitButton(context);
+      },
+    );
   }
 }
