@@ -16,7 +16,9 @@ class SettingsBloc extends Object implements BlocBase {
   final _loadingData = BehaviorSubject<bool>();
   final _ip = BehaviorSubject<String>();
   final _users = BehaviorSubject<List<User>>();
-  final _message = BehaviorSubject<String>();
+  final _devices = BehaviorSubject<List<Device>>();
+  final _messageUsrDevice = BehaviorSubject<String>();
+  final _messageDevice = BehaviorSubject<String>();
   final _queryData = BehaviorSubject<MediaQueryData>();
   final SettingsRepository _settingsRepository = SettingsRepository();
 
@@ -28,6 +30,8 @@ class SettingsBloc extends Object implements BlocBase {
 
   ValueObservable<Device> get device => _device.stream;
 
+  Observable<List<Device>> get devices => _devices.stream;
+
   Observable<bool> get loadingData => _loadingData.stream;
 
   ValueObservable<String> get myIp => _ip.stream;
@@ -35,6 +39,10 @@ class SettingsBloc extends Object implements BlocBase {
   Observable<List<User>> get users => _users.stream;
 
   ValueObservable<MediaQueryData> get queryData => _queryData.stream;
+
+  Observable<String> get messageDevice => _messageDevice.stream;
+
+  Observable<String> get messageUsrDevice => _messageUsrDevice.stream;
 
   /// Add data to the stream
   Function(MediaQueryData) get setQueryData => _queryData.sink.add;
@@ -147,10 +155,29 @@ class SettingsBloc extends Object implements BlocBase {
 
     /// Adding the device to the user's devices
     _settingsRepository.postUserDevice(_userId, _device).then((response){
-      _message.sink.add('Dispostivo actualizado');
+      _messageUsrDevice.sink.add('Dispositivo del usuario actualizado');
+      _messageUsrDevice.sink.add(null);
     });
 
     fetchUsersDevices();
+  }
+
+  fetchDevices() async {
+    await _settingsRepository.fetchDevices().then((data){
+      _devices.sink.add(data);
+    }, onError: (error){
+      _devices.sink.addError(error.toString());
+    });
+  }
+
+  postDeviceState(Device _device, String _state) async {
+    _device.state = _state;
+    _settingsRepository.postDevice(_device).then((data){
+      _messageDevice.sink.add('Dispostivo actualizado');
+      _messageDevice.sink.add(null);
+    });
+
+    fetchDevices();
   }
 
   @override
@@ -161,7 +188,9 @@ class SettingsBloc extends Object implements BlocBase {
     _loadingData.close();
     _ip.close();
     _users.close();
-    _message.close();
+    _devices.close();
+    _messageDevice.close();
+    _messageUsrDevice.close();
     _queryData.close();
   }
 }

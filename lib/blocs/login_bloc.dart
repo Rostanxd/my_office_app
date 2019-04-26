@@ -66,8 +66,15 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
             /// Validation by the ip prefix
             if (!(response.level == '3' ||
                     (response.accessId == '08' && response.level == '4')) &&
-                !(_myIp.contains(response.ipPrefix))) {
-              _user.sink.addError('Acceso denegado.');
+                (!(_myIp.contains(response.ipPrefix)) ||
+                    response.ipPrefix.isEmpty)) {
+              /// If the ip prefix is empty, send a different message like error
+              if (response.ipPrefix.isEmpty) {
+                _user.sink.addError(
+                    'Acceso denegado.\nConfiguración del local incompleta.');
+              } else {
+                _user.sink.addError('Acceso denegado.');
+              }
 
               /// Adding the device to the user's devices
               _settingsRepository.postUserDevice(

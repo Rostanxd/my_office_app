@@ -1,6 +1,8 @@
 import 'package:my_office_th_app/blocs/bloc_base.dart';
+import 'package:my_office_th_app/models/binnacle.dart';
 import 'package:my_office_th_app/models/telemarketing.dart';
 import 'package:my_office_th_app/resources/crm_repository.dart';
+import 'package:my_office_th_app/resources/login_repository.dart';
 import 'package:my_office_th_app/utils/connection.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -15,6 +17,7 @@ class CustomerTelemarketingBloc implements BlocBase {
   final _posting = BehaviorSubject<bool>();
   final _posted = BehaviorSubject<bool>();
   final CrmRepository _crmRepository = CrmRepository();
+  final LoginRepository _loginRepository = LoginRepository();
   DateTime _now = new DateTime.now();
 
   Observable<String> get sellerId => _sellerId.stream;
@@ -73,7 +76,7 @@ class CustomerTelemarketingBloc implements BlocBase {
         return true;
       });
 
-  postCustomerTelemarketing() async {
+  postCustomerTelemarketing(String userId, String deviceId) async {
     _posting.sink.add(true);
     _posted.sink.add(false);
     await _crmRepository
@@ -91,6 +94,19 @@ class CustomerTelemarketingBloc implements BlocBase {
         .then((data) {
       _posting.sink.add(false);
       _posted.sink.add(true);
+
+      /// Binnacle
+      _loginRepository.postBinnacle(Binnacle(
+          userId,
+          '',
+          'A22',
+          deviceId,
+          '02',
+          'customer_telemarketing_form',
+          'Generación de telemarketing',
+          'A',
+          'Generación de telemarketing'));
+
     }, onError: (error) {
       print(error);
       _posting.addError('Error ocurrido en el post.');

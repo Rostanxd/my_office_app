@@ -39,7 +39,10 @@ class _CrmHomeState extends State<CrmHome> {
 
     /// Calling API.
     _crmBloc.fetchAllCardInfo(
-        _loginBloc.local.value.id, _loginBloc.user.value.sellerId);
+        _loginBloc.local.value.id,
+        _loginBloc.user.value.accessId == '05'
+            ? _loginBloc.user.value.sellerId
+            : '');
 
     /// Call the scaffold when the stream have a message.
     _crmBloc.message.listen((message) {
@@ -48,14 +51,14 @@ class _CrmHomeState extends State<CrmHome> {
             .showSnackBar(new SnackBar(content: new Text('$message')));
     });
 
-    _crmBloc.customer.listen((data){
+    _crmBloc.customer.listen((data) {
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => BlocProvider(
-                bloc: CustomerDetailBloc(),
-                child: CustomerDetail(data),
-              )));
+                    bloc: CustomerDetailBloc(),
+                    child: CustomerDetail(data),
+                  )));
     });
 
     super.didChangeDependencies();
@@ -428,7 +431,9 @@ class _CrmHomeState extends State<CrmHome> {
                 Container(
                     margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
                     child: Text(
-                      'Venta',
+                      _loginBloc.user.value.accessId == '05'
+                          ? 'Venta Retorno'
+                          : 'Venta',
                       style: TextStyle(
                           color: Colors.greenAccent,
                           fontWeight: FontWeight.bold),

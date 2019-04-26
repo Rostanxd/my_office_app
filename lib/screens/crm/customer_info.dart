@@ -306,7 +306,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
   }
 
   Widget _editingBornDate(bool _editing) {
-    var _textSize = _queryData.size.width * 0.044;
+    var _textSize = _queryData.size.height * 0.023;
     return _editing
         ? Container(
             margin: EdgeInsets.only(left: 20.0, right: 10.0),

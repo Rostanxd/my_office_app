@@ -233,28 +233,28 @@ class _ItemStockCardState extends State<ItemStockCard> {
                       onTap: () {},
                     ),
                   )),
-              Container(
-                  color: f.itemId == _itemDetailsBloc.item.value.itemId
-                      ? Colors.red
-                      : Colors.transparent,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: InkWell(
+              InkWell(
+                onTap: (){
+                  if (f.itemId.isNotEmpty) {
+                    _itemDetailsBloc.changeItemId(f.itemId);
+                    _itemDetailsBloc.changeTypeReport('A');
+                    _itemDetailsBloc.fetchItemStockAll(
+                        f.itemId, _loginBloc.local.value.id);
+                  }
+                },
+                child: Container(
+                    color: f.itemId == _itemDetailsBloc.item.value.itemId
+                        ? Colors.red
+                        : Colors.transparent,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
                       child: Center(
                           child: Text(
                         f.others == 0 ? '' : f.others.toString(),
                         style: _textStyleStock(f, 'O'),
                       )),
-                      onTap: () {
-                        if (f.itemId.isNotEmpty) {
-                          _itemDetailsBloc.changeItemId(f.itemId);
-                          _itemDetailsBloc.changeTypeReport('A');
-                          _itemDetailsBloc.fetchItemStockAll(
-                              f.itemId, _loginBloc.local.value.id);
-                        }
-                      },
-                    ),
-                  )),
+                    )),
+              ),
             ]))
         .toList());
 

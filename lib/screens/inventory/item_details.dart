@@ -55,7 +55,6 @@ class _ItemDetailsState extends State<ItemDetails> {
 
     /// Listening to the bool loading variable
     widget._itemDetailsBloc.loadingImage.listen((data) {
-      print(data);
       if (data)
         _scaffoldGlobalKey.currentState.showSnackBar(SnackBar(
           content: Text('Cargando imágen...'),

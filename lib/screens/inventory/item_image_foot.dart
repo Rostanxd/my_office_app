@@ -27,7 +27,7 @@ class _ItemImageFootState extends State<ItemImageFoot> {
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
-            title: Text('Escoja el origen de la image'),
+            title: Text('Escoja el origen de la imagen'),
             contentPadding: EdgeInsets.all(25.0),
             children: <Widget>[
               RaisedButton(

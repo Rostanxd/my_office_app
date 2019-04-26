@@ -121,12 +121,16 @@ class UserDrawer extends StatelessWidget {
               onTap: () {
                 Navigator.pushNamed(context, '/device_info');
               }),
-          ListTile(
-              title: new Text("Versionamiento"),
-              trailing: new Icon(Icons.insert_drive_file),
-              onTap: () {
-                Navigator.pushNamed(context, '/version_log');
-              }),
+          _loginBloc.user.value.accessId != '01'
+              ? Container(
+                  child: null,
+                )
+              : ListTile(
+                  title: new Text("Versionamiento"),
+                  trailing: new Icon(Icons.insert_drive_file),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/version_log');
+                  }),
           _loginBloc.user.value.accessId != '01'
               ? Container(
                   child: null,

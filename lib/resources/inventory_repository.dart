@@ -20,6 +20,8 @@ class InventoryRepository {
           String itemId, String localId, String type) =>
       itemApi.fetchItemStock(itemId, localId, type);
 
-  Future postImageStyle(styleId, imageName, extension, user, imageBase64) =>
-      itemApi.postImageStyle(styleId, imageName, extension, user, imageBase64);
+  Future postImageStyle(
+          styleId, imageName, extension, user, imageBase64, size) =>
+      itemApi.postImageStyle(
+          styleId, imageName, extension, user, imageBase64, size);
 }

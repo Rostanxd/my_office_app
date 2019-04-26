@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/customer_telemarketing_bloc.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
+import 'package:my_office_th_app/blocs/setting_bloc.dart';
 import 'package:my_office_th_app/models/customer.dart';
 
 class CustomerTelemarketingForm extends StatefulWidget {
@@ -15,6 +16,7 @@ class CustomerTelemarketingForm extends StatefulWidget {
 }
 
 class _CustomerTelemarketingFormState extends State<CustomerTelemarketingForm> {
+  SettingsBloc _settingsBloc;
   LoginBloc _loginBloc;
   TextEditingController _customerIdCtrl = TextEditingController();
   TextEditingController _customerFullName = TextEditingController();
@@ -107,6 +109,7 @@ class _CustomerTelemarketingFormState extends State<CustomerTelemarketingForm> {
   @override
   void didChangeDependencies() {
     print('CustomerTelemarketingForm >> didChangeDependencies');
+    _settingsBloc = BlocProvider.of<SettingsBloc>(context);
     _loginBloc = BlocProvider.of<LoginBloc>(context);
 
     widget._customerTelemarketingBloc.changeCustomerId(widget._customer.id);
@@ -310,7 +313,9 @@ class _CustomerTelemarketingFormState extends State<CustomerTelemarketingForm> {
                           ? IconButton(
                               onPressed: () {
                                 widget._customerTelemarketingBloc
-                                    .postCustomerTelemarketing();
+                                    .postCustomerTelemarketing(
+                                        _loginBloc.user.value.user,
+                                        _settingsBloc.device.value.id);
                               },
                               icon: Icon(
                                 Icons.save,
@@ -318,7 +323,7 @@ class _CustomerTelemarketingFormState extends State<CustomerTelemarketingForm> {
                               ),
                             )
                           : IconButton(
-                              onPressed: (){},
+                              onPressed: () {},
                               icon: Icon(
                                 Icons.save,
                                 color: Colors.grey,

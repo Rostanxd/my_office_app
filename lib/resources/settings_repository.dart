@@ -11,6 +11,8 @@ class SettingsRepository {
 
   Future<Device> fetchDeviceById(String id) => deviceApi.fetchDevice(id);
 
+  Future<List<Device>> fetchDevices() => deviceApi.fetchDevices();
+
   Future<String> postDevice(Device device) => deviceApi.postDevice(device);
 
   Future<String> postUserDevice(String userId, Device device) =>

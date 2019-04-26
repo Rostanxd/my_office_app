@@ -118,7 +118,7 @@ class ItemApi {
   }
 
   Future postImageStyle(String styleId, String imageName, String extension, String user,
-      String imageBase64) async {
+      String imageBase64, String size) async {
 
     print('postImageStyle >> $styleId $imageName $extension $user $imageBase64');
 
@@ -129,7 +129,8 @@ class ItemApi {
           "imgName": "$imageName",
           "imgExtension": ".jpg",
           "user": "$user",
-          "image64": "$imageBase64"
+          "image64": "$imageBase64",
+          "size": "$size"
         }));
 
     print('postImageStyle << ${response.body}');

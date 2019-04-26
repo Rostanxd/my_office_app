@@ -7,6 +7,7 @@ import 'package:my_office_th_app/models/item.dart';
 import 'package:my_office_th_app/models/item_stock.dart';
 import 'package:my_office_th_app/resources/inventory_repository.dart';
 import 'package:my_office_th_app/resources/login_repository.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
 
 class ItemDetailsBloc extends Object implements BlocBase {
@@ -152,6 +153,7 @@ class ItemDetailsBloc extends Object implements BlocBase {
   }
 
   uploadStyleImage(String _userId, String _deviceId, File imageFile) async {
+    File _imageFileTmp;
     File _photoThumb;
 
     /// Control if we don't have any photo captured
@@ -163,45 +165,63 @@ class ItemDetailsBloc extends Object implements BlocBase {
 
     /// Try catch to handle error with the read.
     try {
-      im.Image _image = im.decodeImage(imageFile.readAsBytesSync());
-      im.Image _thumbnail = im.copyResize(_image, 500);
+      /// Creating the image in the temporary path
+      Directory _systemTempDir;
+      await getTemporaryDirectory().then((path) async {
+        _systemTempDir = path;
+        _imageFileTmp = await File(
+                '${_systemTempDir.path}/${imageFile.path.split("/").last}.jpg')
+            .create();
 
-      print(imageFile.path);
+        /// Writing temporary file from the original file.
+        await _imageFileTmp
+            .writeAsBytes(imageFile.readAsBytesSync())
+            .then((file) async {
+          im.Image _image = im.decodeImage(_imageFileTmp.readAsBytesSync());
+          im.Image _thumbnail = im.copyResize(_image, 500);
+          _photoThumb = _imageFileTmp
+            ..writeAsBytesSync(im.encodeJpg(_thumbnail, quality: 50));
 
-      _photoThumb = imageFile
-        ..writeAsBytesSync(im.encodeJpg(_thumbnail, quality: 50));
+          await file.length().then((size) async {
+            /// Calling the API to post the image.
+            await _inventoryRepository
+                .postImageStyle(
+                    _item.value.styleId,
+                    _photoThumb.path.split("/").last,
+                    '.jpg',
+                    _userId,
+                    base64Encode(_photoThumb.readAsBytesSync()),
+                    size.toString())
+                .then((data) {
+              _imageFile.sink.add(_imageFileTmp);
+              _loadingImage.sink.add(false);
 
-      /// Calling the API to post the image.
-      await _inventoryRepository
-          .postImageStyle(_item.value.styleId, _photoThumb.path.split("/").last,
-              '.jpg', _userId, base64Encode(_photoThumb.readAsBytesSync()))
-          .then((data) {
-        _imageFile.sink.add(imageFile);
-        _loadingImage.sink.add(false);
+              /// Binnacle
+              _loginRepository.postBinnacle(Binnacle(
+                  _userId,
+                  '',
+                  'A22',
+                  _deviceId,
+                  '02',
+                  'item_image_foot',
+                  'Carga foto de estilo.',
+                  'A',
+                  'Carga foto del estilo ${_item.value.styleId}.'));
 
-        /// Binnacle
-        _loginRepository.postBinnacle(Binnacle(
-            _userId,
-            '',
-            'A22',
-            _deviceId,
-            '02',
-            'item_image_foot',
-            'Carga foto de estilo.',
-            'A',
-            'Carga foto del estilo ${_item.value.styleId}.'));
-
-        /// As we load a new image to the item, we need to get again
-        /// the item's image list and rebuild the info detail of the item.
-        fetchItem(_itemId.value, '');
-      }, onError: (error) {
-        _loadingImage.sink.add(false);
-        _imageFile.sink.addError('No se ha podido cargar la imagen.');
-        _imageFile.sink.addError(error.runtimeType.toString());
-      }).catchError((error) {
-        _loadingImage.sink.add(false);
-        _imageFile.sink.addError('No se ha podido cargar la imagen.');
-        _imageFile.sink.addError(error.runtimeType.toString());
+              /// As we load a new image to the item, we need to get again
+              /// the item's image list and rebuild the info detail of the item.
+              fetchItem(_itemId.value, '');
+            });
+          }, onError: (error) {
+            _loadingImage.sink.add(false);
+            _imageFile.sink.addError('No se ha podido cargar la imagen.');
+            _imageFile.sink.addError(error.runtimeType.toString());
+          }).catchError((error) {
+            _loadingImage.sink.add(false);
+            _imageFile.sink.addError('No se ha podido cargar la imagen.');
+            _imageFile.sink.addError(error.runtimeType.toString());
+          });
+        });
       });
     } catch (error) {
       print(error.toString());

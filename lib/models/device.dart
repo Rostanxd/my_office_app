@@ -15,6 +15,8 @@ class Device extends Object {
      this.isPhysic, this.userCreated, this.dateCreated, this.userUpdated,
      this.dateUpdated);
 
+
+
  Device.fromJson(Map<String, dynamic> json){
    this.id = json['id'];
    this.state = json['state'];

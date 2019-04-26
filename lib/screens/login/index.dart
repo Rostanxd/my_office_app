@@ -32,9 +32,6 @@ class _MyLoginPageState extends State<MyLoginPage> {
   /// Function to call the next page
   void _moveNextPage(User user) {
     if (!(user.level == '3' || (user.accessId == '08' && user.level == '4'))) {
-      print(user.holding.name);
-      print(user.local.name);
-
       widget._loginBloc.changeCurrentHolding(user.holding);
       widget._loginBloc.changeCurrentLocal(user.local);
 
