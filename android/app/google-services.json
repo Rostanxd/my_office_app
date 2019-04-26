@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "79205300805",
+    "firebase_url": "https://smart-sales-force-th-ww.firebaseio.com",
+    "project_id": "smart-sales-force-th-ww",
+    "storage_bucket": "smart-sales-force-th-ww.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:79205300805:android:913c9f0f355b642d",
+        "android_client_info": {
+          "package_name": "com.rostan.myofficethapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "79205300805-k9jkuqfrse73kq7hl59lqn6fii7gn67g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRgzwGuHYCZToN5wfQfj1WOH-D8fZf13c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "79205300805-k9jkuqfrse73kq7hl59lqn6fii7gn67g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
