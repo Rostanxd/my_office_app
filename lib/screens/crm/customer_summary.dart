@@ -152,7 +152,7 @@ class CustomerSummary extends StatelessWidget {
                       controller: _localCtrl,
                       enabled: false,
                       decoration: InputDecoration(
-                        labelText: 'Alamcén',
+                        labelText: 'Almacén',
                         labelStyle: TextStyle(
                             fontFamily: 'Montserrat',
                             fontWeight: FontWeight.bold,

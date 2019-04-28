@@ -56,9 +56,10 @@ class HomePageState extends State<HomePage> {
         _cardInfoDailySales(),
         _cardInfoCustomersWeek(),
         _cardInfoSalesAnalysis(),
+        _cardInfoTelemarketingWeekly(),
         Container(
           margin: EdgeInsets.only(top: 10.0),
-          height: _queryData.size.height * 0.7,
+          height: _queryData.size.height * 0.75,
           child: _loginBloc.user.value.accessId == '05'
               ? WebView(
                   javascriptMode: JavascriptMode.unrestricted,
@@ -215,6 +216,31 @@ class HomePageState extends State<HomePage> {
                 snapshot.data.subtitle1,
                 snapshot.data.subtitle2)
             : _cardDataLoading(_color1, _color2, 'Análisis de ventas...');
+      },
+    );
+  }
+
+  Widget _cardInfoTelemarketingWeekly() {
+    final _color1 = Color(0xFF0033CC);
+    final _color2 = Color(0xFF395CBE);
+    return StreamBuilder<CardInfo>(
+      stream: _homeBloc.cardTelemarketingWeekly,
+      builder: (BuildContext context, AsyncSnapshot<CardInfo> snapshot) {
+        if (snapshot.hasError)
+          _cardData('', Icon(Icons.person), _color1, _color2,
+              'Telemarketing Semanal', snapshot.error, '', '');
+        return snapshot.hasData
+            ? _cardData(
+                '',
+                Icon(Icons.person),
+                _color1,
+                _color2,
+                snapshot.data.title1,
+                snapshot.data.title2,
+                snapshot.data.subtitle1,
+                snapshot.data.subtitle2)
+            : _cardDataLoading(
+                _color1, _color2, 'Telemarketing de la semana...');
       },
     );
   }

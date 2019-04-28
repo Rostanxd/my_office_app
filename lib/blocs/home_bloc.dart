@@ -14,6 +14,7 @@ class HomeBloc extends Object with HomeValidator implements BlocBase {
   final _cardDailySales = BehaviorSubject<CardInfo>();
   final _cardCustomersWeek = BehaviorSubject<CardInfo>();
   final _cardSalesAnalysis = BehaviorSubject<CardInfo>();
+  final _cardTelemarketingWeekly = BehaviorSubject<CardInfo>();
   final HomeRepository _repository = HomeRepository();
 
   /// Retrieve data from the stream
@@ -32,14 +33,22 @@ class HomeBloc extends Object with HomeValidator implements BlocBase {
 
   Observable<CardInfo> get cardSalesAnalysis => _cardSalesAnalysis.stream;
 
-  Stream<bool> get refreshHome => Observable.combineLatest5(
-      _cardMonthlySales,
-      _cardWeeklySales,
-      _cardDailySales,
-      _cardCustomersWeek,
-      _cardSalesAnalysis,
-      (a, b, c, d, e) {
-        if (a != null && b != null && c != null && d != null && e != null){
+  Observable<CardInfo> get cardTelemarketingWeekly =>
+      _cardTelemarketingWeekly.stream;
+
+  Stream<bool> get refreshHome => Observable.combineLatest6(
+          _cardMonthlySales,
+          _cardWeeklySales,
+          _cardDailySales,
+          _cardCustomersWeek,
+          _cardSalesAnalysis,
+          _cardTelemarketingWeekly, (a, b, c, d, e, f) {
+        if (a != null &&
+            b != null &&
+            c != null &&
+            d != null &&
+            e != null &&
+            f != null) {
           return true;
         } else {
           return false;
@@ -76,12 +85,14 @@ class HomeBloc extends Object with HomeValidator implements BlocBase {
     _cardDailySales.sink.add(null);
     _cardCustomersWeek.sink.add(null);
     _cardSalesAnalysis.sink.add(null);
+    _cardTelemarketingWeekly.sink.add(null);
 
     fetchMonthlySales(localId, sellerId);
     fetchWeeklySales(localId, sellerId);
     fetchDailySales(localId, sellerId);
     fetchCustomersWeek(localId, sellerId);
     fetchSalesAnalysis(localId, sellerId);
+    fetchTelemarketingWeekly(localId, sellerId);
   }
 
   fetchMonthlySales(String localId, String sellerId) async {
@@ -164,6 +175,18 @@ class HomeBloc extends Object with HomeValidator implements BlocBase {
     });
   }
 
+  fetchTelemarketingWeekly(String localId, String sellerId) async {
+    _cardTelemarketingWeekly.sink.add(null);
+    await _repository
+        .fetchCardInfo(localId, sellerId, 'T')
+        .timeout(Duration(seconds: Connection.timeOutSec))
+        .then((response) {
+      _cardTelemarketingWeekly.sink.add(response);
+    }, onError: (error) {
+      _cardTelemarketingWeekly.sink.addError(error.toString());
+    });
+  }
+
   /// To close the stream
   dispose() {
     _assistance.close();
@@ -173,6 +196,7 @@ class HomeBloc extends Object with HomeValidator implements BlocBase {
     _cardDailySales.close();
     _cardCustomersWeek.close();
     _cardSalesAnalysis.close();
+    _cardTelemarketingWeekly.close();
   }
 }
 
