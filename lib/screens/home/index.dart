@@ -56,7 +56,7 @@ class HomePageState extends State<HomePage> {
         _cardInfoDailySales(),
         _cardInfoCustomersWeek(),
         _cardInfoSalesAnalysis(),
-        _cardInfoTelemarketingWeekly(),
+//        _cardInfoTelemarketingWeekly(),
         Container(
           margin: EdgeInsets.only(top: 10.0),
           height: _queryData.size.height * 0.75,

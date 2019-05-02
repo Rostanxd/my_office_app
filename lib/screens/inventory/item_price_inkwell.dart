@@ -17,7 +17,7 @@ class ItemPriceInkwell extends StatefulWidget {
 class _ItemPriceInkwellState extends State<ItemPriceInkwell> {
   SettingsBloc _settingsBloc;
   ItemDetailsBloc _itemDetailsBloc;
-  bool _pressed = false;
+  bool _pressed = true;
   MediaQueryData _queryData;
   double _queryMediaWidth;
 
