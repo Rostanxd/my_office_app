@@ -12,6 +12,7 @@ class CustomerSummary extends StatelessWidget {
   LoginBloc _loginBloc;
   MediaQueryData _queryData;
   CustomerDetailBloc _customerDetailBloc;
+  WebViewController _controller;
   TextEditingController _dateCtrl = TextEditingController();
   TextEditingController _sellerCtrl = TextEditingController();
   TextEditingController _localCtrl = TextEditingController();
@@ -189,11 +190,10 @@ class CustomerSummary extends StatelessWidget {
         height: _queryData.size.height * 0.7,
         child: WebView(
           javascriptMode: JavascriptMode.unrestricted,
-          initialUrl:
-              'http://info.thgye.com.ec/VtaClienteResumen.html?'
+          initialUrl: 'http://info.thgye.com.ec/VtaClienteResumen.html?'
               'holdingId=${_loginBloc.holding.value.id}&customerId=${customer.id}',
           onWebViewCreated: (WebViewController webViewController) {
-//            _controller = webViewController;
+            _controller = webViewController;
           },
         ));
   }

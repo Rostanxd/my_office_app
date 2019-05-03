@@ -154,6 +154,31 @@ class _DeviceInfoState extends State<DeviceInfo> {
         ),
         Divider(),
         ListTile(
+          title: Text('Name'),
+          subtitle: Text(data.name),
+        ),
+        Divider(),
+        ListTile(
+          title: Text('System name'),
+          subtitle: Text(data.systemName),
+        ),
+        Divider(),
+        ListTile(
+          title: Text('System version'),
+          subtitle: Text(data.systemVersion),
+        ),
+        Divider(),
+        ListTile(
+          title: Text('Localized model'),
+          subtitle: Text(data.localizedModel),
+        ),
+        Divider(),
+        ListTile(
+          title: Text('Is physical device?'),
+          subtitle: Text(data.isPhysicalDevice.toString()),
+        ),
+        Divider(),
+        ListTile(
           title: Text('Ip'),
           subtitle: Text(_settingsBloc.myIp.value),
         ),
