@@ -48,7 +48,7 @@ dependencies:
   device_info: ^0.3.0
 
   # To get ip address
-  #get_ip: ^0.3.0
+  get_ip: ^0.2.0
 
   # To call resources like web, email and telephone default from device
   url_launcher: ^5.0.2

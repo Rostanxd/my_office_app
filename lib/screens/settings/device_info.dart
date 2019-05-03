@@ -141,6 +141,23 @@ class _DeviceInfoState extends State<DeviceInfo> {
   }
 
   Widget _deviceIosInfo(IosDeviceInfo data) {
-    return Container();
+    return ListView(
+      children: <Widget>[
+        ListTile(
+          title: Text('Model'),
+          subtitle: Text(data.model),
+        ),
+        Divider(),
+        ListTile(
+          title: Text('Id'),
+          subtitle: Text(data.identifierForVendor),
+        ),
+        Divider(),
+        ListTile(
+          title: Text('Ip'),
+          subtitle: Text(_settingsBloc.myIp.value),
+        ),
+      ],
+    );
   }
 }
