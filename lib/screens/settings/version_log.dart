@@ -22,6 +22,7 @@ class VersionLog extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          _controller.clearCache();
           _controller.reload();
         },
         child: Icon(Icons.refresh),

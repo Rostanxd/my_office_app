@@ -144,7 +144,7 @@ class _InventoryHomeState extends State<InventoryHome> {
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.refresh),
           onPressed: () {
-            //  _controller.clearCache();
+            _controller.clearCache();
             _controller.reload();
           }),
     );

@@ -30,25 +30,25 @@ dependencies:
   datetime_picker_formfield: ^0.1.8
 
   # To use bar code scanner
-  barcode_scan: ^0.0.8
+  barcode_scan: ^1.0.0
 
   # Using this version of image_picker because it's compatible with AndroidX
-  image_picker: ^0.4.12+1
+  image_picker: ^0.6.0
 
-  # To manipulate the image from the camra or gallery
+  # To manipulate the image from the camera or gallery
   image: ^2.0.7
 
   # To use the web view widget
-  webview_flutter: ^0.2.0
+  webview_flutter: ^0.3.6
 
   # To implement RxDart and use BLoC Pattern
-  rxdart: ^0.19.0
+  rxdart: ^0.20.0
 
   # To access device information
-  device_info: ^0.3.0
+  device_info: ^0.4.0
 
   # To get ip address
-  get_ip: ^0.2.0
+  get_ip: ^0.3.0
 
   # To call resources like web, email and telephone default from device
   url_launcher: ^5.0.2
@@ -57,7 +57,7 @@ dependencies:
   flare_flutter:
 
   # To use temporary path
-  path_provider: ^0.5.0
+  path_provider: ^0.5.0+1
 
   # To define the app icon
   flutter_launcher_icons: ^0.7.0

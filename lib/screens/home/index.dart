@@ -88,6 +88,7 @@ class HomePageState extends State<HomePage> {
                   onPressed: () {
                     _homeBloc.fetchAllCardInfo(_loginBloc.local.value.id,
                         _loginBloc.user.value.sellerId);
+                    _controller.clearCache();
                     _controller.reload();
                   })
               : FloatingActionButton(

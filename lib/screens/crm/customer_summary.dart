@@ -192,9 +192,7 @@ class CustomerSummary extends StatelessWidget {
           initialUrl:
               'http://info.thgye.com.ec/VtaClienteResumen.html?'
               'holdingId=${_loginBloc.holding.value.id}&customerId=${customer.id}',
-          onWebViewCreated: (WebViewController webViewController) {
-//            _controller = webViewController;
-          },
+          onWebViewCreated: (WebViewController webViewController) {},
         ));
   }
 }
