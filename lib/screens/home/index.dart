@@ -64,7 +64,7 @@ class HomePageState extends State<HomePage> {
               ? WebView(
                   javascriptMode: JavascriptMode.unrestricted,
                   initialUrl: 'http://info.thgye.com.ec/VtaSemanalCom.html?'
-                      'sellerId=${_loginBloc.user.value.sellerId}&localId=${_loginBloc.local.value.id}',
+                    'sellerId=${_loginBloc.user.value.sellerId}&localId=${_loginBloc.local.value.id}',
                   onWebViewCreated: (WebViewController webViewController) {
                     _controller = webViewController;
                   },
@@ -72,7 +72,7 @@ class HomePageState extends State<HomePage> {
               : WebView(
                   javascriptMode: JavascriptMode.unrestricted,
                   initialUrl: 'http://info.thgye.com.ec/VtaSemanalCom.html?'
-                      'sellerId=&localId=${_loginBloc.local.value.id}',
+                    'sellerId=&localId=${_loginBloc.local.value.id}',
                   onWebViewCreated: (WebViewController webViewController) {
                     _controller = webViewController;
                   },

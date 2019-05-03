@@ -1,6 +1,6 @@
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
-import 'package:get_ip/get_ip.dart';
+//import 'package:get_ip/get_ip.dart';
 import 'package:my_office_th_app/blocs/bloc_base.dart';
 import 'package:my_office_th_app/models/device.dart';
 import 'package:my_office_th_app/models/user.dart';
@@ -74,6 +74,22 @@ class SettingsBloc extends Object implements BlocBase {
   fetchIosInfo() async {
     await _deviceInfoPlugin.iosInfo.then((response) {
       _iosDeviceInfo.sink.add(response);
+
+      /// Creating a device and adding to the stream
+      _device.sink.add(Device(
+          response.identifierForVendor,
+          '',
+          'Android',
+          '',
+          response.model,
+          '',
+          response.isPhysicalDevice.toString(),
+          '',
+          '',
+          '',
+          ''));
+
+      fetchInfoDevice();
     });
   }
 
@@ -109,13 +125,15 @@ class SettingsBloc extends Object implements BlocBase {
   }
 
   fetchIp() async {
+    _ip.sink.add('192.168.0.7');
+    /*
     try {
       await GetIp.ipAddress.then((response) {
         _ip.sink.add(response);
       });
     } catch (error) {
       _ip.sink.addError(error.runtimeType.toString());
-    }
+    }*/
   }
 
   postDevice() async {
