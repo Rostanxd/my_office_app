@@ -6,12 +6,14 @@ import 'package:my_office_th_app/blocs/setting_bloc.dart';
 import 'package:my_office_th_app/models/customer.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class CustomerSummary extends StatelessWidget {
+// ignore: must_be_immutable
+class CustomerSummaryIos extends StatelessWidget {
   final Customer customer;
+  final CustomerDetailBloc customerDetailBloc;
+
   SettingsBloc _settingsBloc;
   LoginBloc _loginBloc;
   MediaQueryData _queryData;
-  CustomerDetailBloc _customerDetailBloc;
   WebViewController _controller;
   TextEditingController _dateCtrl = TextEditingController();
   TextEditingController _sellerCtrl = TextEditingController();
@@ -19,25 +21,32 @@ class CustomerSummary extends StatelessWidget {
   TextEditingController _amountCtrl = TextEditingController();
   TextEditingController _averageCtrl = TextEditingController();
 
-  CustomerSummary(this.customer);
+  CustomerSummaryIos(this.customer, this.customerDetailBloc);
 
   @override
   Widget build(BuildContext context) {
     _settingsBloc = BlocProvider.of<SettingsBloc>(context);
     _loginBloc = BlocProvider.of<LoginBloc>(context);
-    _customerDetailBloc = BlocProvider.of<CustomerDetailBloc>(context);
     _queryData = _settingsBloc.queryData.value;
 
     /// Getting customer summary
-    _customerDetailBloc.fetchCustomerLastSummary(
+    customerDetailBloc.fetchCustomerLastSummary(
         _loginBloc.holding.value.id, customer.id);
 
-    return ListView(
-      children: <Widget>[
-        _customerSummary(),
-        _customerChart(),
-        SizedBox(height: 40.0,)
-      ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(''),
+        backgroundColor: Color(0xff011e41),
+      ),
+      body: ListView(
+        children: <Widget>[
+          _customerSummary(),
+          _customerChart(),
+          SizedBox(
+            height: 40.0,
+          ),
+        ],
+      ),
     );
   }
 
@@ -57,7 +66,7 @@ class CustomerSummary extends StatelessWidget {
               ),
               Divider(),
               StreamBuilder(
-                stream: _customerDetailBloc.lastSummary,
+                stream: customerDetailBloc.lastSummary,
                 builder: (BuildContext context,
                     AsyncSnapshot<CustomerLastSummary> snapshot) {
                   if (snapshot.hasError) {
