@@ -122,6 +122,7 @@ class _InventoryHomeState extends State<InventoryHome> {
         ],
       ),
       drawer: UserDrawer(),
+      /*
       body: _loginBloc.user.value.local.name.isNotEmpty &&
                   (_loginBloc.user.value.accessId == '08' &&
                       _loginBloc.user.value.level != '4') ||
@@ -141,6 +142,10 @@ class _InventoryHomeState extends State<InventoryHome> {
                 _controller = webViewController;
               },
             ),
+            */
+      body: Container(
+        child: Text(''),
+      ),
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.refresh),
           onPressed: () {
