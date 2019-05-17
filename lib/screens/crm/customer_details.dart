@@ -18,10 +18,18 @@ class CustomerDetail extends StatefulWidget {
 
 class _CustomerDetailState extends State<CustomerDetail> {
   CustomerDetailBloc _customerDetailBloc;
+  List<Widget> _widgetOptions = new List<Widget>();
+  List<BottomNavigationBarItem> _buttonNavigationBarItems = new List<BottomNavigationBarItem>();
 
   @override
   void didChangeDependencies() {
     print('CustomerDetails >> didChangeDependencies');
+
+    _customerDetailBloc = BlocProvider.of<CustomerDetailBloc>(context);
+
+    /// Default index for the bottom navigation bar.
+    _customerDetailBloc.changeIndex(0);
+
     super.didChangeDependencies();
   }
 
@@ -35,16 +43,18 @@ class _CustomerDetailState extends State<CustomerDetail> {
   @override
   Widget build(BuildContext context) {
     print('CustomerDetails >> build');
-    _customerDetailBloc = BlocProvider.of<CustomerDetailBloc>(context);
 
-    /// Default index for the bottom navigation bar.
-    _customerDetailBloc.changeIndex(0);
+    _widgetOptions.add(CustomerInfo(widget.customer));
+    _widgetOptions.add(CustomerSummary(widget.customer));
+    _widgetOptions.add(CustomerTelemarketing(widget.customer));
 
-    var _widgetOptions = [
-      CustomerInfo(widget.customer),
-      CustomerSummary(widget.customer),
-      CustomerTelemarketing(widget.customer),
-    ];
+    _buttonNavigationBarItems.add(BottomNavigationBarItem(
+        icon: Icon(Icons.info), title: Text('Info')));
+    _buttonNavigationBarItems.add(BottomNavigationBarItem(
+        icon: Icon(Icons.shopping_cart), title: Text('Compras')));
+    _buttonNavigationBarItems.add(BottomNavigationBarItem(
+        icon: Icon(Icons.monetization_on),
+        title: Text('Telemarketing')));
 
     return Scaffold(
       appBar: AppBar(
@@ -67,15 +77,7 @@ class _CustomerDetailState extends State<CustomerDetail> {
           if (snapshot.hasError) print(snapshot.error.toString());
           return snapshot.hasData
               ? BottomNavigationBar(
-                  items: <BottomNavigationBarItem>[
-                    BottomNavigationBarItem(
-                        icon: Icon(Icons.info), title: Text('Info')),
-                    BottomNavigationBarItem(
-                        icon: Icon(Icons.shopping_cart), title: Text('Compras')),
-                    BottomNavigationBarItem(
-                        icon: Icon(Icons.monetization_on),
-                        title: Text('Telemarketing')),
-                  ],
+                  items: _buttonNavigationBarItems,
                   currentIndex: snapshot.data,
                   fixedColor: Colors.deepPurple,
                   onTap: (index) {
