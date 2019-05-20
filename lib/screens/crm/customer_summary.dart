@@ -36,7 +36,9 @@ class CustomerSummary extends StatelessWidget {
       children: <Widget>[
         _customerSummary(),
         _customerChart(),
-        SizedBox(height: 40.0,)
+        SizedBox(
+          height: 40.0,
+        )
       ],
     );
   }
@@ -186,13 +188,17 @@ class CustomerSummary extends StatelessWidget {
   }
 
   Widget _customerChart() {
+    var holdingId = _loginBloc.holding.value.id;
+    var customerId = customer.id;
+    var link = 'http://info.thgye.com.ec/VtaClienteResumen.html?'
+        'customerId=${customerId.trim()}&holdingId=$holdingId';
+
     return Container(
         margin: EdgeInsets.only(top: 10.0),
         height: _queryData.size.height * 0.7,
         child: WebView(
           javascriptMode: JavascriptMode.unrestricted,
-          initialUrl: 'http://info.thgye.com.ec/VtaClienteResumen.html?'
-              'holdingId=${_loginBloc.holding.value.id}&customerId=${customer.id}',
+          initialUrl: link,
           onWebViewCreated: (WebViewController webViewController) {
             _controller = webViewController;
           },

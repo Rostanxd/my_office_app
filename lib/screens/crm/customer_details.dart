@@ -6,7 +6,6 @@ import 'package:my_office_th_app/blocs/customer_detail_bloc.dart';
 import 'package:my_office_th_app/components/card_dummy_loading.dart';
 import 'package:my_office_th_app/models/customer.dart';
 import 'package:my_office_th_app/screens/crm/customer_info.dart';
-import 'package:my_office_th_app/screens/crm/customer_summary_ios.dart';
 import 'package:my_office_th_app/screens/crm/customer_telemarketing.dart';
 import 'package:my_office_th_app/screens/crm/customer_summary.dart';
 
@@ -29,43 +28,16 @@ class _CustomerDetailState extends State<CustomerDetail> {
   @override
   void initState() {
     /// Loading options and widgets by platform
-    if (Platform.isAndroid) {
-      _widgetOptions.add(CustomerInfo(widget.customer));
-      _widgetOptions.add(CustomerSummary(widget.customer));
-      _widgetOptions.add(CustomerTelemarketing(widget.customer));
+    _widgetOptions.add(CustomerInfo(widget.customer));
+    _widgetOptions.add(CustomerSummary(widget.customer));
+    _widgetOptions.add(CustomerTelemarketing(widget.customer));
 
-      _buttonNavigationBarItems.add(
-          BottomNavigationBarItem(icon: Icon(Icons.info), title: Text('Info')));
-      _buttonNavigationBarItems.add(BottomNavigationBarItem(
-          icon: Icon(Icons.shopping_cart), title: Text('Compras')));
-      _buttonNavigationBarItems.add(BottomNavigationBarItem(
-          icon: Icon(Icons.monetization_on), title: Text('Telemarketing')));
-    } else {
-      _widgetOptions.add(CustomerInfo(widget.customer));
-      _widgetOptions.add(CustomerTelemarketing(widget.customer));
-
-      _buttonNavigationBarItems.add(
-          BottomNavigationBarItem(icon: Icon(Icons.info), title: Text('Info')));
-      _buttonNavigationBarItems.add(BottomNavigationBarItem(
-          icon: Icon(Icons.monetization_on), title: Text('Telemarketing')));
-
-      _appBarActions.add(Container(
-        padding: EdgeInsets.all(10.0),
-        child: FlatButton(
-          child: Text(
-            'Ver compras',
-            style: TextStyle(color: Colors.white),
-          ),
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => CustomerSummaryIos(
-                        widget.customer, _customerDetailBloc)));
-          },
-        ),
-      ));
-    }
+    _buttonNavigationBarItems.add(
+        BottomNavigationBarItem(icon: Icon(Icons.info), title: Text('Info')));
+    _buttonNavigationBarItems.add(BottomNavigationBarItem(
+        icon: Icon(Icons.shopping_cart), title: Text('Compras')));
+    _buttonNavigationBarItems.add(BottomNavigationBarItem(
+        icon: Icon(Icons.monetization_on), title: Text('Telemarketing')));
 
     super.initState();
   }
