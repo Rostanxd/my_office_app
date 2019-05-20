@@ -203,30 +203,27 @@ class _MyLoginPageState extends State<MyLoginPage> {
                               ),
                             ),
                           ),
-                          Container(
-                            height: 40.0,
-                            width: _queryMediaWidth * 0.75,
-                            margin:
-                                EdgeInsets.only(top: _queryMediaHeight * 0.10),
-                            child: Material(
-                              borderRadius: BorderRadius.circular(20.0),
-                              shadowColor: Color(0xff212121),
-                              color: Color(0xFFeb2227),
-                              elevation: 7.0,
-                              child: GestureDetector(
-                                onTap: () {
-                                  if (Platform.isAndroid)
-                                    widget._settingsBloc.fetchInfoDevice();
-                                },
-                                child: Center(
+                          InkWell(
+                              child: Container(
+                                height: 40.0,
+                                width: _queryMediaWidth * 0.75,
+                                margin: EdgeInsets.only(
+                                    top: _queryMediaHeight * 0.10),
+                                child: Material(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  shadowColor: Color(0xff212121),
+                                  color: Color(0xFFeb2227),
+                                  elevation: 7.0,
                                   child: Icon(
                                     Icons.refresh,
                                     color: Colors.white,
                                   ),
                                 ),
                               ),
-                            ),
-                          ),
+                              onTap: () {
+                                if (Platform.isAndroid)
+                                  widget._settingsBloc.fetchInfoDevice();
+                              }),
                         ],
                       );
               },
@@ -261,20 +258,22 @@ class _MyLoginPageState extends State<MyLoginPage> {
       child: Stack(
         children: <Widget>[
           Container(
-            padding: EdgeInsets.fromLTRB(15.0, 40.0, 0.0, 0.0),
+            padding:
+                EdgeInsets.fromLTRB(15.0, _queryMediaHeight * 0.08, 0.0, 0.0),
             child: Text('Smart Sales',
                 style: TextStyle(
                     fontSize: _textTitleSize, fontWeight: FontWeight.bold)),
           ),
           Container(
-            padding: EdgeInsets.fromLTRB(16.0, 100.0, 0.0, 0.0),
+            padding: EdgeInsets.fromLTRB(
+                16.0, _queryMediaHeight * 0.16, 0.0, 0.0),
             child: Text('Force',
                 style: TextStyle(
                     fontSize: _textTitleSize, fontWeight: FontWeight.bold)),
           ),
           Container(
-            padding: EdgeInsets.fromLTRB(
-                _queryData.size.width * 0.4, 100.0, 0.0, 0.0),
+            padding: EdgeInsets.fromLTRB(_queryData.size.width * 0.4,
+                _queryMediaHeight * 0.16, 0.0, 0.0),
             child: Text('.',
                 style: TextStyle(
                     fontSize: _textTitleSize,

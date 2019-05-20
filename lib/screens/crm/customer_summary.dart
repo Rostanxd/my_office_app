@@ -6,13 +6,13 @@ import 'package:my_office_th_app/blocs/setting_bloc.dart';
 import 'package:my_office_th_app/models/customer.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+// ignore: must_be_immutable
 class CustomerSummary extends StatelessWidget {
   final Customer customer;
   SettingsBloc _settingsBloc;
   LoginBloc _loginBloc;
   MediaQueryData _queryData;
   CustomerDetailBloc _customerDetailBloc;
-  WebViewController _controller;
   TextEditingController _dateCtrl = TextEditingController();
   TextEditingController _sellerCtrl = TextEditingController();
   TextEditingController _localCtrl = TextEditingController();
@@ -37,7 +37,7 @@ class CustomerSummary extends StatelessWidget {
         _customerSummary(),
         _customerChart(),
         SizedBox(
-          height: 40.0,
+          height: 20.0,
         )
       ],
     );
@@ -195,13 +195,11 @@ class CustomerSummary extends StatelessWidget {
 
     return Container(
         margin: EdgeInsets.only(top: 10.0),
-        height: _queryData.size.height * 0.7,
+        height: _queryData.size.height * 0.90,
         child: WebView(
           javascriptMode: JavascriptMode.unrestricted,
           initialUrl: link,
-          onWebViewCreated: (WebViewController webViewController) {
-            _controller = webViewController;
-          },
+          onWebViewCreated: (WebViewController webViewController) {},
         ));
   }
 }

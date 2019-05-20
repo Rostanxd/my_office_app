@@ -75,6 +75,7 @@ class _UserDevicesState extends State<UserDevices> {
                 children: <Widget>[
                   Container(
                     margin: EdgeInsets.only(top: 10.0, left: 10.0),
+                    width: _settingsBloc.queryData.value.size.width * 0.75,
                     child: Text(
                       '${_userList[index].user} - ${_userList[index].name}',
                       style: TextStyle(fontWeight: FontWeight.bold),
@@ -102,6 +103,7 @@ class _UserDevicesState extends State<UserDevices> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Container(
+                    width: _settingsBloc.queryData.value.size.width * 0.5,
                     margin: EdgeInsets.only(left: 10.0),
                     child: Text('${d.deviceId}')),
                 Container(

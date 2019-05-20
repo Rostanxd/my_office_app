@@ -194,35 +194,80 @@ class _LoginLocalFormState extends State<LoginLocalForm> {
   }
 
   Widget _continueButton() {
-    return InkWell(
-      onTap: () {
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-                builder: (context) => BlocProvider<HomeBloc>(
-                      bloc: HomeBloc(),
-                      child: HomePage(),
-                    )),
-            (Route<dynamic> route) => false);
-      },
-      child: Container(
-        height: 40.0,
-        width: _queryMediaWidth * 0.75,
-        child: Material(
-          borderRadius: BorderRadius.circular(20.0),
-          shadowColor: Color(0xff212121),
-          color: Color(0xff011e41),
-          elevation: 7.0,
-          child: Center(
-            child: Text(
-              'CONTINUAR',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Montserrat'),
+    return StreamBuilder<bool>(
+      stream: _loginBloc.continueBool,
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        if (snapshot.hasError)
+          return Container(
+            height: 40.0,
+            width: _queryMediaWidth * 0.75,
+            child: Material(
+              borderRadius: BorderRadius.circular(20.0),
+              shadowColor: Color(0xff212121),
+              color: Colors.grey,
+              elevation: 7.0,
+              child: Center(
+                child: Text(
+                  snapshot.error,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Montserrat'),
+                ),
+              ),
             ),
-          ),
-        ),
-      ),
+          );
+        return snapshot.hasData && snapshot.data
+            ? InkWell(
+                onTap: () {
+                  Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                          builder: (context) => BlocProvider<HomeBloc>(
+                                bloc: HomeBloc(),
+                                child: HomePage(),
+                              )),
+                      (Route<dynamic> route) => false);
+                },
+                child: Container(
+                  height: 40.0,
+                  width: _queryMediaWidth * 0.75,
+                  child: Material(
+                    borderRadius: BorderRadius.circular(20.0),
+                    shadowColor: Color(0xff212121),
+                    color: Color(0xff011e41),
+                    elevation: 7.0,
+                    child: Center(
+                      child: Text(
+                        'CONTINUAR',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Montserrat'),
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : Container(
+                height: 40.0,
+                width: _queryMediaWidth * 0.75,
+                child: Material(
+                  borderRadius: BorderRadius.circular(20.0),
+                  shadowColor: Color(0xff212121),
+                  color: Colors.grey,
+                  elevation: 7.0,
+                  child: Center(
+                    child: Text(
+                      'CARGANDO...',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Montserrat'),
+                    ),
+                  ),
+                ),
+              );
+      },
     );
   }
 

@@ -79,8 +79,8 @@ class SettingsBloc extends Object implements BlocBase {
       _device.sink.add(Device(
           response.identifierForVendor,
           '',
-          'Android',
-          '',
+          'iOS',
+          response.systemVersion,
           response.model,
           '',
           response.isPhysicalDevice.toString(),

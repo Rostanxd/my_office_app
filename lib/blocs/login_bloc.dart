@@ -32,6 +32,15 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
 
   Stream<bool> get logging => _logging.stream;
 
+  Stream<bool> get continueBool =>
+      Observable.combineLatest2(_holdingList, _localList, (a, b) {
+        if (a != null && b != null){
+          return true;
+        }else{
+          return false;
+        }
+      });
+
   ValueObservable<Local> get local => _local.stream;
 
   ValueObservable<Holding> get holding => _holding.stream;

@@ -94,6 +94,7 @@ class _DevicesState extends State<Devices> {
                 children: <Widget>[
                   Container(
                     margin: EdgeInsets.only(left: 5.0),
+                    width: _settingsBloc.queryData.value.size.width * 0.5,
                     child: Text(
                       _device.id,
                       style: TextStyle(fontWeight: FontWeight.bold),

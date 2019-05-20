@@ -59,7 +59,7 @@ class HomePageState extends State<HomePage> {
 //        _cardInfoTelemarketingWeekly(),
         Container(
           margin: EdgeInsets.only(top: 10.0),
-          height: _queryData.size.height * 0.75,
+          height: _queryData.size.height * 0.90,
           child: _loginBloc.user.value.accessId == '05'
               ? WebView(
                   javascriptMode: JavascriptMode.unrestricted,
@@ -78,6 +78,7 @@ class HomePageState extends State<HomePage> {
                   },
                 ),
         ),
+        SizedBox(height: 20.0,)
       ]),
       floatingActionButton: StreamBuilder<bool>(
         stream: _homeBloc.refreshHome,
@@ -219,7 +220,7 @@ class HomePageState extends State<HomePage> {
       },
     );
   }
-
+/*
   Widget _cardInfoTelemarketingWeekly() {
     final _color1 = Color(0xFF0033CC);
     final _color2 = Color(0xFF395CBE);
@@ -244,7 +245,7 @@ class HomePageState extends State<HomePage> {
       },
     );
   }
-
+*/
   Widget _cardDataLoading(Color _color1, Color _color2, String _message) {
     return Container(
       margin: EdgeInsets.only(top: 10.0, right: 10.0, left: 10.0),
@@ -285,7 +286,6 @@ class HomePageState extends State<HomePage> {
       String _titleRight,
       String _subLeft,
       String _subRight) {
-    var _textSize = _queryData.size.width * 0.035;
     return Container(
       margin: EdgeInsets.only(top: 10.0, right: 10.0, left: 10.0),
       decoration: BoxDecoration(
@@ -311,32 +311,45 @@ class HomePageState extends State<HomePage> {
         ),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(_titleLeft,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: _textSize,
-                    fontWeight: FontWeight.bold)),
-            Text(_titleRight,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: _textSize,
-                    fontWeight: FontWeight.bold)),
+            Container(
+              width: _settingsBloc.queryData.value.size.width*0.25,
+              margin: EdgeInsets.only(bottom: 5.0),
+              child: Text(_titleLeft,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold)),
+            ),
+            Container(
+              margin: EdgeInsets.only(bottom: 5.0),
+              width: _settingsBloc.queryData.value.size.width*0.40,
+              alignment: Alignment(1, 0),
+              child: Text(_titleRight,
+                  style: TextStyle(
+
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold)),
+            ),
           ],
         ),
         subtitle: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text(_subLeft,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: _textSize,
-                )),
-            Text(_subRight,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: _textSize,
-                )),
+            Container(
+              margin: EdgeInsets.only(bottom: 5.0),
+              child: Text(_subLeft,
+                  style: TextStyle(
+                    color: Colors.white,
+                  )),
+            ),
+            Container(
+              margin: EdgeInsets.only(bottom: 5.0),
+              child: Text(_subRight,
+                  style: TextStyle(
+                    color: Colors.white,
+                  )),
+            ),
           ],
         ),
       ),
