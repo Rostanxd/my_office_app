@@ -340,7 +340,6 @@ class HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Container(
-              width: _settingsBloc.queryData.value.size.width*0.25,
               margin: EdgeInsets.only(bottom: 5.0),
               child: Text(_subLeft,
                   style: TextStyle(
@@ -349,7 +348,6 @@ class HomePageState extends State<HomePage> {
                   )),
             ),
             Container(
-              width: _settingsBloc.queryData.value.size.width*0.40,
               margin: EdgeInsets.only(bottom: 5.0),
               alignment: Alignment(1, 0),
               child: Text(_subRight,
