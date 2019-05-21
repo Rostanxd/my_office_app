@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_office_th_app/blocs/bloc_provider.dart';
 import 'package:my_office_th_app/blocs/item_details_bloc.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
+import 'package:my_office_th_app/blocs/setting_bloc.dart';
 import 'package:my_office_th_app/models/item_stock.dart';
 
 class ItemStockCard extends StatefulWidget {
@@ -10,6 +11,7 @@ class ItemStockCard extends StatefulWidget {
 }
 
 class _ItemStockCardState extends State<ItemStockCard> {
+  SettingsBloc _settingsBloc;
   LoginBloc _loginBloc;
   ItemDetailsBloc _itemDetailsBloc;
 
@@ -28,7 +30,8 @@ class _ItemStockCardState extends State<ItemStockCard> {
 
   @override
   Widget build(BuildContext context) {
-    /// Getting the bloc of the item details
+    /// Getting blocs
+    _settingsBloc = BlocProvider.of<SettingsBloc>(context);
     _loginBloc = BlocProvider.of<LoginBloc>(context);
 
     _itemDetailsBloc.changeLoadingData(false);
@@ -55,6 +58,7 @@ class _ItemStockCardState extends State<ItemStockCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Container(
+                    width: _settingsBloc.queryData.value.size.width * 0.5,
                     margin: EdgeInsets.only(top: 20.0, left: 20.0, bottom: 5.0),
                     child: Text(
                       _tableType == 'L'

@@ -19,7 +19,6 @@ class _CustomerInfoState extends State<CustomerInfo> {
   CustomerDetailBloc _customerDetailBloc;
   SettingsBloc _settingsBloc;
   LoginBloc _loginBloc;
-  MediaQueryData _queryData;
   TextEditingController _idCtrl = TextEditingController();
   TextEditingController _lastNameCtrl = TextEditingController();
   TextEditingController _firstNameCtrl = TextEditingController();
@@ -55,7 +54,6 @@ class _CustomerInfoState extends State<CustomerInfo> {
     print('CustomerInfo >> didChangeDependencies');
     _settingsBloc = BlocProvider.of<SettingsBloc>(context);
     _loginBloc = BlocProvider.of<LoginBloc>(context);
-    _queryData = _settingsBloc.queryData.value;
     _customerDetailBloc = BlocProvider.of<CustomerDetailBloc>(context);
 
     /// Looking for the customer data.
@@ -306,7 +304,6 @@ class _CustomerInfoState extends State<CustomerInfo> {
   }
 
   Widget _editingBornDate(bool _editing) {
-    var _textSize = _queryData.size.height * 0.023;
     return _editing
         ? Container(
             margin: EdgeInsets.only(left: 20.0, right: 10.0),
@@ -325,18 +322,18 @@ class _CustomerInfoState extends State<CustomerInfo> {
                     return Text(
                       snapshot.data.isEmpty ? 'dd/MM/yyyy' : snapshot.data,
                       style: TextStyle(
-                          color: Colors.blueAccent, fontSize: _textSize),
+                          color: Colors.blueAccent),
                     );
                   return snapshot.hasData
                       ? Text(
                           snapshot.data,
                           style: TextStyle(
-                              color: Colors.blueAccent, fontSize: _textSize),
+                              color: Colors.blueAccent),
                         )
                       : Text(
                           snapshot.data.isEmpty ? 'dd/MM/yyyy' : snapshot.data,
                           style: TextStyle(
-                              color: Colors.blueAccent, fontSize: _textSize),
+                              color: Colors.blueAccent),
                         );
                 },
               ),
@@ -363,12 +360,12 @@ class _CustomerInfoState extends State<CustomerInfo> {
                                   ? 'dd/MM/yyyy'
                                   : snapshot.data,
                               style: TextStyle(
-                                  color: Colors.black, fontSize: _textSize),
+                                  color: Colors.black),
                             )
                           : Text(
                               'dd/MM/yyyy',
                               style: TextStyle(
-                                  color: Colors.black, fontSize: _textSize),
+                                  color: Colors.black),
                             );
                     })),
           );

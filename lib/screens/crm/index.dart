@@ -179,8 +179,8 @@ class _CrmHomeState extends State<CrmHome> {
   }
 
   Widget _loadedData(TelemarketingEffectiveness _telemarketingEffectiveness) {
-    var _textDataSize = _queryData.size.width * 0.0275;
-    var _cellWidth = _queryData.size.width * 0.20;
+    var _textDataSize = _queryData.size.width * 0.0270;
+    var _cellWidth = _queryData.size.width * 0.18;
 //    print(_textDataSize);
 //    print(_cellWidth);
     return Container(

@@ -286,6 +286,7 @@ class HomePageState extends State<HomePage> {
       String _titleRight,
       String _subLeft,
       String _subRight) {
+    var _textSize = _queryData.size.width * 0.035;
     return Container(
       margin: EdgeInsets.only(top: 10.0, right: 10.0, left: 10.0),
       decoration: BoxDecoration(
@@ -318,6 +319,7 @@ class HomePageState extends State<HomePage> {
               margin: EdgeInsets.only(bottom: 5.0),
               child: Text(_titleLeft,
                   style: TextStyle(
+                      fontSize: _textSize,
                       color: Colors.white,
                       fontWeight: FontWeight.bold)),
             ),
@@ -327,26 +329,32 @@ class HomePageState extends State<HomePage> {
               alignment: Alignment(1, 0),
               child: Text(_titleRight,
                   style: TextStyle(
-
+                      fontSize: _textSize,
                       color: Colors.white,
                       fontWeight: FontWeight.bold)),
             ),
           ],
         ),
         subtitle: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Container(
+              width: _settingsBloc.queryData.value.size.width*0.25,
               margin: EdgeInsets.only(bottom: 5.0),
               child: Text(_subLeft,
                   style: TextStyle(
+                    fontSize: _textSize,
                     color: Colors.white,
                   )),
             ),
             Container(
+              width: _settingsBloc.queryData.value.size.width*0.40,
               margin: EdgeInsets.only(bottom: 5.0),
+              alignment: Alignment(1, 0),
               child: Text(_subRight,
                   style: TextStyle(
+                    fontSize: _textSize,
                     color: Colors.white,
                   )),
             ),

@@ -98,7 +98,7 @@ class CustomerSummary extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Container(
-                  width: _queryData.size.width * 0.4,
+                  width: _queryData.size.width * 0.35,
                   margin: EdgeInsets.only(left: 20.0),
                   child: TextField(
                       controller: _dateCtrl,
@@ -114,7 +114,7 @@ class CustomerSummary extends StatelessWidget {
                       )),
                 ),
                 Container(
-                  width: _queryData.size.width * 0.4,
+                  width: _queryData.size.width * 0.35,
                   margin: EdgeInsets.only(right: 20.0),
                   child: TextField(
                       controller: _amountCtrl,
@@ -150,7 +150,7 @@ class CustomerSummary extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Container(
-                  width: _queryData.size.width * 0.4,
+                  width: _queryData.size.width * 0.35,
                   margin: EdgeInsets.only(left: 20.0, bottom: 20.0),
                   child: TextField(
                       controller: _localCtrl,
@@ -166,7 +166,7 @@ class CustomerSummary extends StatelessWidget {
                       )),
                 ),
                 Container(
-                  width: _queryData.size.width * 0.4,
+                  width: _queryData.size.width * 0.35,
                   margin: EdgeInsets.only(right: 20.0, bottom: 20.0),
                   child: TextField(
                       controller: _averageCtrl,
