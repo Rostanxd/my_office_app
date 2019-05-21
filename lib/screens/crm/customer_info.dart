@@ -40,7 +40,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
         context: context,
         initialDate: _customerDetailBloc.bornDate.value != ''
             ? formatter.parse(_customerDetailBloc.bornDate.value)
-            : _now,
+            : DateTime(_now.year - 17),
         firstDate: DateTime(1900),
         lastDate: DateTime(_now.year - 17));
 
