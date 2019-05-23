@@ -33,7 +33,9 @@ class HomePageState extends State<HomePage> {
     /// Managers set seller id to empty to watch all the sales
     _homeBloc.fetchAllCardInfo(
         _loginBloc.local.value.id,
-        _loginBloc.user.value.accessId != '08'
+        /// Sellers and Sub-Manager, they can only watch their sales
+        _loginBloc.user.value.profile.id == 'V' ||
+            _loginBloc.user.value.profile.id == 'S'
             ? _loginBloc.user.value.sellerId
             : '');
 
@@ -60,7 +62,8 @@ class HomePageState extends State<HomePage> {
         Container(
           margin: EdgeInsets.only(top: 10.0),
           height: _queryData.size.height * 0.90,
-          child: _loginBloc.user.value.accessId == '05'
+          child: _loginBloc.user.value.profile.id == 'V' ||
+              _loginBloc.user.value.profile.id == 'S'
               ? WebView(
                   javascriptMode: JavascriptMode.unrestricted,
                   initialUrl: 'http://info.thgye.com.ec/VtaSemanalCom.html?'

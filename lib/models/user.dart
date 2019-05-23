@@ -1,5 +1,6 @@
 import 'package:my_office_th_app/models/holding.dart';
 import 'package:my_office_th_app/models/local.dart';
+import 'package:my_office_th_app/models/profile.dart';
 
 class User extends Object {
   String user;
@@ -12,12 +13,14 @@ class User extends Object {
   String identification;
   List<UserDevice> deviceList;
   String ipPrefix;
+  Profile profile;
 
   User(
       this.user,
       this.name,
       this.level,
       this.accessId,
+      this.profile,
       this.sellerId,
       this.holding,
       this.local,
@@ -30,6 +33,7 @@ class User extends Object {
     this.name = json['name'];
     this.level = json['level'];
     this.accessId = json['accessId'];
+    this.profile = Profile.fromEvaluation(json['profileId']);
     this.sellerId = json['sellerId'];
     this.holding = new Holding(json['holdingId'], json['holdingName']);
     this.local = new Local(json['localId'], json['localName']);
@@ -39,6 +43,17 @@ class User extends Object {
 
     this.ipPrefix = json['ipPrefix'];
   }
+
+  @override
+  String toString() {
+    return 'User{user: $user, name: $name, level: $level, '
+        'accessId: $accessId, sellerId: $sellerId, '
+        'holding: $holding, local: $local, '
+        'identification: $identification, deviceList: $deviceList, '
+        'ipPrefix: $ipPrefix, profile: ${profile.toString()}';
+  }
+
+
 }
 
 class UserDevice extends Object {

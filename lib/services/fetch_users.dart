@@ -35,6 +35,7 @@ class UserApi {
           gxResponse['SdtUsers'][0]['level'],
           gxResponse['SdtUsers'][0]['accessId'],
           gxResponse['SdtUsers'][0]['sellerId'],
+          gxResponse['SdtUsers'][0]['profileId'],
           Holding(gxResponse['SdtUsers'][0]['holdingId'],
               gxResponse['SdtUsers'][0]['holdingName']),
           Local(gxResponse['SdtUsers'][0]['localId'],

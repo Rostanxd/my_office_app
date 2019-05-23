@@ -31,7 +31,8 @@ class _MyLoginPageState extends State<MyLoginPage> {
 
   /// Function to call the next page
   void _moveNextPage(User user) {
-    if (!(user.level == '3' || (user.accessId == '08' && user.level == '4'))) {
+    /// System and Super Manager
+    if (!(user.profile.id == '0' || user.profile.id == 'S')) {
       widget._loginBloc.changeCurrentHolding(user.holding);
       widget._loginBloc.changeCurrentLocal(user.local);
 
@@ -265,8 +266,8 @@ class _MyLoginPageState extends State<MyLoginPage> {
                     fontSize: _textTitleSize, fontWeight: FontWeight.bold)),
           ),
           Container(
-            padding: EdgeInsets.fromLTRB(
-                16.0, _queryMediaHeight * 0.16, 0.0, 0.0),
+            padding:
+                EdgeInsets.fromLTRB(16.0, _queryMediaHeight * 0.16, 0.0, 0.0),
             child: Text('Force',
                 style: TextStyle(
                     fontSize: _textTitleSize, fontWeight: FontWeight.bold)),
