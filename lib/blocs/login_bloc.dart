@@ -34,9 +34,9 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
 
   Stream<bool> get continueBool =>
       Observable.combineLatest2(_holdingList, _localList, (a, b) {
-        if (a != null && b != null){
+        if (a != null && b != null) {
           return true;
-        }else{
+        } else {
           return false;
         }
       });
@@ -72,9 +72,23 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
         .fetchUser(_id.value, _password.value)
         .then((response) {
           if (response != null) {
+            /// Checking if the profile is controlled by the back-end
+            if (response.profile.id.isEmpty){
+              _user.sink.addError('Error: Perfil no asignado.\n'
+                  'Comunicarse con el Dpto. de Sistemas');
+              return;
+            }
+
+            /// Checking the "Seller" profile, it need to have a seller id.
+            if (response.profile.id == 'V' && response.sellerId.isEmpty) {
+              _user.sink.addError(
+                  'Su perfil de vendedor no tiene código asignado. \n'
+                      'Comuniquese con el dpto. de RRHH.');
+              return;
+            }
+
             /// Validation by the ip prefix
-            if (!(response.level == '3' ||
-                    (response.accessId == '08' && response.level == '4')) &&
+            if (!(response.profile.id == '0' || response.profile.id == 'S') &&
                 (!(_myIp.contains(response.ipPrefix)) ||
                     response.ipPrefix.isEmpty)) {
               /// If the ip prefix is empty, send a different message like error
@@ -157,14 +171,14 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
           _logging.sink.add(false);
         }, onError: (error) {
           ///  If we got an error we add the error to the stream
-          _user.sink.addError(error.runtimeType.toString());
+          _user.sink.addError(error.toString());
           _logging.sink.add(false);
           print(error.toString());
         })
         .timeout(Duration(seconds: Connection.timeOutSec))
         .catchError((error) {
           ///  If we got a time out we add the error to the stream
-          _user.sink.addError(error.runtimeType.toString());
+          _user.sink.addError(error.toString());
           _logging.sink.add(false);
           print(error.toString());
         });
@@ -223,6 +237,7 @@ class LoginBloc extends Object with LoginUserValidator implements BlocBase {
   logOut() {
     _user.sink.add(null);
     _local.sink.add(null);
+    _holding.sink.add(null);
     _password.sink.add(null);
     changeCurrentLocal(null);
     changeCurrentHolding(null);

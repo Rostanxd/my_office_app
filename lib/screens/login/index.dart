@@ -245,8 +245,8 @@ class _MyLoginPageState extends State<MyLoginPage> {
             SizedBox(height: 15.0),
             _userLogged(),
             _form(),
-            SizedBox(height: 15.0),
-            _footPage()
+//            SizedBox(height: 15.0),
+//            _footPage()
           ],
         ),
       ],
@@ -308,8 +308,8 @@ class _MyLoginPageState extends State<MyLoginPage> {
       stream: widget._loginBloc.user,
       builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
         if (snapshot.hasData) {
-          if (!(snapshot.data.level == '3' ||
-              (snapshot.data.accessId == '08' && snapshot.data.level == '4'))) {
+          if (!(snapshot.data.profile.id == '0' ||
+              snapshot.data.profile.id == 'S')) {
             return Container(
               child: null,
             );

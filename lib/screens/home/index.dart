@@ -8,7 +8,6 @@ import 'package:my_office_th_app/components/user_drawer.dart';
 import 'package:my_office_th_app/models/card_info.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-// ignore: must_be_immutable
 class HomePage extends StatefulWidget {
   @override
   HomePageState createState() {
@@ -30,12 +29,10 @@ class HomePageState extends State<HomePage> {
     _loginBloc = BlocProvider.of<LoginBloc>(context);
     _homeBloc = BlocProvider.of<HomeBloc>(context);
 
-    /// Managers set seller id to empty to watch all the sales
+    /// The sellers just have to see their own sales
     _homeBloc.fetchAllCardInfo(
         _loginBloc.local.value.id,
-        /// Sellers and Sub-Manager, they can only watch their sales
-        _loginBloc.user.value.profile.id == 'V' ||
-            _loginBloc.user.value.profile.id == 'S'
+        _loginBloc.user.value.profile.id == 'V'
             ? _loginBloc.user.value.sellerId
             : '');
 
@@ -62,12 +59,11 @@ class HomePageState extends State<HomePage> {
         Container(
           margin: EdgeInsets.only(top: 10.0),
           height: _queryData.size.height * 0.90,
-          child: _loginBloc.user.value.profile.id == 'V' ||
-              _loginBloc.user.value.profile.id == 'S'
+          child: _loginBloc.user.value.profile.id == 'V'
               ? WebView(
                   javascriptMode: JavascriptMode.unrestricted,
                   initialUrl: 'http://info.thgye.com.ec/VtaSemanalCom.html?'
-                    'sellerId=${_loginBloc.user.value.sellerId}&localId=${_loginBloc.local.value.id}',
+                      'sellerId=${_loginBloc.user.value.sellerId}&localId=${_loginBloc.local.value.id}',
                   onWebViewCreated: (WebViewController webViewController) {
                     _controller = webViewController;
                   },
@@ -75,13 +71,15 @@ class HomePageState extends State<HomePage> {
               : WebView(
                   javascriptMode: JavascriptMode.unrestricted,
                   initialUrl: 'http://info.thgye.com.ec/VtaSemanalCom.html?'
-                    'sellerId=&localId=${_loginBloc.local.value.id}',
+                      'sellerId=&localId=${_loginBloc.local.value.id}',
                   onWebViewCreated: (WebViewController webViewController) {
                     _controller = webViewController;
                   },
                 ),
         ),
-        SizedBox(height: 20.0,)
+        SizedBox(
+          height: 20.0,
+        )
       ]),
       floatingActionButton: StreamBuilder<bool>(
         stream: _homeBloc.refreshHome,
@@ -223,6 +221,7 @@ class HomePageState extends State<HomePage> {
       },
     );
   }
+
 /*
   Widget _cardInfoTelemarketingWeekly() {
     final _color1 = Color(0xFF0033CC);
@@ -318,7 +317,7 @@ class HomePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Container(
-              width: _settingsBloc.queryData.value.size.width*0.25,
+              width: _settingsBloc.queryData.value.size.width * 0.25,
               margin: EdgeInsets.only(bottom: 5.0),
               child: Text(_titleLeft,
                   style: TextStyle(
@@ -328,7 +327,7 @@ class HomePageState extends State<HomePage> {
             ),
             Container(
               margin: EdgeInsets.only(bottom: 5.0),
-              width: _settingsBloc.queryData.value.size.width*0.40,
+              width: _settingsBloc.queryData.value.size.width * 0.40,
               alignment: Alignment(1, 0),
               child: Text(_titleRight,
                   style: TextStyle(

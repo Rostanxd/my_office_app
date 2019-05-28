@@ -10,6 +10,7 @@ class DeviceApi {
 
   Future<Device> fetchDevice(String id) async{
     print('fetchDevice >> $id');
+    Device _device;
     var response = await _httpClient.post(Connection.host + '/rest/WsManDispositivos',
         headers: {"Content-Type": "application/json"},
         body: json.encode({"id": "$id"}));
@@ -22,8 +23,11 @@ class DeviceApi {
     /// Genexus response structure
     var responseList = gxResponse['SdtWsDevices'] as List;
 
+    if (responseList.length != 0)
+      _device = responseList.map((f) => Device.fromJson((f))).toList()[0];
+
     /// Loading variable
-    return responseList.map((f) => Device.fromJson((f))).toList()[0];
+    return _device;
   }
 
   Future<List<Device>> fetchDevices() async{

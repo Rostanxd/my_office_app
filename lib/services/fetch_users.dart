@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:my_office_th_app/models/holding.dart';
 import 'package:my_office_th_app/models/local.dart';
+import 'package:my_office_th_app/models/profile.dart';
 import 'package:my_office_th_app/models/user.dart';
 import 'package:my_office_th_app/utils/connection.dart';
 
@@ -34,8 +35,8 @@ class UserApi {
           gxResponse['SdtUsers'][0]['name'],
           gxResponse['SdtUsers'][0]['level'],
           gxResponse['SdtUsers'][0]['accessId'],
+          Profile.fromEvaluation(gxResponse['SdtUsers'][0]['profileId']),
           gxResponse['SdtUsers'][0]['sellerId'],
-          gxResponse['SdtUsers'][0]['profileId'],
           Holding(gxResponse['SdtUsers'][0]['holdingId'],
               gxResponse['SdtUsers'][0]['holdingName']),
           Local(gxResponse['SdtUsers'][0]['localId'],

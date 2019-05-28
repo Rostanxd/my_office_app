@@ -40,7 +40,7 @@ class _CrmHomeState extends State<CrmHome> {
     /// Calling API.
     _crmBloc.fetchAllCardInfo(
         _loginBloc.local.value.id,
-        _loginBloc.user.value.accessId == '05'
+        _loginBloc.user.value.profile.id == 'V'
             ? _loginBloc.user.value.sellerId
             : '');
 
@@ -84,7 +84,7 @@ class _CrmHomeState extends State<CrmHome> {
         drawer: UserDrawer(),
         body: ListView(
           children: <Widget>[
-            _loginBloc.user.value.accessId == '05'
+            _loginBloc.user.value.profile.id == 'V'
                 ? _telemarketingAnniversaries()
                 : Container(
                     margin: EdgeInsets.all(0.0),
@@ -431,7 +431,7 @@ class _CrmHomeState extends State<CrmHome> {
                 Container(
                     margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
                     child: Text(
-                      _loginBloc.user.value.accessId == '05'
+                      _loginBloc.user.value.profile.id == 'V'
                           ? 'Venta Retorno'
                           : 'Venta',
                       style: TextStyle(

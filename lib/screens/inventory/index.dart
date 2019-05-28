@@ -122,10 +122,7 @@ class _InventoryHomeState extends State<InventoryHome> {
         ],
       ),
       drawer: UserDrawer(),
-      body: _loginBloc.user.value.local.name.isNotEmpty &&
-                  (_loginBloc.user.value.accessId == '08' &&
-                      _loginBloc.user.value.level != '4') ||
-              _loginBloc.user.value.accessId == '05'
+      body: _loginBloc.user.value.profile.id == 'V'
           ? Container(
               margin: EdgeInsets.all(0.0),
               padding: EdgeInsets.all(0.0),

@@ -52,8 +52,8 @@ class _LoginUserFormState extends State<LoginUserForm> {
               _idField(),
               SizedBox(height: 20.0),
               _passwordField(),
-              SizedBox(height: 5.0),
-              _forgotInkWell(),
+//              SizedBox(height: 5.0),
+//              _forgotInkWell(),
               SizedBox(height: 40.0),
               _streamButtonSubmit(context)
             ],

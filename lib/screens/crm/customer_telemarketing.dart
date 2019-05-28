@@ -60,7 +60,8 @@ class _CustomerTelemarketingState extends State<CustomerTelemarketing> {
                     margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
                     child: Text(
                       'Telemarketing del cliente',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 18.0),
                     ),
                   ),
                   Divider(),
@@ -87,11 +88,11 @@ class _CustomerTelemarketingState extends State<CustomerTelemarketing> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
                       Container(
-                          margin:
-                              EdgeInsets.only(top: 10.0, right: 20.0, bottom: 10.0),
+                          margin: EdgeInsets.only(
+                              top: 10.0, right: 20.0, bottom: 10.0),
                           child: IconButton(
                             onPressed: () {
-                              if (_loginBloc.user.value.accessId == '05') {
+                              if (_loginBloc.user.value.profile.id == 'V') {
                                 CustomerTelemarketingBloc
                                     _customerTelemarketingBloc =
                                     CustomerTelemarketingBloc();
@@ -106,13 +107,14 @@ class _CustomerTelemarketingState extends State<CustomerTelemarketing> {
                                             )));
                               } else {
                                 Scaffold.of(context).showSnackBar(SnackBar(
-                                    content: Text(
-                                        'Lo sentimos su usuario no tiene código de vendedor asignado.')));
+                                    content:
+                                        Text('Lo sentimos su usuario no tiene '
+                                            'código de vendedor asignado.')));
                               }
                             },
                             icon: Icon(
                               Icons.edit,
-                              color: _loginBloc.user.value.accessId == '05'
+                              color: _loginBloc.user.value.profile.id == 'V'
                                   ? Colors.lightBlue
                                   : Colors.grey,
                             ),

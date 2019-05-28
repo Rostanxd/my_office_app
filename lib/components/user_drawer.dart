@@ -4,7 +4,6 @@ import 'package:my_office_th_app/blocs/crm_bloc.dart';
 import 'package:my_office_th_app/blocs/home_bloc.dart';
 import 'package:my_office_th_app/blocs/login_bloc.dart';
 import 'package:my_office_th_app/blocs/setting_bloc.dart';
-import 'package:my_office_th_app/models/user.dart';
 
 import 'package:my_office_th_app/blocs/inventory_bloc.dart';
 import 'package:my_office_th_app/screens/crm/index.dart';
@@ -13,20 +12,46 @@ import 'package:my_office_th_app/screens/inventory/index.dart';
 import 'package:my_office_th_app/screens/login/index.dart';
 import 'package:my_office_th_app/utils/info.dart';
 
-// ignore: must_be_immutable
-class UserDrawer extends StatelessWidget {
+class UserDrawer extends StatefulWidget {
+  @override
+  UserDrawerState createState() {
+    return new UserDrawerState();
+  }
+}
+
+class UserDrawerState extends State<UserDrawer> {
   SettingsBloc _settingsBloc;
+
   LoginBloc _loginBloc;
 
   @override
   Widget build(BuildContext context) {
-    print('UserDrawer >> build');
-
     _settingsBloc = BlocProvider.of<SettingsBloc>(context);
-
-    /// Searching for the login bloc in the provider
     _loginBloc = BlocProvider.of<LoginBloc>(context);
 
+    /// Checking the ip
+    _settingsBloc.fetchIp();
+
+    /// Validation to check the currently ip.
+    /// If the user is logged and its profile is different of
+    /// System or Super Manager and its ip doesn't contain the ip prefix or
+    /// it's last is empty, so, log out automatically.
+    _settingsBloc.myIp.listen((data) {
+      if (!(_loginBloc.user.value.profile.id == '0' ||
+              _loginBloc.user.value.profile.id == 'S') &&
+          (!(_settingsBloc.myIp.value
+                  .contains(_loginBloc.user.value.ipPrefix)) ||
+              _loginBloc.user.value.ipPrefix.isEmpty)) {
+        /// Function to set null user and local
+        _loginBloc.logOut();
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+                builder: (context) => MyLoginPage(_settingsBloc, _loginBloc)),
+            (Route<dynamic> route) => false);
+      }
+    });
+
+    print('UserDrawer >> build');
     return Drawer(
       child: ListView(
         children: <Widget>[
@@ -82,16 +107,9 @@ class UserDrawer extends StatelessWidget {
                               child: HomePage(),
                             )));
               }),
-          _loginBloc.user.value.local.name.isNotEmpty &&
-                      (_loginBloc.user.value.accessId == '08' &&
-                          _loginBloc.user.value.level != '4') ||
-                  _loginBloc.user.value.accessId == '05'
-              ? Container(
-                  margin: EdgeInsets.all(0.0),
-                  padding: EdgeInsets.all(0.0),
-                  child: null,
-                )
-              : ListTile(
+          _loginBloc.user.value.profile.id == '0' ||
+                  _loginBloc.user.value.profile.id == 'S'
+              ? ListTile(
                   title: new Text("Cambiar Local"),
                   trailing: new Icon(Icons.location_on),
                   onTap: () {
@@ -101,7 +119,12 @@ class UserDrawer extends StatelessWidget {
                         MaterialPageRoute(
                             builder: (context) =>
                                 MyLoginPage(_settingsBloc, _loginBloc)));
-                  }),
+                  })
+              : Container(
+                  margin: EdgeInsets.all(0.0),
+                  padding: EdgeInsets.all(0.0),
+                  child: null,
+                ),
           ListTile(
               title: new Text("Salir"),
               trailing: new Icon(Icons.exit_to_app),
@@ -121,26 +144,26 @@ class UserDrawer extends StatelessWidget {
               onTap: () {
                 Navigator.pushNamed(context, '/device_info');
               }),
-          _loginBloc.user.value.accessId != '01'
-              ? Container(
-                  child: null,
-                )
-              : ListTile(
+          _loginBloc.user.value.profile.id == '0'
+              ? ListTile(
                   title: new Text("Versionamiento"),
                   trailing: new Icon(Icons.insert_drive_file),
                   onTap: () {
                     Navigator.pushNamed(context, '/version_log');
-                  }),
-          _loginBloc.user.value.accessId != '01'
-              ? Container(
+                  })
+              : Container(
                   child: null,
-                )
-              : ListTile(
+                ),
+          _loginBloc.user.value.profile.id == '0'
+              ? ListTile(
                   title: new Text("Configuración"),
                   trailing: new Icon(Icons.settings),
                   onTap: () {
                     Navigator.pushNamed(context, '/settings');
-                  }),
+                  })
+              : Container(
+                  child: null,
+                ),
           ListTile(
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -177,20 +200,26 @@ class UserDrawer extends StatelessWidget {
                   margin: EdgeInsets.only(
                     left: 20.0,
                   ),
-                  child: StreamBuilder(
-                      stream: _loginBloc.user,
-                      builder:
-                          (BuildContext context, AsyncSnapshot<User> snapshot) {
-                        return snapshot.hasData
-                            ? Text(
-                                snapshot.data.name,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14.0),
-                              )
-                            : CircularProgressIndicator();
-                      }),
+                  child: Text(
+                    _loginBloc.user.value.name,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14.0),
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(
+                    top: 5.0,
+                    left: 20.0,
+                  ),
+                  child: Text(
+                    _loginBloc.user.value.profile.name,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14.0),
+                  ),
                 ),
                 Container(
                   margin: EdgeInsets.only(

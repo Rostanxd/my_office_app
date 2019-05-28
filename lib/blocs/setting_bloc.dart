@@ -96,30 +96,33 @@ class SettingsBloc extends Object implements BlocBase {
   fetchInfoDevice() async {
     _loadingData.sink.add(true);
     await _settingsRepository.deviceApi.fetchDevice(_device.value.id).then(
-            (response) {
-          /// Updating device info in the backend
-          postDevice();
+        (response) {
 
-          /// Error if the device is inactive
-          if (response.state != 'A') {
-            _device.sink.addError('Dispositivo inactivo');
-          } else {
-            _device.sink.add(response);
-          }
-        }, onError: (error) {
-      if (error.runtimeType == RangeError) {
+      if (response == null) {
         /// Creating the device in the back end
         postDevice();
 
         /// Error if we try to find the device the first time.
         _device.sink.addError(
             'Lo sentimos.\nEl dispositivo no se encuentra registrado.');
-      } else {
-        _device.sink.addError(error.runtimeType.toString());
-        _loadingData.sink.add(false);
+
+        return;
       }
+
+      /// Updating device info in the backend
+      postDevice();
+
+      /// Error if the device is inactive
+      if (response.state != 'A') {
+        _device.sink.addError('Dispositivo inactivo');
+      } else {
+        _device.sink.add(response);
+      }
+    }, onError: (error) {
+      _device.sink.addError(error.toString());
+      _loadingData.sink.add(false);
     }).catchError((error) {
-      _device.sink.addError(error.runtimeType.toString());
+      _device.sink.addError(error.toString());
       _loadingData.sink.add(false);
     });
   }
@@ -156,21 +159,11 @@ class SettingsBloc extends Object implements BlocBase {
   }
 
   postUserDeviceState(String _userId, String _deviceId, String _state) async {
-    Device _device = Device(
-        _deviceId,
-        _state,
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-        '');
+    Device _device =
+        Device(_deviceId, _state, '', '', '', '', '', '', '', '', '');
 
     /// Adding the device to the user's devices
-    _settingsRepository.postUserDevice(_userId, _device).then((response){
+    _settingsRepository.postUserDevice(_userId, _device).then((response) {
       _messageUsrDevice.sink.add('Dispositivo del usuario actualizado');
       _messageUsrDevice.sink.add(null);
     });
@@ -179,16 +172,16 @@ class SettingsBloc extends Object implements BlocBase {
   }
 
   fetchDevices() async {
-    await _settingsRepository.fetchDevices().then((data){
+    await _settingsRepository.fetchDevices().then((data) {
       _devices.sink.add(data);
-    }, onError: (error){
+    }, onError: (error) {
       _devices.sink.addError(error.toString());
     });
   }
 
   postDeviceState(Device _device, String _state) async {
     _device.state = _state;
-    _settingsRepository.postDevice(_device).then((data){
+    _settingsRepository.postDevice(_device).then((data) {
       _messageDevice.sink.add('Dispostivo actualizado');
       _messageDevice.sink.add(null);
     });

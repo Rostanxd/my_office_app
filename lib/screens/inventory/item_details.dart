@@ -134,8 +134,8 @@ class _ItemDetailsState extends State<ItemDetails> {
           icon: Icon(Icons.format_list_numbered), title: Text('Saldos')),
     ];
 
-    /// Only if the user is not a access '05' (seller).
-    if (widget._loginBloc.user.value.accessId != '05') {
+    /// Only if the user is not a seller.
+    if (widget._loginBloc.user.value.profile.id != 'V') {
       _widgetOptions.add(ListView(
         children: <Widget>[ItemSalesStockCard()],
       ));

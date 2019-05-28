@@ -11,19 +11,19 @@ class Profile extends Object {
     this.id = id;
     switch (id) {
       case 'S':
-        this.name = 'Super Administrador';
+        this.name = 'SUPER ADMINISTRADOR';
         break;
       case 'A':
-        this.name = 'Administrador';
+        this.name = 'ASMINISTRADOR';
         break;
       case 'B':
-        this.name = 'Sub-Administrador';
+        this.name = 'SUB ADMINISTRADOR';
         break;
       case 'V':
-        this.name = 'Vendedor';
+        this.name = 'VENDEDOR';
         break;
       case '0':
-        this.name = 'Sistemas';
+        this.name = 'SISTEMAS';
         break;
     }
   }
