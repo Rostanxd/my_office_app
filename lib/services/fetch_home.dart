@@ -31,4 +31,19 @@ class HomeApi {
 
     return _cardInfo;
   }
+
+  Future<String> postCustomerCounter(String localId, String sellerId)  async {
+    final response = await _httpClient.post(
+        Connection.host + '/rest/WsPvtContadorClientes',
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({"localId": "$localId", "sellerId": "$sellerId"}));
+
+    /// To get easily the gx response
+    Map<String, dynamic> gxResponse = json.decode(response.body);
+
+    /// Genexus response structure
+    var res = gxResponse['SdtContadorClientes'] as Object;
+
+    return res;
+  }
 }

@@ -23,6 +23,26 @@ class HomePageState extends State<HomePage> {
   WebViewController _controller;
 
   @override
+  void initState() {
+    /// Listener to the observable to catch the response.
+    _homeBloc.customerCounter.listen((Object response) {
+      if (response != null) {
+        final snackBar = SnackBar(
+          content: Text('Contador de clientes +1 !'),
+        );
+        Scaffold.of(context).showSnackBar(snackBar);
+      }
+    }, onError: (error, stacktrace) {
+      final snackBar = SnackBar(
+        content: Text('Ha ocurrido un error.'),
+      );
+      Scaffold.of(context).showSnackBar(snackBar);
+    });
+
+    super.initState();
+  }
+
+  @override
   void didChangeDependencies() {
     print('Home >> didChangeDependencies');
     _settingsBloc = BlocProvider.of<SettingsBloc>(context);
@@ -81,21 +101,58 @@ class HomePageState extends State<HomePage> {
           height: 20.0,
         )
       ]),
-      floatingActionButton: StreamBuilder<bool>(
-        stream: _homeBloc.refreshHome,
-        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-          return snapshot.hasData && snapshot.data
-              ? FloatingActionButton(
-                  child: Icon(Icons.refresh),
-                  onPressed: () {
-                    _homeBloc.fetchAllCardInfo(_loginBloc.local.value.id,
-                        _loginBloc.user.value.sellerId);
-                    _controller.reload();
-                  })
-              : FloatingActionButton(
-                  backgroundColor: Colors.grey,
-                  child: Icon(Icons.refresh),
-                  onPressed: () {});
+      floatingActionButton: StreamBuilder<Object>(
+        stream: _homeBloc.customerCounter,
+        builder: (BuildContext context, AsyncSnapshot<Object> snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+              {
+                return FloatingActionButton(
+                    child: Icon(Icons.add),
+                    onPressed: () {
+                      _homeBloc.postCustomerCounter(_loginBloc.local.value.id,
+                          _loginBloc.user.value.sellerId);
+                      _controller.reload();
+                    });
+              }
+              break;
+            case ConnectionState.active:
+              {
+                return !snapshot.hasData || !snapshot.data
+                    ? FloatingActionButton(
+                        child: Icon(Icons.add),
+                        onPressed: () {
+                          _homeBloc.postCustomerCounter(
+                              _loginBloc.local.value.id,
+                              _loginBloc.user.value.sellerId);
+                          _controller.reload();
+                        })
+                    : FloatingActionButton(
+                        child: Icon(Icons.add),
+                        backgroundColor: Colors.grey,
+                        onPressed: () {});
+              }
+              break;
+            case ConnectionState.done:
+              {
+                return FloatingActionButton(
+                    child: Icon(Icons.add),
+                    onPressed: () {
+                      _homeBloc.postCustomerCounter(_loginBloc.local.value.id,
+                          _loginBloc.user.value.sellerId);
+                      _controller.reload();
+                    });
+              }
+              break;
+            default:
+              {
+                return FloatingActionButton(
+                    child: Icon(Icons.add),
+                    backgroundColor: Colors.grey,
+                    onPressed: () {});
+              }
+              break;
+          }
         },
       ),
     );

@@ -15,4 +15,7 @@ class HomeRepository {
   Future<CardInfo> fetchCardInfo(
           String localId, String sellerId, String type) =>
       homeApi.fetchCardInfo(localId, sellerId, type);
+
+  Future<String> postCustomerCounter(String localId, String sellerId) =>
+      homeApi.postCustomerCounter(localId, sellerId);
 }

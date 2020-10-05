@@ -178,7 +178,7 @@ class ItemDetailsBloc extends Object implements BlocBase {
             .writeAsBytes(imageFile.readAsBytesSync())
             .then((file) async {
           im.Image _image = im.decodeImage(_imageFileTmp.readAsBytesSync());
-          im.Image _thumbnail = im.copyResize(_image, 500);
+          im.Image _thumbnail = im.copyResize(_image);
           _photoThumb = _imageFileTmp
             ..writeAsBytesSync(im.encodeJpg(_thumbnail, quality: 50));
 
