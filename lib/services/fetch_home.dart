@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:my_office_th_app/models/card_info.dart';
 import 'package:my_office_th_app/utils/connection.dart';
+import 'package:my_office_th_app/models/personCounter.dart';
 
 class HomeApi {
   final _httpClient = http.Client();
@@ -32,18 +33,22 @@ class HomeApi {
     return _cardInfo;
   }
 
-  Future<String> postCustomerCounter(String localId, String sellerId)  async {
+  Future<PersonCounter> postCustomerCounter(String userId, String deviceId,
+      String localId, String sellerId) async {
+
     final response = await _httpClient.post(
-        Connection.host + '/rest/WsPvtContadorClientes',
+        Connection.host + '/rest/WsPvtClienteAtendidoPost',
         headers: {"Content-Type": "application/json"},
-        body: json.encode({"localId": "$localId", "sellerId": "$sellerId"}));
+        body: json.encode({
+          "userId": "$userId",
+          "deviceId": "$deviceId",
+          "localId": "$localId",
+          "sellerId": "$sellerId",
+        }));
 
     /// To get easily the gx response
     Map<String, dynamic> gxResponse = json.decode(response.body);
 
-    /// Genexus response structure
-    var res = gxResponse['SdtContadorClientes'] as Object;
-
-    return res;
+    return PersonCounter.fromJson(gxResponse);
   }
 }

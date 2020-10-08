@@ -2,6 +2,7 @@ import 'package:my_office_th_app/blocs/bloc_base.dart';
 import 'package:my_office_th_app/blocs/home_validator.dart';
 import 'package:my_office_th_app/models/assistance.dart';
 import 'package:my_office_th_app/models/card_info.dart';
+import 'package:my_office_th_app/models/personCounter.dart';
 import 'package:my_office_th_app/resources/home_repository.dart';
 import 'package:my_office_th_app/utils/connection.dart';
 import 'package:rxdart/rxdart.dart';
@@ -15,7 +16,7 @@ class HomeBloc extends Object with HomeValidator implements BlocBase {
   final _cardCustomersWeek = BehaviorSubject<CardInfo>();
   final _cardSalesAnalysis = BehaviorSubject<CardInfo>();
   final _cardTelemarketingWeekly = BehaviorSubject<CardInfo>();
-  final _customerCounter = BehaviorSubject<Object>();
+  final _customerCounter = BehaviorSubject<PersonCounter>();
   final HomeRepository _repository = HomeRepository();
 
   /// Retrieve data from the stream
@@ -37,7 +38,7 @@ class HomeBloc extends Object with HomeValidator implements BlocBase {
   Observable<CardInfo> get cardTelemarketingWeekly =>
       _cardTelemarketingWeekly.stream;
 
-  Observable<Object> get customerCounter => _customerCounter.stream;
+  Observable<PersonCounter> get customerCounter => _customerCounter.stream;
 
   Stream<bool> get refreshHome => Observable.combineLatest6(
           _cardMonthlySales,
@@ -190,10 +191,11 @@ class HomeBloc extends Object with HomeValidator implements BlocBase {
     });
   }
 
-  postCustomerCounter(String localId, String sellerId) async {
+  postCustomerCounter(
+      String userId, String deviceId, String localId, String sellerId) async {
     _customerCounter.sink.add(null);
     await _repository
-        .postCustomerCounter(localId, sellerId)
+        .postCustomerCounter(userId, deviceId, localId, sellerId)
         .timeout(Duration(seconds: 3))
         .then((response) {
       _customerCounter.sink.add(response);

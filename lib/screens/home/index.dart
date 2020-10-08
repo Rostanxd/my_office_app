@@ -6,6 +6,7 @@ import 'package:my_office_th_app/blocs/login_bloc.dart';
 import 'package:my_office_th_app/blocs/setting_bloc.dart';
 import 'package:my_office_th_app/components/user_drawer.dart';
 import 'package:my_office_th_app/models/card_info.dart';
+import 'package:my_office_th_app/models/personCounter.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,31 +17,12 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   SettingsBloc _settingsBloc;
   LoginBloc _loginBloc;
   HomeBloc _homeBloc;
   MediaQueryData _queryData;
   WebViewController _controller;
-
-  @override
-  void initState() {
-    /// Listener to the observable to catch the response.
-    _homeBloc.customerCounter.listen((Object response) {
-      if (response != null) {
-        final snackBar = SnackBar(
-          content: Text('Contador de clientes +1 !'),
-        );
-        Scaffold.of(context).showSnackBar(snackBar);
-      }
-    }, onError: (error, stacktrace) {
-      final snackBar = SnackBar(
-        content: Text('Ha ocurrido un error.'),
-      );
-      Scaffold.of(context).showSnackBar(snackBar);
-    });
-
-    super.initState();
-  }
 
   @override
   void didChangeDependencies() {
@@ -57,6 +39,24 @@ class HomePageState extends State<HomePage> {
             : '');
 
     _queryData = _settingsBloc.queryData.value;
+
+    _homeBloc.customerCounter.listen((PersonCounter response) {
+      if (response != null) {
+        final snackBar = SnackBar(
+          content: Text('Contador de clientes ${response.attendedClients}!'),
+          duration: Duration(seconds: 2),
+        );
+
+        _scaffoldKey.currentState.showSnackBar(snackBar);
+      }
+    }, onError: (error, stacktrace) {
+      final snackBar = SnackBar(
+        content: Text('Ha ocurrido un error.'),
+      );
+
+      _scaffoldKey.currentState.showSnackBar(snackBar);
+    });
+
     super.didChangeDependencies();
   }
 
@@ -64,6 +64,7 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     print('Home >> build');
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text(""),
         backgroundColor: Color(0xff011e41),
@@ -101,58 +102,22 @@ class HomePageState extends State<HomePage> {
           height: 20.0,
         )
       ]),
-      floatingActionButton: StreamBuilder<Object>(
+      floatingActionButton: StreamBuilder<PersonCounter>(
         stream: _homeBloc.customerCounter,
-        builder: (BuildContext context, AsyncSnapshot<Object> snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.waiting:
-              {
-                return FloatingActionButton(
-                    child: Icon(Icons.add),
-                    onPressed: () {
-                      _homeBloc.postCustomerCounter(_loginBloc.local.value.id,
-                          _loginBloc.user.value.sellerId);
-                      _controller.reload();
-                    });
-              }
-              break;
-            case ConnectionState.active:
-              {
-                return !snapshot.hasData || !snapshot.data
-                    ? FloatingActionButton(
-                        child: Icon(Icons.add),
-                        onPressed: () {
-                          _homeBloc.postCustomerCounter(
-                              _loginBloc.local.value.id,
-                              _loginBloc.user.value.sellerId);
-                          _controller.reload();
-                        })
-                    : FloatingActionButton(
-                        child: Icon(Icons.add),
-                        backgroundColor: Colors.grey,
-                        onPressed: () {});
-              }
-              break;
-            case ConnectionState.done:
-              {
-                return FloatingActionButton(
-                    child: Icon(Icons.add),
-                    onPressed: () {
-                      _homeBloc.postCustomerCounter(_loginBloc.local.value.id,
-                          _loginBloc.user.value.sellerId);
-                      _controller.reload();
-                    });
-              }
-              break;
-            default:
-              {
-                return FloatingActionButton(
-                    child: Icon(Icons.add),
-                    backgroundColor: Colors.grey,
-                    onPressed: () {});
-              }
-              break;
-          }
+        builder: (BuildContext context, AsyncSnapshot<PersonCounter> snapshot) {
+          print(snapshot.connectionState);
+          print(snapshot.data);
+
+          return FloatingActionButton(
+              child: Icon(Icons.add),
+              onPressed: () {
+                _homeBloc.postCustomerCounter(
+                    _loginBloc.user.value.user,
+                    _settingsBloc.device.value.id,
+                    _loginBloc.local.value.id,
+                    _loginBloc.user.value.sellerId);
+                _controller.reload();
+              });
         },
       ),
     );
