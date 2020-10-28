@@ -65,6 +65,9 @@ dependencies:
   # To use firestore
   firebase_core: ^0.2.5
 
+  # To refresh with pull from top
+  pull_to_refresh: ^1.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

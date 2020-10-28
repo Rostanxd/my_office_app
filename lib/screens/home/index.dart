@@ -8,6 +8,7 @@ import 'package:my_office_th_app/components/user_drawer.dart';
 import 'package:my_office_th_app/models/card_info.dart';
 import 'package:my_office_th_app/models/personCounter.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -23,6 +24,14 @@ class HomePageState extends State<HomePage> {
   HomeBloc _homeBloc;
   MediaQueryData _queryData;
   WebViewController _controller;
+  RefreshController _refreshController = RefreshController();
+
+  void _onRefresh(bool up) async{
+    _homeBloc.fetchAllCardInfo(
+        _loginBloc.local.value.id, _loginBloc.user.value.sellerId);
+    _controller.reload();
+    _refreshController.sendBack(true, RefreshStatus.completed);
+  }
 
   @override
   void didChangeDependencies() {
@@ -70,38 +79,42 @@ class HomePageState extends State<HomePage> {
         backgroundColor: Color(0xff011e41),
       ),
       drawer: UserDrawer(),
-      body: ListView(children: <Widget>[
-        _cardInfoMonthlySales(),
-        _cardInfoWeeklySales(),
-        _cardInfoDailySales(),
-        _cardInfoCustomersWeek(),
-        _cardInfoSalesAnalysis(),
+      body: SmartRefresher(
+          enablePullDown: true,
+          onRefresh: _onRefresh,
+          child: ListView(children: <Widget>[
+            _cardInfoMonthlySales(),
+            _cardInfoWeeklySales(),
+            _cardInfoDailySales(),
+            _cardInfoCustomersWeek(),
+            _cardInfoSalesAnalysis(),
 //        _cardInfoTelemarketingWeekly(),
-        Container(
-          margin: EdgeInsets.only(top: 10.0),
-          height: _queryData.size.height * 0.90,
-          child: _loginBloc.user.value.profile.id == 'V'
-              ? WebView(
-                  javascriptMode: JavascriptMode.unrestricted,
-                  initialUrl: 'http://info.thgye.com.ec/VtaSemanalCom.html?'
-                      'sellerId=${_loginBloc.user.value.sellerId}&localId=${_loginBloc.local.value.id}',
-                  onWebViewCreated: (WebViewController webViewController) {
-                    _controller = webViewController;
-                  },
-                )
-              : WebView(
-                  javascriptMode: JavascriptMode.unrestricted,
-                  initialUrl: 'http://info.thgye.com.ec/VtaSemanalCom.html?'
-                      'sellerId=&localId=${_loginBloc.local.value.id}',
-                  onWebViewCreated: (WebViewController webViewController) {
-                    _controller = webViewController;
-                  },
-                ),
-        ),
-        SizedBox(
-          height: 20.0,
-        )
-      ]),
+            Container(
+              margin: EdgeInsets.only(top: 10.0),
+              height: _queryData.size.height * 0.90,
+              child: _loginBloc.user.value.profile.id == 'V'
+                  ? WebView(
+                      javascriptMode: JavascriptMode.unrestricted,
+                      initialUrl: 'http://info.thgye.com.ec/VtaSemanalCom.html?'
+                          'sellerId=${_loginBloc.user.value.sellerId}&localId=${_loginBloc.local.value.id}',
+                      onWebViewCreated: (WebViewController webViewController) {
+                        _controller = webViewController;
+                      },
+                    )
+                  : WebView(
+                      javascriptMode: JavascriptMode.unrestricted,
+                      initialUrl: 'http://info.thgye.com.ec/VtaSemanalCom.html?'
+                          'sellerId=&localId=${_loginBloc.local.value.id}',
+                      onWebViewCreated: (WebViewController webViewController) {
+                        _controller = webViewController;
+                      },
+                    ),
+            ),
+            SizedBox(
+              height: 20.0,
+            )
+          ]),
+          controller: _refreshController),
       floatingActionButton: StreamBuilder<PersonCounter>(
         stream: _homeBloc.customerCounter,
         builder: (BuildContext context, AsyncSnapshot<PersonCounter> snapshot) {
